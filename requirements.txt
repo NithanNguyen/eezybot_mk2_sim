@@ -1,0 +1,8 @@
+# Da kiem tra tren Python 3.8.20 (Ubuntu 20.04 mac dinh Python 3.8)
+mujoco==3.2.3        # ban cuoi cung co wheel cho Python 3.8
+numpy==1.24.4
+matplotlib==3.7.5
+ruckig==0.12.2       # ban cuoi cung co wheel cho Python 3.8
+trimesh==4.4.9
+networkx==3.1        # trimesh can de va lo luoi STL
+scipy==1.10.1
