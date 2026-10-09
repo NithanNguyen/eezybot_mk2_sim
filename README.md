@@ -1,5 +1,18 @@
 # Mô phỏng EEZYbotARM Mk2 — Python + MuJoCo
 
+### FAST RUN
+```bash
+source ~/venvs/mk2/bin/activate
+cd ~/eezybot_mk2_sim
+
+python run_sim.py --view      # xem tay máy vẽ theo thời gian thực
+python run_sim.py             # chạy không cửa sổ, ghi kết quả vào results/
+python -m mujoco.viewer --mjcf=model/mk2.xml   # điều khiển tay bằng thanh trượt
+python check_kinematics.py    # kiểm chứng động học (khoảng 30 giây)
+```
+
+
+
 Bộ mã mô phỏng cho đồ án CE212 "Tay máy robot 3-DOF phân loại sản phẩm". Gói này gồm:
 
 - Mô hình MuJoCo của Mk2 dựng từ **chính các file STL gốc**, có **3 vòng hình bình hành kín**.
