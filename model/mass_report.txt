@@ -1,0 +1,14 @@
+chi tiet | khoi luong (g) | the tich (cm3) | ghi chu
+EBAmk2_001_base | 178.2 | 143.7 | luoi da va lo
+EBAmk2_011_gearmast | 38.3 | 30.9 | luoi kin
+2 x MG996R tren de quay | 110.0 | - | datasheet, vi tri gan dung
+EBAmk2_002_mainarm | 83.1 | 67.0 | luoi da va lo
+EBAmk2_006_horarm__ | 48.6 | 39.2 | luoi kin
+EBAmk2_009_trialinkfront | 17.7 | 14.3 | luoi kin
+dau cong tac (but) | 15.0 | - | [GIA-DINH]
+EBAmk2_003_varm | 15.0 | 12.1 | luoi da va lo
+EBAmk2_004_link135 | 7.3 | 5.9 | luoi kin
+EBAmk2_005_link135angled | 8.2 | 6.6 | luoi kin
+EBAmk2_007_trialink | 23.1 | 18.6 | luoi kin
+EBAmk2_008_link147_new | 7.8 | 6.3 | luoi kin
+TONG khoi luong chuyen dong: 552.3 g  (FILL_FACTOR=1.0)
