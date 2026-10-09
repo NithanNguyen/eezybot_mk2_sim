@@ -30,10 +30,13 @@ TRI_A = (6.42, 33.35)
 TRI_B = (41.91, 9.09)
 TRI_C = (77.42, 33.35)                                                        # [DO-STL]
 
-# Chieu cao truc vai O so voi mat ban (mm).
-# Tinh tu chuoi chi tiet: be vit mainbase z=33.5 + lower_base->mat tren gearmast
-# 16.78 (gom khe bi 1.78 uoc tu ranh bi R~3.18 va bi D6) + 43.00 trong 001_base.
-H_SHOULDER = 93.3                                     # [DO-STL + suy luan] -> nen do lai
+# Chieu cao truc vai O so voi mat ban (mm). Chuoi chi tiet tu duoi len (tools/check_assembly.py):
+#   012 mainbase: mat do 013 o z = 33.95
+#   013 lower_base: mat tam (r < 6 mm) cao 6.30 -> 40.25; gearmast 011 (11 mm) ty len mat nay
+#   (bi D6 trong ranh R3.17 con khe ~0.6 mm, nen tam la diem tua) -> mat tren gearmast 51.25
+#   001_base: lo vai cao 43.00 tren mat day                               -> 94.25
+LOWER_BASE_Z = 33.95                                  # [DO-STL]
+H_SHOULDER = LOWER_BASE_Z + 6.30 + 11.0 + 43.00       # = 94.25 mm   [DO-STL] -> nen do lai tren tay that
 
 # Truc vai cat truc dung (O nam ngay tren truc quay de): 001_base O.y = truc.y
 SHOULDER_OFFSET_X = 0.0                                                       # [DO-STL]
@@ -43,20 +46,61 @@ SHOULDER_OFFSET_X = 0.0                                                       # 
 BASE_GEAR_RATIO = 2.0                                                         # [DO-STL]
 
 # ---------------------------------------------------------------------------
-# 2. Dau cong tac (but ve / tam kep) so voi co tay W, he truc co dinh (x truoc, z len)
+# 2. Kep (gripper) + but ve
+#    Kep 014 lap vao luoi duoi en (dovetail) cua 009, ngon chi ve phia truoc, mat kep
+#    nam ngang. But dung thang theo truc z cua kep, ngoi huong xuong.
 # ---------------------------------------------------------------------------
-TOOL_OFFSET = (40.0, -45.0)     # (dx, dz) mm                                 [GIA-DINH] !!!
-TOOL_MASS_G = 15.0              # gia but + but (+ kep)                        [GIA-DINH]
+PEN_DIAMETER = 10.0             # mm                                           [YEU-CAU]
+PEN_GRIP_TO_TIP = 90.0          # mm, tu diem kep (giua ma kep) toi ngoi       [YEU-CAU]
+#   (60 mm thi hinh ve tren giay dat tren mat dat chi dat R ~ 10 mm do gioi han va cham; chon 90 mm)
+PEN_LENGTH = 140.0              # mm, tong chieu dai but                       [GIA-DINH]
+TOOL_MASS_G = 15.0              # khoi luong but                               [GIA-DINH]
+PEN_TIP_FRICTION = 0.2          # he so ma sat ngoi-giay                       [GIA-DINH]
+
+# Diem kep but so voi tam truc co tay W, truc the gioi o tu the home (mm), va goc nghieng
+# cua kep quanh truc y. Tinh tu STL boi build_model.py (lo khop + khop dovetail + goc kep
+# but D10) — build_model.py kiem tra lai va dung neu lech > 0.02 mm.        [DO-STL]
+GRIP_POINT_W = (95.98, 0.475, -8.00)
+CLAW_TILT_DEG = 0.27            # truc z kep nghieng so voi phuong dung (ngoi lech ve phia truoc)
+
+import math as _m
+# Ngoi but so voi W (mat phang canh tay: dx, dz) va do lech ngang dy (mm) — dung cho FK/IK
+TOOL_OFFSET = (GRIP_POINT_W[0] + PEN_GRIP_TO_TIP * _m.sin(_m.radians(CLAW_TILT_DEG)),
+               GRIP_POINT_W[2] - PEN_GRIP_TO_TIP * _m.cos(_m.radians(CLAW_TILT_DEG)))
+TOOL_OFFSET_Y = GRIP_POINT_W[1]
+
+# Kep: banh rang 016 (10 rang, m = 1.5) tren truc SG90 an khop 018 (16 rang) gan vao ngon trai;
+# 2 ngon an khop nhau 1:1 (12 rang). Ti so goc truc SG90 / goc ngon:            [DO-STL]
+GRIPPER_GEAR_RATIO = 16.0 / 10.0
+FINGER_OPEN_MAX_DEG = 40.0      # do mo toi da cua ngon so voi luc kep but     [GIA-DINH]
+# Quan tinh rotor quy doi cua cac khop kep (kg m^2). Can > 0: banh rang/ngon nhua rat nhe,
+# khong co gia tri nay mo phong mat on dinh (dt = 0.5 ms).                    [GIA-DINH]
+GRIPPER_ARMATURE = 1e-6
+
+# ---------------------------------------------------------------------------
+# 2b. Giay ve — A4 (ISO 216: 210 x 297 mm), dat ngay tren mat ban
+# ---------------------------------------------------------------------------
+PAPER_SIZE = (210.0, 297.0)     # (theo x, theo y) mm                          [ISO 216]
+PAPER_THICKNESS = 1.0           # mm, mat tren giay o z = 1 mm                 [YEU-CAU]
+PAPER_CENTER = (245.0, 0.0)     # (x, y) tam to giay = tam hinh ve mac dinh; R_max ~ 56 mm tai day (check_kinematics [4])
+INK_WIDTH = 1.0                 # be rong net but (mm)                         [YEU-CAU]
+# Ngoi coi la "cham giay" (ra muc) khi khe ngoi-giay <= INK_GAP. Tiep xuc cung trong MuJoCo
+# rung vi mo +-0.015 mm; nguong nay chi anh huong viec ghi muc, khong anh huong luc tiep xuc.
+INK_GAP = 0.05                  # mm                                           [GIA-DINH]
+PEN_LIFT = 15.0                 # do cao nhac but khi di chuyen toi/roi diem dau (mm)
 
 # ---------------------------------------------------------------------------
 # 3. Gioi han khop (do). theta2 = goc canh tay chinh so voi phuong ngang,
 #    phi = goc tay ngang (forearm) so voi phuong ngang, rel = phi - theta2.
-#    Mac dinh lay be rong 90 do theo URDF cua repo HotBlackRobotics/ntbd
-#    (joint_2 [-35,55], joint_3 [-70,20]); vi tri cu the phai do lai.
+#    Lay tu kiem tra va cham giua cac chi tiet STL (tools/check_assembly.py --limits):
+#      phi < -67.5: tay ngang 006 cham co tay 009 | phi > 22.5: tay quay 003 cham de 001
+#      rel < -147.5: 006 cham canh tay chinh 002 | theta2 < 40: 002 cham tam giac 007
+#    Gioi han duoi day cach bien va cham >= 2.5 do. Vi tri cu the van nen do tren tay that.
 # ---------------------------------------------------------------------------
 THETA1_LIM = (-45.0, 45.0)      # khop de (servo 0..180 qua hop so 2:1)       [ntbd URDF]
-THETA2_LIM = (35.0, 125.0)                                                    # [GIA-DINH]
-REL_LIM = (-160.0, -70.0)       # phi - theta2                                [GIA-DINH]
+THETA2_LIM = (42.5, 125.0)                                                    # [DO-STL va cham]
+PHI_LIM = (-65.0, 20.0)                                                       # [DO-STL va cham]
+REL_LIM = (-145.0, -60.0)       # phi - theta2                                [DO-STL va cham]
 
 # ---------------------------------------------------------------------------
 # 4. Lop anh xa goc dong hoc -> goc servo (do). Phai hieu chuan tren phan cung.
@@ -76,6 +120,14 @@ MG996R = {
     "6V":   {"stall_kgfcm": 11.0, "s_per_60deg": 0.15},                       # [DATASHEET]
 }
 SERVO_MASS_G = 55.0                                                           # [DATASHEET]
+MG996R_SIZE = (40.7, 19.7, 42.9)  # dai x rong x cao, mm (TowerPro)          [DATASHEET]
+# Truc ra cua MG996R lech khoi tam than servo 9.75 mm theo chieu dai: suy tu vi tri lo truc
+# vai trong cua so lap servo cua 001 va tu tam an khop gearservo/gearmast trong 012. [DO-STL]
+MG996R_SHAFT_OFFSET = 9.75
+
+# Servo kep SG90 — TowerPro SG90 datasheet: 1.8 kgf.cm, 0.1 s/60 do (4.8 V), 9 g,
+# kich thuoc ~22.2 x 11.8 x 31 mm                                             [DATASHEET]
+SG90 = {"stall_kgfcm": 1.8, "s_per_60deg": 0.10, "mass_g": 9.0, "size": (22.2, 11.8, 31.0)}
 # Sai so goc tai do mo-men bat dau bao hoa (do cung cua vong P ben trong servo).
 # Nha san xuat KHONG cong bo -> hieu chinh bang dap ung buoc do tren servo that.
 SERVO_ERR_SAT_DEG = 5.0                                                       # [GIA-DINH]

@@ -96,3 +96,11 @@ def derivs(x, dt=P.CMD_PERIOD):
     a = np.diff(v, axis=0, prepend=v[:1]) / dt
     j = np.diff(a, axis=0, prepend=a[:1]) / dt
     return v, a, j
+
+
+def line_path(p0, p1, T, dt=P.CMD_PERIOD):
+    """Doan thang p0 -> p1 trong T giay, bien dang van toc hinh sin (bat dau/ket thuc v = 0).
+    Dung cho ha but xuong giay va nhac but len (khong tinh vao chi so M0/M2)."""
+    n = max(1, int(round(T / dt)))
+    s = (1 - np.cos(np.pi * np.arange(1, n + 1) / n)) / 2
+    return np.asarray(p0, float) + np.outer(s, np.asarray(p1, float) - np.asarray(p0, float))

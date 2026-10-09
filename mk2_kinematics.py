@@ -13,6 +13,9 @@ de cuong. Neu ban can bang DH chuan: q3_DH = phi - th2.
 
 Dau cong tac giu huong co dinh (hinh binh hanh thu 2 va 3), nen vi tri
 p = (x, y, z) chi phu thuoc (th1, th2, phi).
+
+Ngoi but lech khoi mat phang canh tay mot doan nho DY = TOOL_OFFSET_Y (do kep lap
+khong dung giua truc khop, tinh tu STL). FK/IK duoi day tinh ca do lech nay.
 """
 import math
 import numpy as np
@@ -22,6 +25,7 @@ L2 = P.L_UPPER
 L3 = P.L_FORE
 H = P.H_SHOULDER
 DX, DZ = P.TOOL_OFFSET
+DY = P.TOOL_OFFSET_Y
 OX = P.SHOULDER_OFFSET_X
 
 
@@ -34,7 +38,8 @@ def fk(th1, th2, phi):
     """Vi tri dau cong tac (mm)."""
     r = OX + L2 * math.cos(th2) + L3 * math.cos(phi) + DX
     z = H + L2 * math.sin(th2) + L3 * math.sin(phi) + DZ
-    return np.array([r * math.cos(th1), r * math.sin(th1), z])
+    c1, s1 = math.cos(th1), math.sin(th1)
+    return np.array([r * c1 - DY * s1, r * s1 + DY * c1, z])
 
 
 def wrist(th1, th2, phi):
@@ -49,8 +54,12 @@ def ik(p, check_limits=True):
     """IK giai tich. p (mm) -> (th1, th2, phi) rad. Chon nghiem khuyu-tren
     (E nam tren duong O-W), dung voi cau hinh that cua Mk2."""
     x, y, z = p
-    th1 = math.atan2(y, x)
-    r = math.hypot(x, y) - DX - OX
+    rho2 = x * x + y * y
+    if rho2 <= DY * DY:
+        raise IKError(f"diem qua gan truc de: {p}")
+    rr = math.sqrt(rho2 - DY * DY)              # khoang cach trong mat phang canh tay
+    th1 = math.atan2(y, x) - math.atan2(DY, rr)
+    r = rr - DX - OX
     zz = z - H - DZ
     d2 = r * r + zz * zz
     c = (d2 - L2 * L2 - L3 * L3) / (2 * L2 * L3)
@@ -76,6 +85,8 @@ def within_limits(q):
         return False, f"th2={th2:.1f} ngoai {P.THETA2_LIM}"
     if not (P.REL_LIM[0] <= rel <= P.REL_LIM[1]):
         return False, f"phi-th2={rel:.1f} ngoai {P.REL_LIM}"
+    if not (P.PHI_LIM[0] <= phi <= P.PHI_LIM[1]):
+        return False, f"phi={phi:.1f} ngoai {P.PHI_LIM}"
     s = to_servo(q)
     for i, v in enumerate(s):
         if not (P.SERVO_RANGE[0] <= v <= P.SERVO_RANGE[1]):
@@ -90,8 +101,8 @@ def jacobian(th1, th2, phi):
     c1, s1 = math.cos(th1), math.sin(th1)
     dr2, dr3 = -L2 * math.sin(th2), -L3 * math.sin(phi)
     dz2, dz3 = L2 * math.cos(th2), L3 * math.cos(phi)
-    return np.array([[-r * s1, dr2 * c1, dr3 * c1],
-                     [r * c1, dr2 * s1, dr3 * s1],
+    return np.array([[-r * s1 - DY * c1, dr2 * c1, dr3 * c1],
+                     [r * c1 - DY * s1, dr2 * s1, dr3 * s1],
                      [0.0, dz2, dz3]])
 
 
@@ -143,5 +154,5 @@ def linkage_points(th2, phi):
 
 
 def tool_warning():
-    return ("CANH BAO: TOOL_OFFSET va TOOL_MASS_G trong params.py la gia tri tam "
+    return ("CANH BAO: PEN_LENGTH, TOOL_MASS_G va gioi han khop trong params.py la gia tri tam "
             "[GIA-DINH]. Hay do tren tay may that roi sua lai.")
