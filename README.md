@@ -224,9 +224,9 @@ git clone --depth 1 https://github.com/mchora2/EEZYbotARMMK2 ~/mk2_stl/EEZYbotAR
 Sau đó **tìm thư mục chứa STL** (không đoán đường dẫn) và lưu vào biến `STL_DIR`:
 
 ```bash
-find ~/mk2_stl -iname "EBAmk2_001_base.stl"
-# Ví dụ in ra /home/<tên-bạn>/mk2_stl/files/EBAmk2_001_base.STL  -> thư mục là ~/mk2_stl/files
-STL_DIR=$(dirname "$(find ~/mk2_stl -name 'EBAmk2_001_base.STL' | head -1)")
+find ~/Documents/dktd/mk2_stl -iname "EBAmk2_001_base.stl"
+# Ví dụ in ra /home/<tên-bạn>/mk2_stl/files/EBAmk2_001_base.STL  -> thư mục là ~/Documents/dktd/mk2_stl/files
+STL_DIR=/home/thienan/Documents/dktd/mk2_stl/files
 echo "$STL_DIR"
 ```
 
