@@ -283,6 +283,14 @@ Da ghi .../eezybot_mk2_sim/model/mk2.xml
 - Dòng `diem kep - W` được so với `params.GRIP_POINT_W`. Nếu không khớp, script dừng và in giá trị đúng để chép vào `params.py`.
 - Dòng `ngoi but o home`: vị trí ngòi tính từ STL phải trùng FK giải tích của `mk2_kinematics.py`, sai lệch < 0,05 mm.
 
+✅ **Kiểm tra Góc hiệu dụng của các servo:**
+
+```bash
+python -c "import mujoco,numpy as np; m=mujoco.MjModel.from_xml_path('model/mk2.xml'); [print(f'{m.actuator(i).name:15s}', np.round(m.actuator_ctrlrange[i],4), 'rad =', np.round(np.degrees(m.actuator_ctrlrange[i]),1), 'deg') for i in range(m.nu)]"
+```
+
+
+
 ✅ **Kiểm tra — MuJoCo nạp được mô hình:**
 
 ```bash
