@@ -71,7 +71,7 @@
 <site name="tool" pos="0.110592 0.00048 -0.0895" size="0.002" rgba="1 0 0 1"/>
 <site name="grip" pos="0.110592 0.00048 0.0005" size="0.002" rgba="0 1 0 1"/>
             <body name="gear_l" pos="0.045 0.01398 -0.007">
-              <inertial pos="0.00508528 1.40339e-07 0.007" mass="0.00622139" fullinertia="2.56e-07 9.54147e-07 1.1594e-06 1.98682e-24 -5.13225e-25 -8.41072e-25"/>
+              <inertial pos="0.00508528 1.40339e-07 0.007" mass="0.00622139" fullinertia="2.56e-07 9.54147e-07 1.1594e-06 -2.79578e-23 -2.53068e-25 2.38273e-26"/>
               <joint name="gripper" type="hinge" axis="0 0 1" armature="1e-06" damping="0.0168564" limited="true" range="0 1.5708"/>
               <geom type="mesh" mesh="GR_gear_l" rgba="0.16 0.62 0.56 1" contype="0" conaffinity="0" group="1"/>
               <body name="finger_l" pos="0.035 0 0">
@@ -81,12 +81,12 @@
               </body>
             </body>
             <body name="uplink_l" pos="0.0633303 0.00598 -0.007">
-              <inertial pos="0.017507 0 0.007" mass="0.00206584" fullinertia="1.44251e-08 2.80231e-07 2.77807e-07 -1.07271e-24 -6.16751e-26 0"/>
+              <inertial pos="0.017507 0 0.007" mass="0.00206584" fullinertia="1.44251e-08 2.80231e-07 2.77807e-07 -3.98906e-24 4.57057e-26 0"/>
               <joint name="uplink_l" type="hinge" axis="0 0 1" armature="1e-06"/>
               <geom type="mesh" mesh="GR_uplink_l" rgba="0.23 0.53 1 1" contype="0" conaffinity="0" group="1"/>
             </body>
             <body name="gear_r" pos="0.045 -0.01302 -0.007">
-              <inertial pos="0.00508528 1.40339e-07 0.007" mass="0.00622139" fullinertia="2.56e-07 9.54147e-07 1.1594e-06 1.98682e-24 -5.13225e-25 -8.41072e-25"/>
+              <inertial pos="0.00508528 1.40339e-07 0.007" mass="0.00622139" fullinertia="2.56e-07 9.54147e-07 1.1594e-06 -2.79578e-23 -2.53068e-25 2.38273e-26"/>
               <joint name="gear_r" type="hinge" axis="0 0 -1" armature="1e-06" limited="true" range="0 1.5708"/>
               <geom type="mesh" mesh="GR_gear_r" rgba="0.16 0.62 0.56 1" contype="0" conaffinity="0" group="1"/>
               <body name="finger_r" pos="0.035 0 0">
@@ -96,7 +96,7 @@
               </body>
             </body>
             <body name="uplink_r" pos="0.0633303 -0.00502 -0.007">
-              <inertial pos="0.017507 0 0.007" mass="0.00206584" fullinertia="1.44251e-08 2.80231e-07 2.77807e-07 -1.07271e-24 -6.16751e-26 0"/>
+              <inertial pos="0.017507 0 0.007" mass="0.00206584" fullinertia="1.44251e-08 2.80231e-07 2.77807e-07 -3.98906e-24 4.57057e-26 0"/>
               <joint name="uplink_r" type="hinge" axis="0 0 -1" armature="1e-06"/>
               <geom type="mesh" mesh="GR_uplink_r" rgba="0.23 0.53 1 1" contype="0" conaffinity="0" group="1"/>
             </body>
