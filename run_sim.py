@@ -1,13 +1,15 @@
 """run_sim.py — Mo phong thi nghiem ve ngoi sao + duong tron (de cuong, muc
 'Thuc nghiem danh gia'): so sanh M0 (noi suy tuyen tinh) va M2 (double-S).
 
-Kep giu but D10 thang dung, to giay A4 day 1 mm nam tren mat ban. Nét muc (rong 1 mm)
-chi duoc ghi khi MuJoCo bao co tiep xuc giua ngoi but va giay.
+Bai ve CAN BUT: chay voi co --pen (model/mk2_pen.xml). Gripper kep but D10 thang dung giua
+2 ngon, to giay A4 day 1 mm nam tren mat ban. Net muc (rong 1 mm) chi duoc ghi khi MuJoCo bao
+co tiep xuc giua ngoi but va giay. Mac dinh (khong --pen) mo hinh khong co but nen script dung.
 
 Vi du:
-    python run_sim.py                         # chay ca M0, M2, luu do thi + CSV + anh vao results/
-    python run_sim.py --view                  # xem truc tiep trong cua so MuJoCo (thay vet muc)
-    python run_sim.py --R 30 --vmax 150 --amax 1500 --jmax 30000
+    python run_sim.py --pen                   # chay ca M0, M2, luu do thi + CSV + anh vao results/
+    python run_sim.py --pen --view            # xem truc tiep trong cua so MuJoCo (thay vet muc)
+    python run_sim.py --pen --R 15 --vmax 150 --amax 1500 --jmax 30000
+R kha thi (cach gioi han >= 3 do) tren mat giay: bang [4] cua  python check_kinematics.py --pen
 
 Chuoi xu ly giong firmware: p(t) -> IK -> goc servo (do) -> [giu 20 ms] -> servo.
 Moi lan ve: ha but thang dung xuong diem dau (1 s) -> dung 0.3 s -> ve (M0 hoac M2)
@@ -26,12 +28,17 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--cx", type=float, default=P.PAPER_CENTER[0], help="tam hinh, x (mm)")
 ap.add_argument("--cy", type=float, default=P.PAPER_CENTER[1], help="tam hinh, y (mm)")
 ap.add_argument("--z", type=float, default=P.PAPER_THICKNESS, help="do cao LENH cua ngoi but khi ve (mm), mac dinh = mat giay")
-ap.add_argument("--R", type=float, default=40.0, help="ban kinh duong tron (mm)")
+ap.add_argument("--R", type=float, default=20.0, help="ban kinh duong tron (mm); R_max tren giay: check_kinematics.py --pen [4]")
 ap.add_argument("--vmax", type=float, default=150.0, help="mm/s   [GIA-DINH]")
 ap.add_argument("--amax", type=float, default=1500.0, help="mm/s^2 [GIA-DINH]")
 ap.add_argument("--jmax", type=float, default=30000.0, help="mm/s^3 [GIA-DINH]")
 ap.add_argument("--view", action="store_true", help="mo cua so MuJoCo xem truc tiep")
+ap.add_argument("--pen", action="store_true", help="gan but vao gripper (bat buoc cho bai ve)")
 args = ap.parse_args()
+if not args.pen:
+    raise SystemExit("run_sim.py la bai VE hinh, can but. Mac dinh mo phong khong gan but; "
+                     "chay lai voi co --pen:  python run_sim.py --pen")
+K.set_tool("pen")
 if not args.view:
     matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -78,8 +85,9 @@ for name, pts, sid in [("M0", p0, sid0), ("M2", p2, sid2)]:
                       i0=len(down) + n_dwell)
 
 # ---------------------------------------------------------------- mo phong MuJoCo
-m, d = S.load_model()
+m, d = S.load_model(pen=True)
 viewer = None
+can_render = True                                           # chup anh ink_*.png (can OpenGL)
 if args.view:
     import mujoco.viewer
     viewer = mujoco.viewer.launch_passive(m, d)
@@ -87,8 +95,7 @@ if args.view:
         viewer.cam.lookat[:] = [args.cx / 1000 - 0.05, args.cy / 1000, 0.06]
         viewer.cam.distance = 0.55; viewer.cam.azimuth = -150; viewer.cam.elevation = -32
 for name, R_ in runs.items():
-    mujoco.mj_resetData(m, d)
-    d.ctrl[:] = 0.0                                             # servo kep = 0: kep but
+    S.reset(m, d)                                               # keyframe "pen": gripper kep but
     ctrl = np.array([S.servo_to_ctrl(s) for s in R_["servo"]])
     S.settle(m, d, ctrl[0], seconds=2.0)                        # dua but toi tren diem dau
     d.time = 0.0
@@ -107,7 +114,10 @@ for name, R_ in runs.items():
           f"max |mo-men servo| = {np.abs(lg['frc']).max(0).round(3)} Nm")
     print(f"[{name}] ngoi cham giay {cover:.1f}% thoi gian ve; so net muc = {len(ink.strokes)}; "
           f"luc ep ngoi TB/max = {fn.mean() if fn.size else 0:.2f}/{fn.max() if fn.size else 0:.2f} N")
-    # anh chup cuoi lan ve (can OpenGL; bo qua neu khong co)
+    # anh chup cuoi lan ve (can OpenGL; bo qua neu khong co — chi thu 1 lan: tao lai Renderer
+    # sau mot lan loi co the lam tien trinh dung han tren mot so may)
+    if not can_render:
+        continue
     try:
         r = mujoco.Renderer(m, 720, 960)
         cam = mujoco.MjvCamera(); cam.lookat[:] = [args.cx / 1000, args.cy / 1000, 0.02]
@@ -118,6 +128,7 @@ for name, R_ in runs.items():
         Image.fromarray(r.render()).save(os.path.join(OUT, f"ink_{name}.png"))
         r.close()
     except Exception as e:                                      # noqa: BLE001
+        can_render = False
         print(f"  (khong chup duoc anh ink_{name}.png: {e})")
 if viewer is not None:
     viewer.close()

@@ -14,8 +14,11 @@ de cuong. Neu ban can bang DH chuan: q3_DH = phi - th2.
 Dau cong tac giu huong co dinh (hinh binh hanh thu 2 va 3), nen vi tri
 p = (x, y, z) chi phu thuoc (th1, th2, phi).
 
-Ngoi but lech khoi mat phang canh tay mot doan nho DY = TOOL_OFFSET_Y (do kep lap
-khong dung giua truc khop, tinh tu STL). FK/IK duoi day tinh ca do lech nay.
+Dau cong tac (params.TOOL_OFFSETS) chon bang set_tool():
+  "gripper" (mac dinh): TCP gap vat — giua 2 dem mui ngon luc dong.
+  "pen": ngoi but — chi dung khi chay voi co --pen (model/mk2_pen.xml).
+Dau cong tac lech khoi mat phang canh tay mot doan nho DY = TOOL_OFFSET_Y (mat doi xung gripper
+khong trung mat phang khop). FK/IK duoi day tinh ca do lech nay.
 """
 import math
 import numpy as np
@@ -24,13 +27,23 @@ import params as P
 L2 = P.L_UPPER
 L3 = P.L_FORE
 H = P.H_SHOULDER
-DX, DZ = P.TOOL_OFFSET
+DX, DZ = P.TOOL_OFFSETS["gripper"]
 DY = P.TOOL_OFFSET_Y
 OX = P.SHOULDER_OFFSET_X
+TOOL = "gripper"
 
 
 class IKError(ValueError):
     pass
+
+
+def set_tool(name):
+    """Chon dau cong tac cho FK/IK: "gripper" (TCP gap vat, mac dinh) hoac "pen" (ngoi but)."""
+    global DX, DZ, TOOL
+    if name not in P.TOOL_OFFSETS:
+        raise ValueError(f"dau cong tac '{name}' khong co trong params.TOOL_OFFSETS {list(P.TOOL_OFFSETS)}")
+    DX, DZ = P.TOOL_OFFSETS[name]
+    TOOL = name
 
 
 # ----------------------------------------------------------------- FK
@@ -76,6 +89,12 @@ def ik(p, check_limits=True):
     return q
 
 
+def phi_limits():
+    """Gioi han goc phi hieu dung (do) = giao cua PHI_LIM (va cham STL) va CTRL_ELBOW_DEG (tam lenh
+    servo khuyu trong model): IK khong duoc tra ve lenh ma actuator se cat."""
+    return max(P.PHI_LIM[0], P.CTRL_ELBOW_DEG[0]), min(P.PHI_LIM[1], P.CTRL_ELBOW_DEG[1])
+
+
 def within_limits(q):
     th1, th2, phi = (math.degrees(v) for v in q)
     rel = phi - th2
@@ -87,6 +106,12 @@ def within_limits(q):
         return False, f"phi-th2={rel:.1f} ngoai {P.REL_LIM}"
     if not (P.PHI_LIM[0] <= phi <= P.PHI_LIM[1]):
         return False, f"phi={phi:.1f} ngoai {P.PHI_LIM}"
+    # tam lenh actuator trong model (sim_common.q_to_ctrl): base = gear * th1, vai = th2 - 90, khuyu = phi
+    for v, lim, nm in ((P.BASE_GEAR_RATIO * th1, P.CTRL_BASE_DEG, "CTRL_BASE_DEG"),
+                       (th2 - 90.0, P.CTRL_SHOULDER_DEG, "CTRL_SHOULDER_DEG"),
+                       (phi, P.CTRL_ELBOW_DEG, "CTRL_ELBOW_DEG")):
+        if not (lim[0] <= v <= lim[1]):
+            return False, f"lenh {nm}={v:.1f} ngoai {lim}"
     s = to_servo(q)
     for i, v in enumerate(s):
         if not (P.SERVO_RANGE[0] <= v <= P.SERVO_RANGE[1]):
@@ -154,5 +179,6 @@ def linkage_points(th2, phi):
 
 
 def tool_warning():
-    return ("CANH BAO: PEN_LENGTH, TOOL_MASS_G va gioi han khop trong params.py la gia tri tam "
+    return (f"Dau cong tac: {TOOL} {(round(DX, 2), round(DY, 2), round(DZ, 2))} mm so voi W. "
+            "CANH BAO: PEN_LENGTH, TOOL_MASS_G, GRIP_CENTER_Y va gioi han khop trong params.py la gia tri tam "
             "[GIA-DINH]. Hay do tren tay may that roi sua lai.")

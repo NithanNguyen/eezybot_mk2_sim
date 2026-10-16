@@ -1,34 +1,37 @@
 """
-build_model.py — Dung mo hinh MuJoCo (MJCF) cua EEZYbotARM Mk2 tu cac file STL goc,
-gom ca kep (gripper), but ve, to giay A4 va hop bao servo.
+build_model.py — Dung mo hinh MuJoCo (MJCF) cua EEZYbotARM Mk2 tu cac file STL goc cua canh tay,
+gom gripper THAT tren robot (gripper.py), hop bao servo, va (chi khi gan but) but ve + to giay A4.
 
 Cach dung:
     python build_model.py --stl-dir <thu muc chua EBAmk2_*.STL>
 
 Ket qua:
     model/meshes/*.stl   (STL nhi phan, da dat vao he toa do cua tung body)
-    model/mk2.xml        (MJCF)
+    model/mk2.xml        (MJCF MAC DINH: gripper, KHONG co but — bai gap vat)
+    model/mk2_pen.xml    (MJCF cho che do --pen: them but D10 kep giua 2 ngon + to giay A4)
     model/mass_report.txt
 
 Nguyen tac lap rap (kiem chung bang tools/check_assembly.py):
-  * Moi luoi hien thi la file STL goc, khong sua.
+  * Luoi canh tay la file STL goc, khong sua. Gripper (khong co CAD) la luoi lang tru sinh tu
+    so do thuoc kep (params.py) + bien dang anh (gripper_shape.py), xem gripper.py.
   * Trong mat phang canh tay: 2 tam lo truc cua chi tiet dat trung 2 diem khop tinh tu params.py.
   * Theo truc khop (truc y the gioi): moi chi tiet co chieu lap FLIP (+1/-1) va vi tri Y0
     (= toa do y the gioi cua mat toa do 0 doc truc lo trong file STL). Bo gia tri trong
     bang ARM la nghiem cua bai toan xep chong: chi tiet chung mot truc nam sat nhau,
     khong chi tiet nao lan vao nhau o moi tu the trong gioi han khop.
-  * Kep 014 lap vao luoi duoi en cua 009; 2 ngon (015 phai, 017 trai) doi xung guong,
-    an khop nhau bang banh rang 12 rang; 018 cam 2 chot vao ngon trai; 016 tren truc SG90.
-  * 3 vong hinh binh hanh dong bang <equality><connect>; banh rang kep va banh rang de
-    dong bang <equality><joint>.
+  * Gripper thay ca co tay 009 + kep goc 014-018: thap ga co lo W (dau tay ngang 006) va Q
+    (dau 008), Q - W = (32.6, 28.0) mm nhu 009 -> gripper luon nam ngang.
+  * 3 vong hinh binh hanh canh tay dong bang <equality><connect>; 2 hinh binh hanh cua gripper
+    (ngon tinh tien) va cap banh rang de dong bang <equality><joint> tuyen tinh (khong bi nhay
+    sang nhanh hinh binh hanh cheo nhu khi dung <connect>).
 """
 import argparse, math, os, sys
 import numpy as np
 import trimesh
-from scipy.optimize import brentq
 
 import params as P
 import mk2_kinematics as K
+import gripper as GR
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "model")
@@ -48,9 +51,6 @@ HOLES = {
     # tam giac doi xung: lap kieu FLIP=+1 thi lo "A" cua co cau la lo TRI_C cua file STL
     "EBAmk2_007_trialink":       dict(axis=2, h={"A": P.TRI_C, "E": P.TRI_B, "C": P.TRI_A}),
     "EBAmk2_008_link147_new":    dict(axis=2, h={"C": (6.56, 6.57), "Q": (6.57, 153.57)}),
-    # W la lo tai vau hep 12 mm (vua khe 12 mm cua 006), Q la lo tai vau rong 22 mm.
-    # Lap dung chieu nay thi luoi duoi en cua 009 huong xuong de gan kep.
-    "EBAmk2_009_trialinkfront":  dict(axis=1, h={"W": (6.57, 39.68), "Q": (34.45, 6.95)}),
 }
 
 # Xep chong theo truc khop: (lo 1, lo 2, FLIP, Y0 mm). Nguon: tools/check_assembly.py
@@ -62,41 +62,7 @@ ARM = {
     "EBAmk2_006_horarm__":      ("E", "W", -1, 20.51),
     "EBAmk2_007_trialink":      ("E", "A", +1, -28.76),
     "EBAmk2_008_link147_new":   ("C", "Q", -1, -12.95),
-    "EBAmk2_009_trialinkfront": ("W", "Q", +1, -13.05),
 }
-
-# --------------------------------------------------------------------------
-# Kep, trong he toa do cua 014_claw_base (mm). Nguon: tools/holes.py + tools/check_assembly.py
-# --------------------------------------------------------------------------
-# 014 -> 009: khop duoi en (ranh chu T cua 014 om dau luoi 009; mat day ranh cham dau luoi)
-CLAW_IN_009_R = np.array([[0, 0, 1], [0, 1, 0], [-1, 0, 0]], float)
-CLAW_IN_009_T = np.array([-3.33, 0.90, 6.69])
-PIV_DX, PIV_SX = np.array([20.56, 3.58]), np.array([20.56, 21.67])   # lo truc ngon tren 014
-LP_DX, LP_SX = np.array([47.50, 10.51]), np.array([48.25, 11.12])     # lo truc trong file ngon
-Z_DX, Z_SX = 0.25 - 3.41, 0.25 - 3.35          # mat tren moay-o ngon cham mat duoi 014
-MIRROR_DEG = 14.38                              # 017 = guong cua 015 xoay 14.38 do quanh lo truc
-CLOSED_DEG = 180.0                              # goc 015 khi 2 ma kep cham nhau
-LP_018 = np.array([12.78, 7.54]); D018_DEG = 14.0   # 018 cam chot vao ngon trai
-Z_018 = Z_SX + 0.05 - 5.03                       # mat moay-o 018 cham mat duoi ngon trai
-SG90_WIN = (21.56, 44.56, 6.38, 18.88)          # cua so lap SG90 tren 014 (x0, x1, y0, y1)
-R016, R018 = 7.5, 12.0                           # ban kinh vong chia (m = 1.5; 10 va 16 rang)
-LP_016 = np.array([8.77, 9.09]); D016_DEG = 26.0   # pha rang 016 an khop 018 o goc kep but
-
-
-def sg90_shaft():
-    """Truc SG90 tren duong tam cua so, cach truc ngon trai R016 + R018 (an khop 016-018)."""
-    yc = (SG90_WIN[2] + SG90_WIN[3]) / 2
-    dy = PIV_SX[1] - yc
-    return np.array([PIV_SX[0] + math.sqrt((R016 + R018) ** 2 - dy ** 2), yc])
-
-
-def Tz(angle_deg, lp, piv, z):
-    """Quay chi tiet quanh truc z (do), dua diem lp (he rieng) toi piv (he kep), cao do z."""
-    a = math.radians(angle_deg); R = np.eye(3)
-    R[:2, :2] = [[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]]
-    T = np.eye(4); T[:3, :3] = R; T[:3, 3] = np.r_[piv, z] - R @ np.r_[lp, 0.0]
-    return T
-
 
 _CACHE = {}
 
@@ -193,24 +159,8 @@ def fmt(v):
     return " ".join(f"{x:.6g}" for x in np.ravel(v))
 
 
-def grip_angle(dx_mesh):
-    """Goc ngon 015 (do) de 2 ma kep vua cham but D = PEN_DIAMETER, tam but nam giua mat kep.
-    Tra ve (goc, tam but (x, y) trong he kep)."""
-    s = dx_mesh.section(plane_origin=[0, 0, 6.0], plane_normal=[0, 0, 1])   # giua chieu cao ma kep
-    L = [d[:, :2] for d in s.discrete if d[:, 0].max() < 14][0]
-    Pj = np.vstack([a + (b - a) * np.linspace(0, 1, 40, endpoint=False)[:, None] for a, b in zip(L[:-1], L[1:])])
-    yc = (PIV_DX[1] + PIV_SX[1]) / 2
-    def placed(a):
-        a = math.radians(a); R = np.array([[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]])
-        return (Pj - LP_DX) @ R.T + PIV_DX
-    Q = placed(CLOSED_DEG); face = Q[Q[:, 1] > Q[:, 1].max() - 0.6]
-    xp = (face[:, 0].min() + face[:, 0].max()) / 2
-    f = lambda a: np.min(np.hypot(*(placed(a) - [xp, yc]).T)) - P.PEN_DIAMETER / 2
-    return brentq(f, CLOSED_DEG - 40, CLOSED_DEG), np.array([xp, yc])
-
-
-def assemble(stl_dir, th2_deg=90.0, phi_deg=0.0, verbose=False):
-    """Dat moi chi tiet STL o tu the (theta1 = 0, theta2, phi). Tra ve dict:
+def assemble(stl_dir, th2_deg=90.0, phi_deg=0.0, verbose=False, grip_deg=0.0):
+    """Dat moi chi tiet STL o tu the (theta1 = 0, theta2, phi), gripper o goc servo grip_deg. Tra ve dict:
     meshes {ten: (luoi mm, T he rieng -> the gioi mm)} cho cac chi tiet chuyen dong,
     static {...} cho de co dinh, va cac dai luong phu (diem khop, he kep, goc kep...)."""
     # ---------------- diem khop o tu the home (th2 = 90 do, phi = 0), mat phang x-z, mm
@@ -257,27 +207,42 @@ def assemble(stl_dir, th2_deg=90.0, phi_deg=0.0, verbose=False):
     gs_z0 = base_bottom - 7.0 + 1.0                                 # giua dai rang gearmast (7 mm)
     gs_T = np.eye(4); gs_T[:3, 3] = np.array([gs_axis[0], gs_axis[1], gs_z0]) - np.array([20.44, 20.35, 0.0])
 
-    # ---------------- kep: 014 theo 009; ngon o goc kep but
-    T009 = meshes["EBAmk2_009_trialinkfront"][1]
-    Tc = np.eye(4); Tc[:3, :3] = CLAW_IN_009_R; Tc[:3, 3] = CLAW_IN_009_T
-    Tclaw = T009 @ Tc                                                # he kep -> the gioi
-    m015 = load(stl_dir, "EBAmk2_015_claw_finger_dx")
-    a_grip, pen_xy = grip_angle(m015)
-    a_sx = -a_grip - MIRROR_DEG
-    shaft = sg90_shaft()
-    claw_local = {
-        "EBAmk2_014_claw_base": np.eye(4),
-        "EBAmk2_015_claw_finger_dx": Tz(a_grip, LP_DX, PIV_DX, Z_DX),
-        "EBAmk2_017_claw_finger_sx": Tz(a_sx, LP_SX, PIV_SX, Z_SX),
-        "EBAmk2_018_claw_gear_driven": Tz(a_sx + D018_DEG, LP_018, PIV_SX, Z_018),
-        "EBAmk2_016_claw_gear_drive": Tz(D016_DEG, LP_016, shaft, Z_018 + 3.03 / 2 - 2.55),
-    }
-    for name, Tl in claw_local.items():
-        mm_ = m015 if name == "EBAmk2_015_claw_finger_dx" else load(stl_dir, name)
-        meshes[name] = (mm_, Tclaw @ Tl)
+    # ---------------- gripper that: than + thap ga gan cung co tay (luon nam ngang), cac khau quay
+    #                  quanh truc z cua gripper. grip_deg = goc servo kep (0 = dong).
+    gr = gripper_poses(Wp, grip_deg)
+    for name, (m, Tm) in gr.items():
+        meshes[name] = (m, Tm)
 
-    return dict(meshes=meshes, static=static, W3=W3, Tclaw=Tclaw, a_grip=a_grip, pen_xy=pen_xy,
-                shaft=shaft, gs_axis=gs_axis, gs_z0=gs_z0, gs_T=gs_T, base_bottom=base_bottom, gm=gm, m015=m015)
+    return dict(meshes=meshes, static=static, W3=W3, gs_axis=gs_axis, gs_z0=gs_z0, gs_T=gs_T,
+                base_bottom=base_bottom, gm=gm)
+
+
+GR_MESH = {"wrist": "GR_body", "gear_l": "GR_gear_l", "gear_r": "GR_gear_r", "finger_l": "GR_finger_l",
+           "finger_r": "GR_finger_r", "uplink_l": "GR_uplink_l", "uplink_r": "GR_uplink_r"}
+_GR_CACHE = {}
+
+
+def gripper_poses(Wp, grip_deg=0.0):
+    """{ten luoi gripper: (luoi mm he body, T body -> the gioi mm)} voi co tay tai Wp (nam ngang)
+    va goc servo kep grip_deg (do)."""
+    if not _GR_CACHE:
+        _GR_CACHE.update(GR.meshes())
+    org, axis = GR.body_origins_w()
+    a = math.radians(grip_deg)
+    out = {}
+    for body, mname in GR_MESH.items():
+        Tm = np.eye(4); Tm[:3, 3] = Wp
+        if body != "wrist":
+            if body.startswith("finger"):          # ngon tinh tien: goc tai Lw(grip_deg)
+                s = -1 if body.endswith("_l") else 1
+                p = GR.pose(grip_deg, s)["lw"]
+                Tm[:3, 3] = Wp + GR.g2w(p[0], p[1], 0.0)
+            else:                                  # banh rang/khau: quay quanh truc +-z tai goc body
+                t = axis[body] * a
+                Tm[:2, :2] = [[math.cos(t), -math.sin(t)], [math.sin(t), math.cos(t)]]
+                Tm[:3, 3] = Wp + org[body]
+        out[mname] = (_GR_CACHE[body], Tm)
+    return out
 
 
 def main():
@@ -289,45 +254,49 @@ def main():
         if f.endswith(".stl"): os.remove(os.path.join(MESH_OUT, f))
 
     A_ = assemble(args.stl_dir, verbose=True)
-    meshes, static, W3, Tclaw = A_["meshes"], A_["static"], A_["W3"], A_["Tclaw"]
+    meshes, static, W3 = A_["meshes"], A_["static"], A_["W3"]
     O, E, Wp, T, V, F, A, C, Q = (W3[k] for k in "O E W T V F A C Q".split())
-    a_grip, pen_xy, shaft, gm = A_["a_grip"], A_["pen_xy"], A_["shaft"], A_["gm"]
+    gm = A_["gm"]
     gs_axis, gs_z0, gs_T, base_bottom = A_["gs_axis"], A_["gs_z0"], A_["gs_T"], A_["base_bottom"]
 
-    def cw(p):  # diem trong he kep -> the gioi (mm)
-        return Tclaw[:3, :3] @ np.asarray(p, float) + Tclaw[:3, 3]
-    zc = Tclaw[:3, 2]                                               # truc z kep (the gioi)
-    # diem kep but: giua mat kep theo chieu cao (ma kep cao 9 mm tren ngon)
-    grip_local = np.array([pen_xy[0], pen_xy[1], Z_DX + (0.11 + 9.11) / 2])
-    grip_w = cw(grip_local)
+    # ---------------- gripper: diem lam viec tinh tu hinh hoc (gripper.py) phai khop params.py
+    tcp = GR.tcp_w(); a_pen = GR.pen_grip_deg(); grip = GR.pen_grip_w(a_pen)
+    print(f"  gripper: Q - W = ({GR.WQ[0]:.2f}, {GR.WQ[1]:.2f}) mm (|Q-W| = {np.hypot(*GR.WQ):.2f}); "
+          f"khe 2 mui ngon: dong {GR.gap_at(0):.2f} mm, mo het {GR.gap_at(P.GRIP_TRAVEL_DEG):.1f} mm")
+    print(f"  but D{P.PEN_DIAMETER:g} lui {P.PEN_FROM_TIP:g} mm tu mut ngon: goc servo kep = {a_pen:.2f} do; "
+          f"khe 2 mui ngon khi kep but = {GR.gap_at(a_pen):.2f} mm")
+    print(f"  TCP - W = ({tcp[0]:.2f}, {tcp[1]:.3f}, {tcp[2]:.2f}) mm; diem kep but - W = "
+          f"({grip[0]:.2f}, {grip[1]:.3f}, {grip[2]:.2f}) mm")
+    if (np.max(np.abs(tcp - np.array(P.TCP_W))) > 0.02 or np.max(np.abs(grip - np.array(P.PEN_GRIP_W))) > 0.02
+            or abs(a_pen - P.PEN_GRIP_DEG) > 0.01):
+        sys.exit("params.TCP_W/PEN_GRIP_W/PEN_GRIP_DEG khong khop hinh hoc gripper. Sua params.py thanh:\n"
+                 f"TCP_W = ({tcp[0]:.2f}, {tcp[1]:.3f}, {tcp[2]:.2f})\n"
+                 f"PEN_GRIP_W = ({grip[0]:.2f}, {grip[1]:.3f}, {grip[2]:.2f})\nPEN_GRIP_DEG = {a_pen:.2f}")
+    tcp_w = Wp + tcp
+    grip_w = Wp + grip
+    zc = np.array([0.0, 0.0, 1.0])                                  # truc gripper (nam ngang -> dung)
     tip_w = grip_w - P.PEN_GRIP_TO_TIP * zc
-    tilt = math.degrees(math.atan2(-zc[0], zc[2]))
-    gW = grip_w - Wp
-    print(f"  kep: goc ngon kep but D{P.PEN_DIAMETER:g} = {a_grip:.2f} do (mo {CLOSED_DEG - a_grip:.2f} do tu luc dong), "
-          f"goc truc SG90 = {(CLOSED_DEG - a_grip) * P.GRIPPER_GEAR_RATIO:.2f} do tu luc dong")
-    print(f"  diem kep - W = ({gW[0]:.2f}, {gW[1]:.3f}, {gW[2]:.2f}) mm, kep nghieng {tilt:.2f} do")
-    if (np.max(np.abs(gW - np.array(P.GRIP_POINT_W))) > 0.02 or abs(tilt - P.CLAW_TILT_DEG) > 0.01):
-        sys.exit(f"params.GRIP_POINT_W/CLAW_TILT_DEG khong khop hinh hoc STL. Sua params.py thanh:\n"
-                 f"GRIP_POINT_W = ({gW[0]:.2f}, {gW[1]:.3f}, {gW[2]:.2f})\nCLAW_TILT_DEG = {tilt:.2f}")
-    fk_tip = K.fk(0.0, math.radians(90.0), 0.0)
-    print(f"  ngoi but o home: STL {np.round(tip_w, 2)}  FK {np.round(fk_tip, 2)}  lech {np.linalg.norm(tip_w - fk_tip):.3f} mm")
+    K.set_tool("gripper"); fk_tcp = K.fk(0.0, math.radians(90.0), 0.0)
+    K.set_tool("pen"); fk_tip = K.fk(0.0, math.radians(90.0), 0.0); K.set_tool("gripper")
+    print(f"  TCP o home: hinh hoc {np.round(tcp_w, 2)}  FK {np.round(fk_tcp, 2)}  lech {np.linalg.norm(tcp_w - fk_tcp):.3f} mm")
+    print(f"  ngoi but o home (--pen): hinh hoc {np.round(tip_w, 2)}  FK {np.round(fk_tip, 2)}  "
+          f"lech {np.linalg.norm(tip_w - fk_tip):.3f} mm")
 
     # ---------------- body frames (goc tai khop, truc song song the gioi o home, mm)
+    o_gr, ax_gr = GR.body_origins_w()
     body_origin = {
         "turret": np.zeros(3), "mainarm": O, "horarm": E, "wrist": Wp,
         "varm": O, "link004": V, "link005": F, "trialink": A, "link008": C,
-        "finger_dx": cw([*PIV_DX, 0]), "finger_sx": cw([*PIV_SX, 0]), "gear016": cw([*shaft, 0]),
         "gearservo": np.array([gs_axis[0], gs_axis[1], 0.0]),
     }
-    body_parts = {
+    body_origin.update({k: Wp + v for k, v in o_gr.items()})
+    body_parts = {   # chi tiet STL goc cua tung body (gripper: GR_MESH)
         "turret": ["EBAmk2_001_base", gm], "mainarm": ["EBAmk2_002_mainarm"],
-        "horarm": ["EBAmk2_006_horarm__"], "wrist": ["EBAmk2_009_trialinkfront", "EBAmk2_014_claw_base"],
+        "horarm": ["EBAmk2_006_horarm__"], "wrist": [],
         "varm": ["EBAmk2_003_varm"], "link004": ["EBAmk2_004_link135"],
         "link005": ["EBAmk2_005_link135angled"], "trialink": ["EBAmk2_007_trialink"],
         "link008": ["EBAmk2_008_link147_new"],
-        "finger_dx": ["EBAmk2_015_claw_finger_dx"],
-        "finger_sx": ["EBAmk2_017_claw_finger_sx", "EBAmk2_018_claw_gear_driven"],
-        "gear016": ["EBAmk2_016_claw_gear_drive"],
+        "gear_l": [], "gear_r": [], "finger_l": [], "finger_r": [], "uplink_l": [], "uplink_r": [],
     }
 
     # ---------------- hop servo (khong co trong STL): kich thuoc + khoi luong datasheet
@@ -341,14 +310,12 @@ def main():
         "mg996r_shoulder": ("turret", np.array([0, y_002 - horn - H_ / 2, O[2] - off]), (W_, H_, L_), P.SERVO_MASS_G),
         "mg996r_base": (None, np.array([gs_axis[0] - off, 0, gs_z0 - H_ / 2]), (L_, W_, H_), P.SERVO_MASS_G),
     }
-    sgL, sgW, sgH = P.SG90["size"]
-    sg_bottom = Z_018 + 3.03 / 2 + 2.5                  # mat tren banh rang 016 (truc SG90 huong xuong)
-    sg_c_local = np.array([(SG90_WIN[0] + SG90_WIN[1]) / 2, shaft[1], sg_bottom + sgH / 2])
-    sg_box = ("wrist", cw(sg_c_local), (sgL, sgW, sgH), P.SG90["mass_g"])
+    c_sv, s_sv = GR.servo_box_w()                       # SG90: truc ra = truc banh rang trai
+    boxes["sg90"] = ("wrist", Wp + c_sv, tuple(s_sv), P.SG90["mass_g"])
 
     # ---------------- xuat luoi (dat vao he body, don vi m) + khoi luong
     report = ["chi tiet | khoi luong (g) | the tich (cm3) | ghi chu"]
-    inertials = {}
+    items_by_body = {}
     for body, parts in body_parts.items():
         items = []
         for name in parts:
@@ -361,17 +328,27 @@ def main():
             com_b = (Rm @ (com / MM) + Tm[:3, 3] - body_origin[body]) * MM
             items.append((mass, com_b, Rm @ I @ Rm.T))
             report.append(f"{name} | {mass*1000:.1f} | {vol/1000:.1f} | {note}")
-        for bname, (b, c, size, mg) in list(boxes.items()) + [("sg90", sg_box)]:
+        if body in GR_MESH:                              # gripper: luoi lang tru o he body (phi = 0)
+            gname = GR_MESH[body]
+            mb = gripper_poses(np.zeros(3), 0.0)[gname][0].copy(); mb.apply_scale(MM)
+            mb.export(os.path.join(MESH_OUT, gname + ".stl"))
+            mass, com, I, vol = GR.mass_props_union(GR.parts()[body], P.PLA_DENSITY * P.FILL_FACTOR)
+            if gname in P.MEASURED_MASS_G:
+                I = I * (P.MEASURED_MASS_G[gname] / 1000.0 / mass); mass = P.MEASURED_MASS_G[gname] / 1000.0
+            items.append((mass, com * MM, I * MM * MM))
+            report.append(f"{gname} | {mass*1000:.1f} | {vol/1000:.1f} | gripper that, hop lang tru (luoi diem 0.25 mm)")
+        for bname, (b, c, size, mg) in boxes.items():
             if b == body:
                 ms = mg / 1000
                 items.append((ms, (c - body_origin[body]) * MM, box_inertia(ms, *(np.array(size) * MM))))
                 report.append(f"{bname} (hop datasheet) | {mg:.1f} | - | vi tri gan dung")
-        if body == "wrist":
-            mt = P.TOOL_MASS_G / 1000
-            pc = grip_w + (P.PEN_LENGTH / 2 - P.PEN_GRIP_TO_TIP) * zc
-            items.append((mt, (pc - body_origin[body]) * MM, box_inertia(mt, *(np.array([10, 10, P.PEN_LENGTH]) * MM))))
-            report.append(f"but D{P.PEN_DIAMETER:g} x {P.PEN_LENGTH:g} mm | {P.TOOL_MASS_G:.1f} | - | [GIA-DINH]")
-        inertials[body] = combine(items)
+        items_by_body[body] = items
+    inertials = {b: combine(it) for b, it in items_by_body.items()}
+    # but (chi model --pen): them vao body wrist
+    mt = P.TOOL_MASS_G / 1000
+    pc = grip_w + (P.PEN_LENGTH / 2 - P.PEN_GRIP_TO_TIP) * zc
+    pen_item = (mt, (pc - body_origin["wrist"]) * MM, box_inertia(mt, *(np.array([10, 10, P.PEN_LENGTH]) * MM)))
+    inertials_pen = dict(inertials); inertials_pen["wrist"] = combine(items_by_body["wrist"] + [pen_item])
     for name, (m, Tm) in static.items():
         mb = m.copy(); mb.apply_transform(Tm); mb.apply_scale(MM)
         mb.export(os.path.join(MESH_OUT, name + ".stl"))
@@ -379,7 +356,7 @@ def main():
     mb = m010.copy(); mb.apply_transform(gs_T); mb.apply_translation(-body_origin["gearservo"]); mb.apply_scale(MM)
     mb.export(os.path.join(MESH_OUT, "EBAmk2_010_gearservo.stl"))
     gs_mass, gs_com, gs_I, _, _ = mass_props(m010, "EBAmk2_010_gearservo")
-    inertials["gearservo"] = (gs_mass, (gs_com / MM + gs_T[:3, 3] - body_origin["gearservo"]) * MM, gs_I)
+    inertials["gearservo"] = inertials_pen["gearservo"] = (gs_mass, (gs_com / MM + gs_T[:3, 3] - body_origin["gearservo"]) * MM, gs_I)
 
     # ---------------- servo model
     sv = P.MG996R[P.SUPPLY]
@@ -393,12 +370,7 @@ def main():
     w0_g = math.radians(60.0) / P.SG90["s_per_60deg"]
     kp_g = tau_g / math.radians(P.SERVO_ERR_SAT_DEG)
     gr = P.GRIPPER_GEAR_RATIO
-    fo = math.radians(P.FINGER_OPEN_MAX_DEG)
-
-    def inertial_xml(body):
-        M, c, I = inertials[body]
-        full = [I[0, 0], I[1, 1], I[2, 2], I[0, 1], I[0, 2], I[1, 2]]
-        return f'<inertial pos="{fmt(c)}" mass="{M:.6g}" fullinertia="{fmt(full)}"/>'
+    travel = math.radians(P.GRIP_TRAVEL_DEG)
 
     def joint(name, damping=0.0, arm=0.0, fl=0.0, rng=None, axis="0 -1 0", play=False):
         s = f'<joint name="{name}" type="hinge" axis="{axis}" damping="{damping:.6g}" armature="{arm:.6g}" frictionloss="{fl:.6g}"'
@@ -412,7 +384,7 @@ def main():
         return f'<geom type="mesh" mesh="{name}" rgba="{rgba}" contype="0" conaffinity="0" group="1"/>'
 
     def box_geom(key, body, rgba="0.12 0.12 0.12 1"):
-        b, c, size, _ = boxes[key] if key in boxes else sg_box
+        b, c, size, _ = boxes[key]
         org = body_origin[body] if body else np.zeros(3)
         return (f'<geom name="{key}" type="box" pos="{fmt((c - org) * MM)}" size="{fmt(np.array(size) * MM / 2)}" '
                 f'rgba="{rgba}" contype="0" conaffinity="0" group="1"/>')
@@ -423,9 +395,10 @@ def main():
     def lw(p, body):   # diem the gioi (mm) -> he body (m)
         return fmt((np.asarray(p) - body_origin[body]) * MM)
 
-    arm_c = "0.95 0.45 0.1 1"; link_c = "0.2 0.4 0.85 1"; tri_c = "0.15 0.6 0.3 1"; claw_c = "0.85 0.85 0.9 1"
+    arm_c = "0.95 0.45 0.1 1"; link_c = "0.2 0.4 0.85 1"; tri_c = "0.15 0.6 0.3 1"
+    gr_body_c = "0.32 0.33 0.36 1"; gr_gear_c = "0.16 0.62 0.56 1"; gr_up_c = "0.23 0.53 1 1"; gr_fin_c = "0.85 0.85 0.9 1"
     arm_motor = max(P.SERVO_ARMATURE, 1e-5 if bl > 0 else 0.0)
-    zax = fmt(zc)
+    garm = P.GRIPPER_ARMATURE
 
     # but: ong than D10 phia tren, phan thon o dau, bi ngoi D1 (hinh hoc va cham voi giay)
     r_tip = P.INK_WIDTH / 2
@@ -441,31 +414,67 @@ def main():
         f'<site name="tool" pos="{lw(tip_w, "wrist")}" size="0.002" rgba="1 0 0 1"/>',
         f'<site name="grip" pos="{lw(grip_w, "wrist")}" size="0.002" rgba="0 1 0 1"/>',
     ])
+    tcp_xml = f'<site name="tool" pos="{lw(tcp_w, "wrist")}" size="0.002" rgba="1 0 0 1"/>'
     px, py = P.PAPER_CENTER; sx_, sy_ = P.PAPER_SIZE; th = P.PAPER_THICKNESS
-    finger_rng_dx = (-fo, 0.0); finger_rng_sx = (0.0, fo)
+    paper_xml = (f'<geom name="paper" type="box" pos="{px*MM:.6g} {py*MM:.6g} {th/2*MM:.6g}" size="{sx_/2*MM:.6g} {sy_/2*MM:.6g} {th/2*MM:.6g}" rgba="1 1 1 1"\n'
+                 f'          contype="0" conaffinity="2" friction="{P.PEN_TIP_FRICTION} 0.005 0.0001" solref="0.002 1"/>')
+    all_meshes = [n for ps in body_parts.values() for n in ps] + list(GR_MESH.values()) + list(static) + ["EBAmk2_010_gearservo"]
 
-    xml = f"""<mujoco model="eezybotarm_mk2">
-  <!-- Sinh tu dong boi build_model.py — KHONG sua tay, sua params.py roi build lai -->
+    def gripper_xml(inert):
+        def inertial(b):
+            M, c, I = inert[b]
+            return f'<inertial pos="{fmt(c)}" mass="{M:.6g}" fullinertia="{fmt([I[0, 0], I[1, 1], I[2, 2], I[0, 1], I[0, 2], I[1, 2]])}"/>'
+        out = []
+        for side in ("l", "r"):
+            ax = "0 0 1" if side == "l" else "0 0 -1"
+            jn = "gripper" if side == "l" else "gear_r"
+            extra = f' damping="{tau_g / w0_g:.6g}"' if side == "l" else ""
+            out.append(f"""            <body name="gear_{side}" pos="{rel('wrist', f'gear_{side}')}">
+              {inertial(f'gear_{side}')}
+              <joint name="{jn}" type="hinge" axis="{ax}" armature="{garm:.6g}"{extra} limited="true" range="0 {travel:.6g}"/>
+              {mesh_geom(f'GR_gear_{side}', gr_gear_c)}
+              <body name="finger_{side}" pos="{rel(f'gear_{side}', f'finger_{side}')}">
+                {inertial(f'finger_{side}')}
+                <joint name="finger_{side}" type="hinge" axis="{ax}" armature="{garm:.6g}"/>
+                {mesh_geom(f'GR_finger_{side}', gr_fin_c)}
+              </body>
+            </body>
+            <body name="uplink_{side}" pos="{rel('wrist', f'uplink_{side}')}">
+              {inertial(f'uplink_{side}')}
+              <joint name="uplink_{side}" type="hinge" axis="{ax}" armature="{garm:.6g}"/>
+              {mesh_geom(f'GR_uplink_{side}', gr_up_c)}
+            </body>""")
+        return "\n".join(out)
+
+    def make_xml(pen):
+        inert = inertials_pen if pen else inertials
+
+        def inertial_xml(body):
+            M, c, I = inert[body]
+            full = [I[0, 0], I[1, 1], I[2, 2], I[0, 1], I[0, 2], I[1, 2]]
+            return f'<inertial pos="{fmt(c)}" mass="{M:.6g}" fullinertia="{fmt(full)}"/>'
+        title = "CHE DO --pen: gripper kep but D10, to giay A4" if pen else "MAC DINH: gripper, khong but (gap vat)"
+        return f"""<mujoco model="eezybotarm_mk2{'_pen' if pen else ''}">
+  <!-- Sinh tu dong boi build_model.py — KHONG sua tay, sua params.py roi build lai. {title} -->
   <compiler angle="radian" inertiafromgeom="false" meshdir="meshes"/>
   <option timestep="{P.TIMESTEP}" integrator="implicitfast" gravity="0 0 -9.81"/>
   <visual><global offwidth="1280" offheight="960"/></visual>
   <asset>
     <texture name="grid" type="2d" builtin="checker" rgb1="0.9 0.9 0.9" rgb2="0.8 0.8 0.8" width="300" height="300"/>
     <material name="grid" texture="grid" texrepeat="10 10"/>
-{chr(10).join(f'    <mesh name="{n}" file="{n}.stl"/>' for n in [n for ps in body_parts.values() for n in ps] + list(static) + ["EBAmk2_010_gearservo"])}
+{chr(10).join(f'    <mesh name="{n}" file="{n}.stl"/>' for n in all_meshes)}
   </asset>
   <worldbody>
     <light pos="0.3 -0.3 0.8" dir="-0.3 0.3 -0.8"/>
     <geom name="table" type="plane" size="0.6 0.6 0.01" material="grid" contype="0" conaffinity="0"/>
-    <geom name="paper" type="box" pos="{px*MM:.6g} {py*MM:.6g} {th/2*MM:.6g}" size="{sx_/2*MM:.6g} {sy_/2*MM:.6g} {th/2*MM:.6g}" rgba="1 1 1 1"
-          contype="0" conaffinity="2" friction="{P.PEN_TIP_FRICTION} 0.005 0.0001" solref="0.002 1"/>
+    {paper_xml if pen else ""}
     {mesh_geom("EBAmk2_012_mainbase", "0.6 0.6 0.6 1")}
     {mesh_geom("EBAmk2_013_lower_base", "0.5 0.5 0.5 1")}
     {mesh_geom("EBAmk2_019_drive_cover", "0.95 0.45 0.1 1")}
     {box_geom("mg996r_base", None)}
     <body name="gearservo" pos="{fmt(body_origin['gearservo'] * MM)}">
       {inertial_xml("gearservo")}
-      <joint name="gearservo" type="hinge" axis="0 0 1" armature="{P.GRIPPER_ARMATURE:.6g}"/>
+      <joint name="gearservo" type="hinge" axis="0 0 1" armature="{garm:.6g}"/>
       {mesh_geom("EBAmk2_010_gearservo", "0.3 0.3 0.3 1")}
     </body>
     <body name="turret" pos="0 0 0">
@@ -488,27 +497,11 @@ def main():
           <body name="wrist" pos="{rel('horarm','wrist')}">
             {inertial_xml("wrist")}
             {joint("wrist_rel")}
-            {mesh_geom("EBAmk2_009_trialinkfront", tri_c)}
-            {mesh_geom("EBAmk2_014_claw_base", claw_c)}
-            <geom name="sg90" type="box" pos="{lw(sg_box[1], 'wrist')}" size="{fmt(np.array(sg_box[2]) * MM / 2)}" quat="{fmt(mat2quat(Tclaw[:3, :3]))}" rgba="0.1 0.3 0.8 1" contype="0" conaffinity="0" group="1"/>
+            {mesh_geom("GR_body", gr_body_c)}
+            {box_geom("sg90", "wrist", "0.1 0.3 0.8 1")}
             <site name="Q_wrist" pos="{fmt((Q - Wp) * MM)}" size="0.003"/>
-            {pen_xml}
-            <body name="finger_dx" pos="{rel('wrist','finger_dx')}">
-              {inertial_xml("finger_dx")}
-              <joint name="finger_dx" type="hinge" axis="{zax}" armature="{P.GRIPPER_ARMATURE:.6g}" limited="true" range="{finger_rng_dx[0]:.6g} {finger_rng_dx[1]:.6g}"/>
-              {mesh_geom("EBAmk2_015_claw_finger_dx", claw_c)}
-            </body>
-            <body name="finger_sx" pos="{rel('wrist','finger_sx')}">
-              {inertial_xml("finger_sx")}
-              <joint name="finger_sx" type="hinge" axis="{zax}" armature="{P.GRIPPER_ARMATURE:.6g}" limited="true" range="{finger_rng_sx[0]:.6g} {finger_rng_sx[1]:.6g}"/>
-              {mesh_geom("EBAmk2_017_claw_finger_sx", claw_c)}
-              {mesh_geom("EBAmk2_018_claw_gear_driven", "0.3 0.3 0.3 1")}
-            </body>
-            <body name="gear016" pos="{rel('wrist','gear016')}">
-              {inertial_xml("gear016")}
-              <joint name="gripper" type="hinge" axis="{zax}" armature="{P.GRIPPER_ARMATURE:.6g}" damping="{tau_g / w0_g:.6g}" limited="true" range="{-gr*fo:.6g} 0"/>
-              {mesh_geom("EBAmk2_016_claw_gear_drive", "0.3 0.3 0.3 1")}
-            </body>
+            {pen_xml if pen else tcp_xml}
+{gripper_xml(inert)}
           </body>
         </body>
       </body>
@@ -543,13 +536,18 @@ def main():
     </body>
   </worldbody>
   <equality>
-    <!-- 3 vong hinh binh hanh -->
+    <!-- 3 vong hinh binh hanh canh tay -->
     <connect name="loop_elbow_drive" site1="T_hor" site2="T_l004" solref="0.002 1"/>
     <connect name="loop_triangle" site1="E_main" site2="E_tri" solref="0.002 1"/>
     <connect name="loop_wrist" site1="Q_wrist" site2="Q_l008" solref="0.002 1"/>
-    <!-- banh rang: 2 ngon an khop 1:1; 016 (10 rang) - 018 (16 rang) tren ngon trai; 010 - 011 de -->
-    <joint name="fingers_mesh" joint1="finger_sx" joint2="finger_dx" polycoef="0 -1 0 0 0" solref="0.002 1"/>
-    <joint name="gripper_gear" joint1="gripper" joint2="finger_dx" polycoef="0 {gr:.6g} 0 0 0" solref="0.002 1"/>
+    <!-- gripper: 2 banh rang an khop 1:1 (chieu duong cua ca 2 khop = mo); 2 hinh binh hanh:
+         khau tren quay cung goc khau duoi, ngon quay nguoc lai -> ngon tinh tien -->
+    <joint name="gripper_gears" joint1="gear_r" joint2="gripper" polycoef="0 1 0 0 0" solref="0.002 1"/>
+    <joint name="finger_l_par" joint1="finger_l" joint2="gripper" polycoef="0 -1 0 0 0" solref="0.002 1"/>
+    <joint name="finger_r_par" joint1="finger_r" joint2="gear_r" polycoef="0 -1 0 0 0" solref="0.002 1"/>
+    <joint name="uplink_l_par" joint1="uplink_l" joint2="gripper" polycoef="0 1 0 0 0" solref="0.002 1"/>
+    <joint name="uplink_r_par" joint1="uplink_r" joint2="gear_r" polycoef="0 1 0 0 0" solref="0.002 1"/>
+    <!-- banh rang de: 010 - 011 -->
     <joint name="base_gear" joint1="gearservo" joint2="base_yaw" polycoef="0 {-g:.6g} 0 0 0"/>
   </equality>
   <actuator>
@@ -558,8 +556,9 @@ def main():
     <position name="servo_base" joint="base_yaw" gear="{g}" kp="{kp:.6g}" forcelimited="true" forcerange="{-tau_s:.6g} {tau_s:.6g}" ctrllimited="true" ctrlrange="{math.radians(P.CTRL_BASE_DEG[0]):.6g} {math.radians(P.CTRL_BASE_DEG[1]):.6g}"/>
     <position name="servo_shoulder" joint="shoulder" kp="{kp:.6g}" forcelimited="true" forcerange="{-tau_s:.6g} {tau_s:.6g}" ctrllimited="true" ctrlrange="{math.radians(P.CTRL_SHOULDER_DEG[0]):.6g} {math.radians(P.CTRL_SHOULDER_DEG[1]):.6g}"/>
     <position name="servo_elbow" joint="elbow_servo" kp="{kp:.6g}" forcelimited="true" forcerange="{-tau_s:.6g} {tau_s:.6g}" ctrllimited="true" ctrlrange="{math.radians(P.CTRL_ELBOW_DEG[0]):.6g} {math.radians(P.CTRL_ELBOW_DEG[1]):.6g}"/>
-    <!-- Servo kep SG90: 0 = kep but D{P.PEN_DIAMETER:g}, am = mo -->
-    <position name="servo_gripper" joint="gripper" kp="{kp_g:.6g}" forcelimited="true" forcerange="{-tau_g:.6g} {tau_g:.6g}" ctrllimited="true" ctrlrange="{-gr*fo:.6g} 0"/>
+    <!-- Servo kep SG90 (truc = banh rang trai, ti so {gr:g}): 0 = dong, {gr * travel:.4g} rad = mo het;
+         kep but D{P.PEN_DIAMETER:g}: {gr * math.radians(a_pen):.4g} rad ({a_pen:.2f} do) -->
+    <position name="servo_gripper" joint="gripper" gear="{gr:g}" kp="{kp_g:.6g}" forcelimited="true" forcerange="{-tau_g:.6g} {tau_g:.6g}" ctrllimited="true" ctrlrange="0 {gr * travel:.6g}"/>
   </actuator>
   <sensor>
     <framepos name="tool_pos" objtype="site" objname="tool"/>
@@ -569,16 +568,33 @@ def main():
   </sensor>
 </mujoco>
 """
+    # ---------------- ghi 2 mo hinh; mo hinh but co keyframe "pen" (gripper o goc kep but)
     with open(os.path.join(OUT, "mk2.xml"), "w") as f:
-        f.write(xml)
+        f.write(make_xml(False))
+    xml_pen = make_xml(True)
+    pen_path = os.path.join(OUT, "mk2_pen.xml")
+    with open(pen_path, "w") as f:
+        f.write(xml_pen)
+    import mujoco
+    mp = mujoco.MjModel.from_xml_path(pen_path)
+    qpos = mp.qpos0.copy(); ctrl = np.zeros(mp.nu); a = math.radians(a_pen)
+    for jn, v in (("gripper", a), ("gear_r", a), ("finger_l", -a), ("finger_r", -a), ("uplink_l", a), ("uplink_r", a)):
+        qpos[mp.joint(jn).qposadr[0]] = v
+    ctrl[mp.actuator("servo_gripper").id] = a * gr                 # do dai actuator = gear * goc khop
+    key = (f'  <keyframe>\n    <!-- gripper kep but: servo_gripper = {a_pen:.2f} do -->\n'
+           f'    <key name="pen" qpos="{fmt(qpos)}" ctrl="{fmt(ctrl)}"/>\n  </keyframe>\n</mujoco>\n')
+    with open(pen_path, "w") as f:
+        f.write(xml_pen.replace("</mujoco>\n", key))
+
     moving = [b for b in inertials if b != "gearservo"]
     tot = sum(inertials[b][0] for b in moving)
     report.append(f"TONG khoi luong chuyen dong: {tot*1000:.1f} g  (FILL_FACTOR={P.FILL_FACTOR})")
+    report.append(f"  + but (chi --pen): {P.TOOL_MASS_G:.1f} g [GIA-DINH]")
     with open(os.path.join(OUT, "mass_report.txt"), "w") as f:
         f.write("\n".join(report) + "\n")
     print("\n".join(report))
     print(f"\nServo: tau_stall={tau_s:.3f} N m, w0={w0:.2f} rad/s, kp={kp:.3f} N m/rad, b={b_emf:.4f} N m s/rad")
-    print(f"Da ghi {os.path.join(OUT, 'mk2.xml')}")
+    print(f"Da ghi {os.path.join(OUT, 'mk2.xml')} (mac dinh, khong but) va {pen_path} (--pen)")
 
 
 def mat2quat(R):

@@ -5,6 +5,10 @@
   [B] Quet luoi tu the trong gioi han khop (params.THETA2_LIM, PHI_LIM, REL_LIM, THETA1_LIM):
       khong cap nao duoc lan vao nhau sau hon TOL.
   [C] (tuy chon --limits) Quet rong ngoai gioi han, in bang va cham de suy ra gioi han khop.
+  [D] Gripper tu va cham: o tu the home, quet goc servo kep 0..90 do, moi cap chi tiet cua gripper
+      (than, 2 banh rang + khau duoi, 2 khau tren, 2 ngon) khong duoc lan vao nhau.
+Gripper duoc kiem tra o goc kep but (params.PEN_GRIP_DEG) cung voi but (but gan vao co tay, chi co
+trong mo hinh --pen); goc dong khac goc nay < 5 do.
 
 Phuong phap: moi chi tiet -> truong khoang cach co dau (SDF) tren luoi voxel (lat cat z, quy tac
 chan-le, nen dung ca voi luoi STL con ho); lay mau 5000 diem tren be mat chi tiet kia va tra SDF.
@@ -28,11 +32,11 @@ import build_model as B
 TOL = 0.35
 BODY = {  # chi tiet -> vat ran (khong kiem tra 2 chi tiet cung vat)
     "EBAmk2_001_base": "turret", "EBAmk2_011_gearmast": "turret", "EBAmk2_002_mainarm": "mainarm",
-    "EBAmk2_006_horarm__": "horarm", "EBAmk2_009_trialinkfront": "wrist", "EBAmk2_014_claw_base": "wrist",
+    "EBAmk2_006_horarm__": "horarm", "GR_body": "wrist",
     "EBAmk2_003_varm": "varm", "EBAmk2_004_link135": "link004", "EBAmk2_005_link135angled": "link005",
     "EBAmk2_007_trialink": "trialink", "EBAmk2_008_link147_new": "link008",
-    "EBAmk2_015_claw_finger_dx": "finger_dx", "EBAmk2_017_claw_finger_sx": "finger_sx",
-    "EBAmk2_018_claw_gear_driven": "finger_sx", "EBAmk2_016_claw_gear_drive": "gear016",
+    "GR_gear_l": "gear_l", "GR_gear_r": "gear_r", "GR_uplink_l": "uplink_l", "GR_uplink_r": "uplink_r",
+    "GR_finger_l": "finger_l", "GR_finger_r": "finger_r",
     "EBAmk2_012_mainbase": "ground", "EBAmk2_013_lower_base": "ground", "EBAmk2_019_drive_cover": "ground",
     "pen": "wrist",
 }
@@ -76,10 +80,11 @@ def d_at(S, Pts):
 
 
 def pen_samples(A):
-    """Diem tren mat tru but (he the gioi o tu the A) — but gan cung voi co tay."""
-    Tc = A["Tclaw"]; zc = Tc[:3, 2]
-    grip = Tc[:3, :3] @ np.array([A["pen_xy"][0], A["pen_xy"][1], B.Z_DX + (0.11 + 9.11) / 2]) + Tc[:3, 3]
-    ex = np.cross(zc, [0, 1, 0]); ex /= np.linalg.norm(ex); ey = np.cross(zc, ex)
+    """Diem tren mat tru but (he the gioi o tu the A) — but gan cung voi co tay (nam ngang) tai
+    params.PEN_GRIP_W, truc but thang dung."""
+    zc = np.array([0.0, 0.0, 1.0])
+    grip = A["W3"]["W"] + np.array(P.PEN_GRIP_W)
+    ex = np.array([1.0, 0.0, 0.0]); ey = np.array([0.0, 1.0, 0.0])
     rng = np.random.default_rng(1)
     s = rng.uniform(-P.PEN_GRIP_TO_TIP + 12, P.PEN_LENGTH - P.PEN_GRIP_TO_TIP, 3000)
     a = rng.uniform(0, 2 * np.pi, 3000); r = P.PEN_DIAMETER / 2
@@ -104,15 +109,15 @@ class Checker:
             self.pts[n] = np.asarray(trimesh.sample.sample_surface_even(m, 5000, radius=0.6, seed=0)[0])
         self.stl_dir = stl_dir
 
-    def poses(self, th2, phi, th1=0.0):
-        A = B.assemble(self.stl_dir, th2, phi)
+    def poses(self, th2, phi, th1=0.0, grip=None):
+        A = B.assemble(self.stl_dir, th2, phi, grip_deg=P.PEN_GRIP_DEG if grip is None else grip)
         Rz = rotz(th1)
         T = {n: Rz @ Tm for n, (_, Tm) in A["meshes"].items()}
         T.update({n: Tm for n, (_, Tm) in A["static"].items()})
         pen = (Rz[:3, :3] @ pen_samples(A).T).T
         return T, pen
 
-    def worst(self, T, pen, only_pairs=None):
+    def worst(self, T, pen, only_pairs=None, with_pen=True):
         names = list(T); res = {}
         for i, a in enumerate(names):
             for b in names[i + 1:]:
@@ -124,7 +129,7 @@ class Checker:
                 pb = self.pts[b] @ Tb[:3, :3].T + Tb[:3, 3]
                 d2 = d_at(self.S[a], (pb - Ta[:3, 3]) @ Ta[:3, :3]).min()
                 res[(a, b)] = float(min(d1, d2))
-        for b in names:
+        for b in names if with_pen else []:
             if BODY[b] == "wrist": continue
             Tb = T[b]
             res[("pen", b)] = float(d_at(self.S[b], (pen - Tb[:3, 3]) @ Tb[:3, :3]).min())
@@ -170,6 +175,23 @@ def main():
         print(f"    LAN VAO NHAU {v:+.2f} mm: {short(k[0])} - {short(k[1])} tai (theta2, phi, theta1) = {p}")
     ok = not bad and not bad_home
     print("PASS: khong chi tiet nao lan vao nhau trong gioi han khop" if ok else "FAIL: xem cac dong LAN VAO NHAU o tren")
+
+    # [D] gripper tu va cham, quet goc servo kep
+    gr_parts = [n for n in BODY if n.startswith("GR_")]
+    pairs = [(a, b) for i, a in enumerate(gr_parts) for b in gr_parts[i + 1:]]
+    wD = {}
+    for gd in np.arange(0.0, P.GRIP_TRAVEL_DEG + 0.1, 10.0):
+        T, _ = C.poses(90.0, 0.0, grip=gd)
+        for k, v in C.worst({n: T[n] for n in gr_parts}, None, only_pairs=pairs, with_pen=False).items():
+            if v < wD.get(k, (99,))[0]: wD[k] = (v, gd)
+    badD = sorted(((v, k, g_) for k, (v, g_) in wD.items() if v < -TOL), key=lambda x: x[0])
+    vmin, kmin = min((v, k) for k, (v, g_) in wD.items())
+    print(f"[D] Gripper, goc servo kep 0..{P.GRIP_TRAVEL_DEG:g} do (buoc 10): khe nho nhat = {vmin:+.2f} mm "
+          f"({short(kmin[0])} - {short(kmin[1])} tai {wD[kmin][1]:g} do)")
+    for v, k, g_ in badD:
+        print(f"    LAN VAO NHAU {v:+.2f} mm: {short(k[0])} - {short(k[1])} tai goc kep {g_:g} do")
+    print("PASS: gripper khong tu va cham" if not badD else "FAIL: gripper tu va cham")
+    ok = ok and not badD
 
     if args.limits:
         print("[C] Bang va cham theo (theta2 hang, phi cot); '.' = khong va cham, chu = cap va cham dau tien")

@@ -1,6 +1,9 @@
 """sim_common.py — Cac ham dung chung: nap mo hinh, doi lenh servo -> ctrl,
 doc goc thuc te (th1, th2, phi) tu trang thai MuJoCo, chay mo phong voi lenh
-giu 20 ms (zero-order hold) giong servo that, va ghi vet muc khi ngoi but cham giay."""
+giu 20 ms (zero-order hold) giong servo that, va ghi vet muc khi ngoi but cham giay.
+
+Hai mo hinh: model/mk2.xml (MAC DINH: gripper, khong but) va model/mk2_pen.xml (co --pen:
+but kep giua 2 ngon + to giay). Site "tool" la dau cong tac: TCP gripper hoac ngoi but."""
 import math, os
 import numpy as np
 import mujoco
@@ -9,18 +12,34 @@ import mk2_kinematics as K
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 MODEL = os.path.join(HERE, "model", "mk2.xml")
+MODEL_PEN = os.path.join(HERE, "model", "mk2_pen.xml")
 INK_RGBA = {"M0": (0.85, 0.1, 0.1, 1.0), "M2": (0.05, 0.2, 0.85, 1.0)}
 
 
-def load_model(gravity=True, contact=True):
-    if not os.path.exists(MODEL):
-        raise SystemExit("Chua co model/mk2.xml — chay: python build_model.py --stl-dir <thu muc STL>")
-    m = mujoco.MjModel.from_xml_path(MODEL)
+def load_model(gravity=True, contact=True, pen=False):
+    """Nap mo hinh mac dinh (gripper) hoac mo hinh co but (pen=True). Mo hinh but bat dau o
+    keyframe "pen": gripper dang kep but."""
+    path = MODEL_PEN if pen else MODEL
+    if not os.path.exists(path):
+        raise SystemExit(f"Chua co {os.path.relpath(path, HERE)} — chay: python build_model.py --stl-dir <thu muc STL>")
+    m = mujoco.MjModel.from_xml_path(path)
     if not gravity:
         m.opt.gravity[:] = 0
     if not contact:
         m.opt.disableflags |= mujoco.mjtDisableBit.mjDSBL_CONTACT
-    return m, mujoco.MjData(m)
+    d = mujoco.MjData(m)
+    reset(m, d)
+    return m, d
+
+
+def reset(m, d):
+    """Ve trang thai dau: mo hinh but -> keyframe "pen" (gripper kep but, servo kep giu goc nay);
+    mo hinh mac dinh -> qpos0, moi lenh = 0 (gripper dong)."""
+    try:
+        mujoco.mj_resetDataKeyframe(m, d, m.key("pen").id)
+    except KeyError:
+        mujoco.mj_resetData(m, d)
+    mujoco.mj_forward(m, d)
 
 
 def q_to_ctrl(q):

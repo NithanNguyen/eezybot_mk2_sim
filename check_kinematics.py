@@ -3,11 +3,14 @@
   2. FK giai tich == vi tri dau but trong MuJoCo co vong kin (khong trong luc)
      -> chung minh lop anh xa goc servo / hinh binh hanh dung
   3. Do vong do trong luc (servo P huu han) o vai tu the
-  4. Ve vung lam viec (r, z) va tim kich thuoc hinh ve kha thi
+  4. Ve vung lam viec (r, z); voi --pen: tim kich thuoc hinh ve kha thi tren giay
+Mac dinh kiem chung cho dau cong tac TCP gripper (mo hinh model/mk2.xml, khong but).
+Voi --pen: dau cong tac = ngoi but (model/mk2_pen.xml).
 [2] va [3] tat va cham ngoi-giay de so sanh dong hoc thuan (but co the xuyen giay o vai tu the).
-Chay: python check_kinematics.py
+Chay: python check_kinematics.py          (TCP gripper)
+      python check_kinematics.py --pen    (ngoi but + bang hinh ve kha thi)
 """
-import math, os
+import argparse, math, os
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -16,6 +19,12 @@ import params as P
 import mk2_kinematics as K
 import sim_common as S
 import trajectories as TR
+
+ap = argparse.ArgumentParser()
+ap.add_argument("--pen", action="store_true", help="kiem chung cho ngoi but (gan but vao gripper)")
+args = ap.parse_args()
+K.set_tool("pen" if args.pen else "gripper")
+TOOL = "ngoi but" if args.pen else "TCP gripper"
 
 OUT = os.path.join(S.HERE, "results"); os.makedirs(OUT, exist_ok=True)
 rng = np.random.default_rng(0)
@@ -46,24 +55,27 @@ print(f"[1] FK(IK(p)) tren {len(qs)} diem: max |FK(IK(p))-p| = {err[:,0].max():.
       f"max |IK(FK(q))-q| = {err[:,1].max():.2e} mrad")
 
 # ---- 2. MuJoCo vong kin vs FK giai tich --------------------------------------
-m, d = S.load_model(gravity=False, contact=False)
+m, d = S.load_model(gravity=False, contact=False, pen=args.pen)
 e_mj, viol = [], []
 for q in random_q(40):
     S.settle(m, d, S.q_to_ctrl(q), seconds=1.5)
     e_mj.append(np.linalg.norm(d.site("tool").xpos * 1000 - K.fk(*q)))
     viol.append(S.loop_violation_mm(d))
-print(f"[2] MuJoCo (vong kin, g=0) vs FK giai tich, 40 tu the: max sai lech = {max(e_mj):.3f} mm, "
+print(f"[2] MuJoCo (vong kin, g=0) vs FK giai tich ({TOOL}), 40 tu the: max sai lech = {max(e_mj):.3f} mm, "
       f"max vi pham rang buoc vong = {max(viol):.4f} mm")
 
 # ---- 3. Vong do trong luc ----------------------------------------------------
-mg, dg = S.load_model(gravity=True, contact=False)
+mg, dg = S.load_model(gravity=True, contact=False, pen=args.pen)
 print("[3] Do vong do trong luc (servo P huu han, params.SERVO_ERR_SAT_DEG):")
-for qd in [(0, 90, 0), (0, 60, -30), (0, 45, -60), (0, 110, 0)]:
+# (0, 45, -55): phi = -60 cu nam ngoai tam lenh servo khuyu CTRL_ELBOW_DEG = (-57.3, 17.5) -> bi cat lenh
+for qd in [(0, 90, 0), (0, 60, -30), (0, 45, -55), (0, 110, 0)]:
     q = tuple(math.radians(v) for v in qd)
+    ok, msg = K.within_limits(q)
+    assert ok, f"tu the thu {qd} ngoai gioi han: {msg}"
     S.settle(mg, dg, S.q_to_ctrl(q), seconds=2.0)
     qa = S.actual_q(mg, dg)
     sag = np.linalg.norm(dg.site("tool").xpos * 1000 - K.fk(*q))
-    print(f"    q={qd}: lech goc (deg) = {np.round(np.degrees(qa - q), 2)}, lech dau but = {sag:.2f} mm, "
+    print(f"    q={qd}: lech goc (deg) = {np.round(np.degrees(qa - q), 2)}, lech {TOOL} = {sag:.2f} mm, "
           f"mo-men servo (Nm) = {np.round(dg.actuator_force[:3], 3)}")
 
 # ---- 4. Vung lam viec + hinh ve kha thi -------------------------------------
@@ -72,8 +84,14 @@ pts = np.array([K.fk(*q) for q in random_q(20000)])
 r = np.hypot(pts[:, 0], pts[:, 1])
 ax.scatter(r, pts[:, 2], s=1, alpha=0.3)
 ax.set_xlabel("r = sqrt(x^2+y^2) [mm]"); ax.set_ylabel("z [mm]")
-ax.set_title("Vung lam viec dau but (mat phang canh tay)"); ax.axhline(0, color="k", lw=0.8)
-ax.set_aspect("equal"); fig.tight_layout(); fig.savefig(os.path.join(OUT, "workspace_rz.png"), dpi=130)
+ax.set_title(f"Vung lam viec {TOOL} (mat phang canh tay)"); ax.axhline(0, color="k", lw=0.8)
+WS_PNG = os.path.join(OUT, "workspace_rz_pen.png" if args.pen else "workspace_rz_gripper.png")
+ax.set_aspect("equal"); fig.tight_layout(); fig.savefig(WS_PNG, dpi=130)
+if not args.pen:
+    print("[4] Bang hinh ve kha thi chi danh cho but: chay  python check_kinematics.py --pen")
+    print(f"Da luu {WS_PNG}")
+    raise SystemExit(0)
+PHI_EFF = K.phi_limits()            # PHI_LIM giao CTRL_ELBOW_DEG
 
 
 def feasible(cx, R, z, margin_deg=3.0):
@@ -88,7 +106,7 @@ def feasible(cx, R, z, margin_deg=3.0):
             th1, th2, phi = (math.degrees(v) for v in q)
             if (th2 - P.THETA2_LIM[0] < margin_deg or P.THETA2_LIM[1] - th2 < margin_deg or
                     (phi - th2) - P.REL_LIM[0] < margin_deg or P.REL_LIM[1] - (phi - th2) < margin_deg or
-                    phi - P.PHI_LIM[0] < margin_deg or P.PHI_LIM[1] - phi < margin_deg):
+                    phi - PHI_EFF[0] < margin_deg or PHI_EFF[1] - phi < margin_deg):
                 return False
     return True
 
@@ -109,4 +127,4 @@ print("[4] Hinh ve lon nhat (sao + tron ban kinh R) theo do cao mat giay z (mm),
 for z, cx, R in best:
     tag = "   <- mat giay (params.PAPER_THICKNESS)" if z == P.PAPER_THICKNESS else ""
     print(f"    z_giay = {z:5.1f} mm: tam x = {cx:3d} mm, R_max = {R:5.1f} mm{tag}")
-print(f"Da luu {os.path.join(OUT, 'workspace_rz.png')}")
+print(f"Da luu {WS_PNG}")

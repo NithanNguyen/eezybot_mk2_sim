@@ -5,17 +5,18 @@ mg996r_elbow (hop datasheet) | 55.0 | - | vi tri gan dung
 mg996r_shoulder (hop datasheet) | 55.0 | - | vi tri gan dung
 EBAmk2_002_mainarm | 83.1 | 67.0 | luoi da va lo
 EBAmk2_006_horarm__ | 48.6 | 39.2 | luoi kin
-EBAmk2_009_trialinkfront | 17.7 | 14.3 | luoi kin
-EBAmk2_014_claw_base | 10.1 | 8.1 | luoi kin
+GR_body | 26.3 | 21.2 | gripper that, hop lang tru (luoi diem 0.25 mm)
 sg90 (hop datasheet) | 9.0 | - | vi tri gan dung
-but D10 x 140 mm | 15.0 | - | [GIA-DINH]
 EBAmk2_003_varm | 15.0 | 12.1 | luoi da va lo
 EBAmk2_004_link135 | 7.3 | 5.9 | luoi kin
 EBAmk2_005_link135angled | 8.2 | 6.6 | luoi kin
 EBAmk2_007_trialink | 23.1 | 18.6 | luoi kin
 EBAmk2_008_link147_new | 7.8 | 6.3 | luoi kin
-EBAmk2_015_claw_finger_dx | 1.8 | 1.5 | lat cat 0.3mm
-EBAmk2_017_claw_finger_sx | 1.8 | 1.4 | luoi da va lo
-EBAmk2_018_claw_gear_driven | 1.6 | 1.3 | luoi kin
-EBAmk2_016_claw_gear_drive | 0.7 | 0.6 | luoi kin
-TONG khoi luong chuyen dong: 577.3 g  (FILL_FACTOR=1.0)
+GR_gear_l | 6.2 | 5.0 | gripper that, hop lang tru (luoi diem 0.25 mm)
+GR_gear_r | 6.2 | 5.0 | gripper that, hop lang tru (luoi diem 0.25 mm)
+GR_finger_l | 8.6 | 6.9 | gripper that, hop lang tru (luoi diem 0.25 mm)
+GR_finger_r | 8.6 | 6.9 | gripper that, hop lang tru (luoi diem 0.25 mm)
+GR_uplink_l | 2.1 | 1.7 | gripper that, hop lang tru (luoi diem 0.25 mm)
+GR_uplink_r | 2.1 | 1.7 | gripper that, hop lang tru (luoi diem 0.25 mm)
+TONG khoi luong chuyen dong: 588.7 g  (FILL_FACTOR=1.0)
+  + but (chi --pen): 15.0 g [GIA-DINH]

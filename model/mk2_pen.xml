@@ -1,0 +1,171 @@
+<mujoco model="eezybotarm_mk2_pen">
+  <!-- Sinh tu dong boi build_model.py — KHONG sua tay, sua params.py roi build lai. CHE DO --pen: gripper kep but D10, to giay A4 -->
+  <compiler angle="radian" inertiafromgeom="false" meshdir="meshes"/>
+  <option timestep="0.0005" integrator="implicitfast" gravity="0 0 -9.81"/>
+  <visual><global offwidth="1280" offheight="960"/></visual>
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" rgb1="0.9 0.9 0.9" rgb2="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="grid" texture="grid" texrepeat="10 10"/>
+    <mesh name="EBAmk2_001_base" file="EBAmk2_001_base.stl"/>
+    <mesh name="EBAmk2_011_gearmast" file="EBAmk2_011_gearmast.stl"/>
+    <mesh name="EBAmk2_002_mainarm" file="EBAmk2_002_mainarm.stl"/>
+    <mesh name="EBAmk2_006_horarm__" file="EBAmk2_006_horarm__.stl"/>
+    <mesh name="EBAmk2_003_varm" file="EBAmk2_003_varm.stl"/>
+    <mesh name="EBAmk2_004_link135" file="EBAmk2_004_link135.stl"/>
+    <mesh name="EBAmk2_005_link135angled" file="EBAmk2_005_link135angled.stl"/>
+    <mesh name="EBAmk2_007_trialink" file="EBAmk2_007_trialink.stl"/>
+    <mesh name="EBAmk2_008_link147_new" file="EBAmk2_008_link147_new.stl"/>
+    <mesh name="GR_body" file="GR_body.stl"/>
+    <mesh name="GR_gear_l" file="GR_gear_l.stl"/>
+    <mesh name="GR_gear_r" file="GR_gear_r.stl"/>
+    <mesh name="GR_finger_l" file="GR_finger_l.stl"/>
+    <mesh name="GR_finger_r" file="GR_finger_r.stl"/>
+    <mesh name="GR_uplink_l" file="GR_uplink_l.stl"/>
+    <mesh name="GR_uplink_r" file="GR_uplink_r.stl"/>
+    <mesh name="EBAmk2_012_mainbase" file="EBAmk2_012_mainbase.stl"/>
+    <mesh name="EBAmk2_013_lower_base" file="EBAmk2_013_lower_base.stl"/>
+    <mesh name="EBAmk2_019_drive_cover" file="EBAmk2_019_drive_cover.stl"/>
+    <mesh name="EBAmk2_010_gearservo" file="EBAmk2_010_gearservo.stl"/>
+  </asset>
+  <worldbody>
+    <light pos="0.3 -0.3 0.8" dir="-0.3 0.3 -0.8"/>
+    <geom name="table" type="plane" size="0.6 0.6 0.01" material="grid" contype="0" conaffinity="0"/>
+    <geom name="paper" type="box" pos="0.29 0 0.0005" size="0.105 0.1485 0.0005" rgba="1 1 1 1"
+          contype="0" conaffinity="2" friction="0.2 0.005 0.0001" solref="0.002 1"/>
+    <geom type="mesh" mesh="EBAmk2_012_mainbase" rgba="0.6 0.6 0.6 1" contype="0" conaffinity="0" group="1"/>
+    <geom type="mesh" mesh="EBAmk2_013_lower_base" rgba="0.5 0.5 0.5 1" contype="0" conaffinity="0" group="1"/>
+    <geom type="mesh" mesh="EBAmk2_019_drive_cover" rgba="0.95 0.45 0.1 1" contype="0" conaffinity="0" group="1"/>
+    <geom name="mg996r_base" type="box" pos="-0.066 0 0.0238" size="0.02035 0.00985 0.02145" rgba="0.12 0.12 0.12 1" contype="0" conaffinity="0" group="1"/>
+    <body name="gearservo" pos="-0.05625 0 0">
+      <inertial pos="-8.7805e-07 2.34676e-06 0.0475788" mass="0.00566278" fullinertia="5.82105e-07 5.82105e-07 1.14117e-06 -7.65455e-15 -2.11369e-16 3.82301e-16"/>
+      <joint name="gearservo" type="hinge" axis="0 0 1" armature="1e-06"/>
+      <geom type="mesh" mesh="EBAmk2_010_gearservo" rgba="0.3 0.3 0.3 1" contype="0" conaffinity="0" group="1"/>
+    </body>
+    <body name="turret" pos="0 0 0">
+      <inertial pos="-0.000300579 -0.000617576 0.073251" mass="0.326504" fullinertia="0.000384604 0.000193279 0.000361709 -3.5564e-06 7.23647e-06 5.39541e-06"/>
+      <joint name="base_yaw" type="hinge" axis="0 0 1" damping="0.669011" armature="0" frictionloss="0"/>
+      <geom type="mesh" mesh="EBAmk2_001_base" rgba="0.95 0.45 0.1 1" contype="0" conaffinity="0" group="1"/>
+      <geom type="mesh" mesh="EBAmk2_011_gearmast" rgba="0.3 0.3 0.3 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="mg996r_elbow" type="box" pos="0 0.0395 0.0845" size="0.00985 0.02145 0.02035" rgba="0.12 0.12 0.12 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="mg996r_shoulder" type="box" pos="0 -0.0394 0.0845" size="0.00985 0.02145 0.02035" rgba="0.12 0.12 0.12 1" contype="0" conaffinity="0" group="1"/>
+      <body name="mainarm" pos="0 0 0.09425">
+        <inertial pos="0.00470724 -0.00264703 0.0590433" mass="0.0830792" fullinertia="0.000184127 0.000181815 1.46534e-05 -3.97752e-07 -1.55376e-06 -8.495e-07"/>
+        <joint name="shoulder" type="hinge" axis="0 -1 0" damping="0.167253" armature="0" frictionloss="0"/>
+        <geom type="mesh" mesh="EBAmk2_002_mainarm" rgba="0.95 0.45 0.1 1" contype="0" conaffinity="0" group="1"/>
+        <site name="E_main" pos="8.26637e-18 0 0.135" size="0.003"/>
+        <body name="horarm" pos="8.26637e-18 0 0.135">
+          <inertial pos="0.0367294 0.00545907 0.0124691" mass="0.0485629" fullinertia="6.90345e-06 0.000173534 0.000173167 5.45019e-06 9.72735e-07 5.84072e-07"/>
+          <joint name="elbow_rel" type="hinge" axis="0 -1 0" damping="0" armature="0" frictionloss="0"/>
+          <geom type="mesh" mesh="EBAmk2_006_horarm__" rgba="0.95 0.45 0.1 1" contype="0" conaffinity="0" group="1"/>
+          <site name="T_hor" pos="-0.057 0 0" size="0.003"/>
+          <body name="wrist" pos="0.147 0 0">
+            <inertial pos="0.0582889 0.00302417 0.000762949" mass="0.0503461" fullinertia="4.15139e-05 0.000108162 7.21291e-05 2.6422e-06 2.26232e-05 -1.91583e-06"/>
+            <joint name="wrist_rel" type="hinge" axis="0 -1 0" damping="0" armature="0" frictionloss="0"/>
+            <geom type="mesh" mesh="GR_body" rgba="0.32 0.33 0.36 1" contype="0" conaffinity="0" group="1"/>
+            <geom name="sg90" type="box" pos="0.045 0.01197 0.019" size="0.0059 0.0111 0.0155" rgba="0.1 0.3 0.8 1" contype="0" conaffinity="0" group="1"/>
+            <site name="Q_wrist" pos="0.0326024 0 0.0280372" size="0.003"/>
+            <geom name="pen_body" type="cylinder" fromto="0.110592 0.00048 -0.0775 0.110592 0.00048 0.0505" size="0.005" rgba="0.1 0.25 0.8 1" contype="0" conaffinity="0" group="1"/>
+<geom name="pen_cone" type="cylinder" fromto="0.110592 0.00048 -0.0865 0.110592 0.00048 -0.0775" size="0.0025" rgba="0.75 0.75 0.75 1" contype="0" conaffinity="0" group="1"/>
+<geom name="pen_neck" type="cylinder" fromto="0.110592 0.00048 -0.089 0.110592 0.00048 -0.0865" size="0.0008" rgba="0.6 0.6 0.6 1" contype="0" conaffinity="0" group="1"/>
+<geom name="pen_tip" type="sphere" pos="0.110592 0.00048 -0.089" size="0.0005" rgba="0.05 0.05 0.05 1" contype="2" conaffinity="0" condim="3" friction="0.2 0.005 0.0001" solref="0.002 1" margin="5e-05" gap="5e-05"/>
+<site name="tool" pos="0.110592 0.00048 -0.0895" size="0.002" rgba="1 0 0 1"/>
+<site name="grip" pos="0.110592 0.00048 0.0005" size="0.002" rgba="0 1 0 1"/>
+            <body name="gear_l" pos="0.045 0.01398 -0.007">
+              <inertial pos="0.00508528 1.40339e-07 0.007" mass="0.00622139" fullinertia="2.56e-07 9.54147e-07 1.1594e-06 1.98682e-24 -5.13225e-25 -8.41072e-25"/>
+              <joint name="gripper" type="hinge" axis="0 0 1" armature="1e-06" damping="0.0168564" limited="true" range="0 1.5708"/>
+              <geom type="mesh" mesh="GR_gear_l" rgba="0.16 0.62 0.56 1" contype="0" conaffinity="0" group="1"/>
+              <body name="finger_l" pos="0.035 0 0">
+                <inertial pos="0.0292127 -0.00543003 0.0077221" mass="0.00860483" fullinertia="3.40266e-07 2.27121e-06 2.18415e-06 2.66977e-07 1.9496e-08 -2.79546e-09"/>
+                <joint name="finger_l" type="hinge" axis="0 0 1" armature="1e-06"/>
+                <geom type="mesh" mesh="GR_finger_l" rgba="0.85 0.85 0.9 1" contype="0" conaffinity="0" group="1"/>
+              </body>
+            </body>
+            <body name="uplink_l" pos="0.0633303 0.00598 -0.007">
+              <inertial pos="0.017507 0 0.007" mass="0.00206584" fullinertia="1.44251e-08 2.80231e-07 2.77807e-07 -1.07271e-24 -6.16751e-26 0"/>
+              <joint name="uplink_l" type="hinge" axis="0 0 1" armature="1e-06"/>
+              <geom type="mesh" mesh="GR_uplink_l" rgba="0.23 0.53 1 1" contype="0" conaffinity="0" group="1"/>
+            </body>
+            <body name="gear_r" pos="0.045 -0.01302 -0.007">
+              <inertial pos="0.00508528 1.40339e-07 0.007" mass="0.00622139" fullinertia="2.56e-07 9.54147e-07 1.1594e-06 1.98682e-24 -5.13225e-25 -8.41072e-25"/>
+              <joint name="gear_r" type="hinge" axis="0 0 -1" armature="1e-06" limited="true" range="0 1.5708"/>
+              <geom type="mesh" mesh="GR_gear_r" rgba="0.16 0.62 0.56 1" contype="0" conaffinity="0" group="1"/>
+              <body name="finger_r" pos="0.035 0 0">
+                <inertial pos="0.029212 0.00542925 0.00772214" mass="0.00860599" fullinertia="3.40345e-07 2.27129e-06 2.18422e-06 -2.67012e-07 1.94975e-08 2.79734e-09"/>
+                <joint name="finger_r" type="hinge" axis="0 0 -1" armature="1e-06"/>
+                <geom type="mesh" mesh="GR_finger_r" rgba="0.85 0.85 0.9 1" contype="0" conaffinity="0" group="1"/>
+              </body>
+            </body>
+            <body name="uplink_r" pos="0.0633303 -0.00502 -0.007">
+              <inertial pos="0.017507 0 0.007" mass="0.00206584" fullinertia="1.44251e-08 2.80231e-07 2.77807e-07 -1.07271e-24 -6.16751e-26 0"/>
+              <joint name="uplink_r" type="hinge" axis="0 0 -1" armature="1e-06"/>
+              <geom type="mesh" mesh="GR_uplink_r" rgba="0.23 0.53 1 1" contype="0" conaffinity="0" group="1"/>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="varm" pos="0 0 0.09425">
+        <inertial pos="-0.0203304 0.0169755 0.000568095" mass="0.0150344" fullinertia="7.85024e-07 6.84699e-06 6.5352e-06 4.20299e-07 1.28454e-07 -8.41439e-09"/>
+        <joint name="elbow_servo" type="hinge" axis="0 -1 0" damping="0.167253" armature="0" frictionloss="0"/>
+        <geom type="mesh" mesh="EBAmk2_003_varm" rgba="0.2 0.4 0.85 1" contype="0" conaffinity="0" group="1"/>
+        <body name="link004" pos="-0.057 0 0">
+          <inertial pos="4.57987e-07 0.0198289 0.0734379" mass="0.00732513" fullinertia="1.65303e-05 1.65488e-05 8.34606e-08 -1.63591e-11 -1.23271e-09 -2.13042e-07"/>
+          <joint name="l004" type="hinge" axis="0 -1 0" damping="0" armature="0" frictionloss="0"/>
+          <geom type="mesh" mesh="EBAmk2_004_link135" rgba="0.2 0.4 0.85 1" contype="0" conaffinity="0" group="1"/>
+          <site name="T_l004" pos="7.10543e-18 0 0.135" size="0.003"/>
+        </body>
+      </body>
+      <body name="link005" pos="-0.03797 0 0.11444">
+        <inertial pos="-0.00937315 -0.0151939 0.0675052" mass="0.0081693" fullinertia="1.82316e-05 1.86257e-05 4.29545e-07 1.54809e-08 -4.774e-10 -7.61011e-13"/>
+        <joint name="l005" type="hinge" axis="0 -1 0" damping="0" armature="0" frictionloss="0"/>
+        <geom type="mesh" mesh="EBAmk2_005_link135angled" rgba="0.15 0.6 0.3 1" contype="0" conaffinity="0" group="1"/>
+        <body name="trialink" pos="3.66504e-06 0 0.134998">
+          <inertial pos="0.0356784 -0.0209389 -0.00553182" mass="0.0230965" fullinertia="2.40987e-06 9.14099e-06 7.94166e-06 -6.98248e-08 -4.70102e-07 2.85865e-07"/>
+          <joint name="tri" type="hinge" axis="0 -1 0" damping="0" armature="0" frictionloss="0"/>
+          <geom type="mesh" mesh="EBAmk2_007_trialink" rgba="0.15 0.6 0.3 1" contype="0" conaffinity="0" group="1"/>
+          <site name="E_tri" pos="0.0379663 0 -0.0201881" size="0.003"/>
+          <body name="link008" pos="0.0705687 0 0.00784916">
+            <inertial pos="0.079606 -0.0155891 4.11825e-07" mass="0.00781487" fullinertia="8.72626e-08 2.05164e-05 2.04965e-05 2.35633e-07 -1.39562e-09 1.59973e-11"/>
+            <joint name="l008" type="hinge" axis="0 -1 0" damping="0" armature="0" frictionloss="0"/>
+            <geom type="mesh" mesh="EBAmk2_008_link147_new" rgba="0.15 0.6 0.3 1" contype="0" conaffinity="0" group="1"/>
+            <site name="Q_l008" pos="0.147 0 0" size="0.003"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <!-- 3 vong hinh binh hanh canh tay -->
+    <connect name="loop_elbow_drive" site1="T_hor" site2="T_l004" solref="0.002 1"/>
+    <connect name="loop_triangle" site1="E_main" site2="E_tri" solref="0.002 1"/>
+    <connect name="loop_wrist" site1="Q_wrist" site2="Q_l008" solref="0.002 1"/>
+    <!-- gripper: 2 banh rang an khop 1:1 (chieu duong cua ca 2 khop = mo); 2 hinh binh hanh:
+         khau tren quay cung goc khau duoi, ngon quay nguoc lai -> ngon tinh tien -->
+    <joint name="gripper_gears" joint1="gear_r" joint2="gripper" polycoef="0 1 0 0 0" solref="0.002 1"/>
+    <joint name="finger_l_par" joint1="finger_l" joint2="gripper" polycoef="0 -1 0 0 0" solref="0.002 1"/>
+    <joint name="finger_r_par" joint1="finger_r" joint2="gear_r" polycoef="0 -1 0 0 0" solref="0.002 1"/>
+    <joint name="uplink_l_par" joint1="uplink_l" joint2="gripper" polycoef="0 1 0 0 0" solref="0.002 1"/>
+    <joint name="uplink_r_par" joint1="uplink_r" joint2="gear_r" polycoef="0 1 0 0 0" solref="0.002 1"/>
+    <!-- banh rang de: 010 - 011 -->
+    <joint name="base_gear" joint1="gearservo" joint2="base_yaw" polycoef="0 -2 0 0 0"/>
+  </equality>
+  <actuator>
+    <!-- Servo MG996R (4.8V): tau_stall=0.922 Nm, w0=5.51 rad/s,
+         kp=tau_stall/5.0 deg, back-EMF dat o damping cua khop -->
+    <position name="servo_base" joint="base_yaw" gear="2.0" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-1.5708 1.5708"/>
+    <position name="servo_shoulder" joint="shoulder" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-0.994838 0.698132"/>
+    <position name="servo_elbow" joint="elbow_servo" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-1.00007 0.305433"/>
+    <!-- Servo kep SG90 (truc = banh rang trai, ti so 1): 0 = dong, 1.571 rad = mo het;
+         kep but D10: 0.0748 rad (4.29 do) -->
+    <position name="servo_gripper" joint="gripper" gear="1" kp="2.02277" forcelimited="true" forcerange="-0.17652 0.17652" ctrllimited="true" ctrlrange="0 1.5708"/>
+  </actuator>
+  <sensor>
+    <framepos name="tool_pos" objtype="site" objname="tool"/>
+    <actuatorfrc name="frc_base" actuator="servo_base"/>
+    <actuatorfrc name="frc_shoulder" actuator="servo_shoulder"/>
+    <actuatorfrc name="frc_elbow" actuator="servo_elbow"/>
+  </sensor>
+  <keyframe>
+    <!-- gripper kep but: servo_gripper = 4.29 do -->
+    <key name="pen" qpos="0 0 0 0 0 0.074795 -0.074795 0.074795 0.074795 -0.074795 0.074795 0 0 0 0 0" ctrl="0 0 0 0.074795"/>
+  </keyframe>
+</mujoco>

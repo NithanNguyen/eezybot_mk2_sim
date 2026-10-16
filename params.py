@@ -7,6 +7,8 @@ build_model.py va mk2_kinematics.py tu doi sang SI (m, kg, rad).
 Moi tham so co ghi NGUON:
   [DO-STL]  : do tu file STL goc (Thingiverse thing:1454048) bang tools/holes.py
   [DATASHEET]: lay tu datasheet (ghi ro trang)
+  [DO-THAT]  : do bang thuoc kep tren gripper that (nguoi dung, 2026-10-16)
+  [ANH]      : do tren anh chup gripper that bang tools/gripper_from_photos.py
   [GIA-DINH] : gia tri tam, CHUA DO tren tay may that -> phai do va sua lai
 """
 
@@ -46,43 +48,61 @@ SHOULDER_OFFSET_X = 0.0                                                       # 
 BASE_GEAR_RATIO = 2.0                                                         # [DO-STL]
 
 # ---------------------------------------------------------------------------
-# 2. Kep (gripper) + but ve
-#    Kep 014 lap vao luoi duoi en (dovetail) cua 009, ngon chi ve phia truoc, mat kep
-#    nam ngang. But dung thang theo truc z cua kep, ngoi huong xuong.
+# 2. Kep (gripper) — gripper THAT tren robot (thiet ke rieng, KHONG phai kep goc 014-018)
+#    Co cau 2 hinh binh hanh: moi ben 1 chi tiet "banh rang + khau duoi" quay quanh truc
+#    banh rang G, 1 "khau tren" quay quanh chot C tren than, ngon noi 2 khau -> ngon TINH TIEN,
+#    khong xoay. 2 banh rang bang nhau an khop 1:1; truc SG90 = truc banh rang trai.
+#    Gripper thay ca 009 (trialinkfront): thap ga co lo W (dau tay ngang 006) va Q (dau 008).
+#    Hinh hoc chi tiet + luoi: gripper.py; bien dang ngon/de: gripper_shape.py (tu anh).
+#    He G (mm): goc = trung diem 2 truc banh rang, gx = ngang (phai khi nhin tu tren, mui ngon
+#    huong len), gy = huong mui ngon, z = len, z = 0 tai mat day gripper.
 # ---------------------------------------------------------------------------
+GRIP_GEAR_DIST = 27.0           # tam-tam 2 truc banh rang                    [DO-THAT]
+GRIP_PIVOT_DIST = 11.0          # tam-tam 2 chot khau tren (2 oc den giua)    [DO-THAT]
+GRIP_FINGER_HOLES = 20.0        # tam-tam 2 lo oc tren 1 ngon                 [DO-THAT]
+GRIP_LINK = 35.0                # tam-tam khau duoi (truc banh rang -> oc duoi ngon) = khau tren [DO-THAT]
+GRIP_TRAVEL_DEG = 90.0          # dong (khau duoi thang, 0 do) -> mo (vuong goc canh tay, 90 do) [DO-THAT]
+GRIP_THICKNESS = 15.0           # be day tong                                  [DO-THAT]
+GRIP_LINK_WIDTH = 6.0           # be rong 2 khau                               [ANH]
+GRIP_W_TO_GEAR = 45.0           # tam W -> duong truc banh rang, doc canh tay  [DO-THAT]
+GRIP_W_HEIGHT = 7.0             # tam W (va mat giua lop banh rang/khau) cao hon mat day gripper [DO-THAT]
+# Q - W (doc tay, dung) = (32.6, 28.0), thang 43 mm: nguoi dung do lai, trung hinh hoc 007/009
+# (mk2_kinematics.linkage_points) -> gripper nam ngang, khong nghieng.         [DO-THAT]
+GRIP_CENTER_Y = 0.48            # y the gioi cua mat phang doi xung gripper = tam kep cu 014 [GIA-DINH]
+GRIP_TCP_BACK = 5.0             # TCP gap vat: giua 2 dem mui ngon luc dong, lui 5 mm tu mut ngon [QUY-UOC]
+GRIPPER_GEAR_RATIO = 1.0        # goc truc SG90 / goc banh rang (truc SG90 = truc banh rang trai) [DO-THAT]
+# Quan tinh rotor quy doi cua cac khop kep (kg m^2). Can > 0: banh rang/ngon nhua rat nhe,
+# khong co gia tri nay mo phong mat on dinh (dt = 0.5 ms).                    [GIA-DINH]
+GRIPPER_ARMATURE = 1e-6
+
+# But ve — CHI gan khi chay voi co --pen (model/mk2_pen.xml). But dung thang, kep giua 2 ngon.
 PEN_DIAMETER = 10.0             # mm                                           [YEU-CAU]
-PEN_GRIP_TO_TIP = 90.0          # mm, tu diem kep (giua ma kep) toi ngoi       [YEU-CAU]
-#   (60 mm thi hinh ve tren giay dat tren mat dat chi dat R ~ 10 mm do gioi han va cham; chon 90 mm)
+PEN_FROM_TIP = 27.0             # truc but lui vao 27 mm so voi mut ngon       [DO-THAT]
+PEN_GRIP_TO_TIP = 90.0          # mm, tu diem kep (giua chieu day ngon) toi ngoi [DO-THAT]
 PEN_LENGTH = 140.0              # mm, tong chieu dai but                       [GIA-DINH]
 TOOL_MASS_G = 15.0              # khoi luong but                               [GIA-DINH]
 PEN_TIP_FRICTION = 0.2          # he so ma sat ngoi-giay                       [GIA-DINH]
 
-# Diem kep but so voi tam truc co tay W, truc the gioi o tu the home (mm), va goc nghieng
-# cua kep quanh truc y. Tinh tu STL boi build_model.py (lo khop + khop dovetail + goc kep
-# but D10) — build_model.py kiem tra lai va dung neu lech > 0.02 mm.        [DO-STL]
-GRIP_POINT_W = (95.98, 0.475, -8.00)
-CLAW_TILT_DEG = 0.27            # truc z kep nghieng so voi phuong dung (ngoi lech ve phia truoc)
+# Diem lam viec so voi tam truc co tay W, truc the gioi o tu the home (mm). Tinh tu hinh hoc
+# boi gripper.py; build_model.py kiem tra lai va dung neu lech > 0.02 mm.
+TCP_W = (132.69, 0.480, 0.50)   # TCP gap vat (khong but), gripper dong
+PEN_GRIP_W = (110.59, 0.480, 0.50)  # diem kep but (tam but, giua chieu day ngon)
+PEN_GRIP_DEG = 4.29             # goc servo kep de 2 mat kep vua cham but D10 (tu luc dong)
 
-import math as _m
-# Ngoi but so voi W (mat phang canh tay: dx, dz) va do lech ngang dy (mm) — dung cho FK/IK
-TOOL_OFFSET = (GRIP_POINT_W[0] + PEN_GRIP_TO_TIP * _m.sin(_m.radians(CLAW_TILT_DEG)),
-               GRIP_POINT_W[2] - PEN_GRIP_TO_TIP * _m.cos(_m.radians(CLAW_TILT_DEG)))
-TOOL_OFFSET_Y = GRIP_POINT_W[1]
-
-# Kep: banh rang 016 (10 rang, m = 1.5) tren truc SG90 an khop 018 (16 rang) gan vao ngon trai;
-# 2 ngon an khop nhau 1:1 (12 rang). Ti so goc truc SG90 / goc ngon:            [DO-STL]
-GRIPPER_GEAR_RATIO = 16.0 / 10.0
-FINGER_OPEN_MAX_DEG = 40.0      # do mo toi da cua ngon so voi luc kep but     [GIA-DINH]
-# Quan tinh rotor quy doi cua cac khop kep (kg m^2). Can > 0: banh rang/ngon nhua rat nhe,
-# khong co gia tri nay mo phong mat on dinh (dt = 0.5 ms).                    [GIA-DINH]
-GRIPPER_ARMATURE = 1e-6
+# Dau cong tac so voi W (mat phang canh tay: dx, dz) va do lech ngang dy (mm) — dung cho FK/IK.
+# Mac dinh "gripper"; "pen" chi dung khi chay voi --pen (mk2_kinematics.set_tool).
+TOOL_OFFSETS = {
+    "gripper": (TCP_W[0], TCP_W[2]),
+    "pen": (PEN_GRIP_W[0], PEN_GRIP_W[2] - PEN_GRIP_TO_TIP),
+}
+TOOL_OFFSET_Y = TCP_W[1]
 
 # ---------------------------------------------------------------------------
 # 2b. Giay ve — A4 (ISO 216: 210 x 297 mm), dat ngay tren mat ban
 # ---------------------------------------------------------------------------
 PAPER_SIZE = (210.0, 297.0)     # (theo x, theo y) mm                          [ISO 216]
 PAPER_THICKNESS = 1.0           # mm, mat tren giay o z = 1 mm                 [YEU-CAU]
-PAPER_CENTER = (245.0, 0.0)     # (x, y) tam to giay = tam hinh ve mac dinh; R_max ~ 56 mm tai day (check_kinematics [4])
+PAPER_CENTER = (290.0, 0.0)     # (x, y) tam to giay = tam hinh ve mac dinh; R_max = 22.9 mm tai day (check_kinematics.py --pen [4])
 INK_WIDTH = 1.0                 # be rong net but (mm)                         [YEU-CAU]
 # Ngoi coi la "cham giay" (ra muc) khi khe ngoi-giay <= INK_GAP. Tiep xuc cung trong MuJoCo
 # rung vi mo +-0.015 mm; nguong nay chi anh huong viec ghi muc, khong anh huong luc tiep xuc.
@@ -93,7 +113,8 @@ PEN_LIFT = 15.0                 # do cao nhac but khi di chuyen toi/roi diem dau
 # 3. Gioi han khop (do). theta2 = goc canh tay chinh so voi phuong ngang,
 #    phi = goc tay ngang (forearm) so voi phuong ngang, rel = phi - theta2.
 #    Lay tu kiem tra va cham giua cac chi tiet STL (tools/check_assembly.py --limits):
-#      phi < -67.5: tay ngang 006 cham co tay 009 | phi > 22.5: tay quay 003 cham de 001
+#      phi <= -70 (bang [C], buoc 5 do): tay ngang 006 cham than gripper GR_body (ban kep cu: 009 o -67.5)
+#      | phi > 22.5: tay quay 003 cham de 001
 #      rel < -147.5: 006 cham canh tay chinh 002 | theta2 < 40: 002 cham tam giac 007
 #    Gioi han duoi day cach bien va cham >= 2.5 do. Vi tri cu the van nen do tren tay that.
 # ---------------------------------------------------------------------------
