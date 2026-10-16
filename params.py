@@ -111,6 +111,10 @@ SERVO_OFFSET = (90.0, 90.0, 90.0)                                             # 
 SERVO_SIGN = (+1, +1, +1)                                                     # [GIA-DINH]
 SERVO_RANGE = (0.0, 180.0)
 
+CTRL_BASE_DEG     = (-90.0, 90.0)
+CTRL_SHOULDER_DEG = (-57.0, 40.0) 
+CTRL_ELBOW_DEG    = (-57.3, 17.5)  # gioi han tren cua phi = 20 do, de tranh cham 003 quay vao 001 base
+
 # ---------------------------------------------------------------------------
 # 5. Servo MG996R — TowerPro (https://towerpro.com.tw/product/mg996r/)
 # ---------------------------------------------------------------------------

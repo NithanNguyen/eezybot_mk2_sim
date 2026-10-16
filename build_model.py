@@ -555,9 +555,9 @@ def main():
   <actuator>
     <!-- Servo MG996R ({P.SUPPLY}): tau_stall={tau_s:.3f} Nm, w0={w0:.2f} rad/s,
          kp=tau_stall/{P.SERVO_ERR_SAT_DEG} deg, back-EMF dat o damping cua khop -->
-    <position name="servo_base" joint="base_yaw" gear="{g}" kp="{kp:.6g}" forcelimited="true" forcerange="{-tau_s:.6g} {tau_s:.6g}" ctrllimited="true" ctrlrange="{-math.pi/2:.6g} {math.pi/2:.6g}"/>
-    <position name="servo_shoulder" joint="shoulder" kp="{kp:.6g}" forcelimited="true" forcerange="{-tau_s:.6g} {tau_s:.6g}" ctrllimited="true" ctrlrange="{-math.pi/2:.6g} {math.pi/2:.6g}"/>
-    <position name="servo_elbow" joint="elbow_servo" kp="{kp:.6g}" forcelimited="true" forcerange="{-tau_s:.6g} {tau_s:.6g}" ctrllimited="true" ctrlrange="{-math.pi/2:.6g} {math.pi/2:.6g}"/>
+    <position name="servo_base" joint="base_yaw" gear="{g}" kp="{kp:.6g}" forcelimited="true" forcerange="{-tau_s:.6g} {tau_s:.6g}" ctrllimited="true" ctrlrange="{math.radians(P.CTRL_BASE_DEG[0]):.6g} {math.radians(P.CTRL_BASE_DEG[1]):.6g}"/>
+    <position name="servo_shoulder" joint="shoulder" kp="{kp:.6g}" forcelimited="true" forcerange="{-tau_s:.6g} {tau_s:.6g}" ctrllimited="true" ctrlrange="{math.radians(P.CTRL_SHOULDER_DEG[0]):.6g} {math.radians(P.CTRL_SHOULDER_DEG[1]):.6g}"/>
+    <position name="servo_elbow" joint="elbow_servo" kp="{kp:.6g}" forcelimited="true" forcerange="{-tau_s:.6g} {tau_s:.6g}" ctrllimited="true" ctrlrange="{math.radians(P.CTRL_ELBOW_DEG[0]):.6g} {math.radians(P.CTRL_ELBOW_DEG[1]):.6g}"/>
     <!-- Servo kep SG90: 0 = kep but D{P.PEN_DIAMETER:g}, am = mo -->
     <position name="servo_gripper" joint="gripper" kp="{kp_g:.6g}" forcelimited="true" forcerange="{-tau_g:.6g} {tau_g:.6g}" ctrllimited="true" ctrlrange="{-gr*fo:.6g} 0"/>
   </actuator>

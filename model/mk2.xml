@@ -133,8 +133,8 @@
     <!-- Servo MG996R (4.8V): tau_stall=0.922 Nm, w0=5.51 rad/s,
          kp=tau_stall/5.0 deg, back-EMF dat o damping cua khop -->
     <position name="servo_base" joint="base_yaw" gear="2.0" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-1.5708 1.5708"/>
-    <position name="servo_shoulder" joint="shoulder" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-1.5708 1.5708"/>
-    <position name="servo_elbow" joint="elbow_servo" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-1.5708 1.5708"/>
+    <position name="servo_shoulder" joint="shoulder" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-0.994838 0.698132"/>
+    <position name="servo_elbow" joint="elbow_servo" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-1.00007 0.305433"/>
     <!-- Servo kep SG90: 0 = kep but D10, am = mo -->
     <position name="servo_gripper" joint="gripper" kp="2.02277" forcelimited="true" forcerange="-0.17652 0.17652" ctrllimited="true" ctrlrange="-1.11701 0"/>
   </actuator>
