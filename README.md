@@ -79,8 +79,8 @@ All three are prebuilt in `model/`. Rebuilding from STL is only required after e
 git clone https://github.com/NithanNguyen/eezybot_mk2_sim.git && cd eezybot_mk2_sim
 python3 -m venv ~/venvs/mk2 && source ~/venvs/mk2/bin/activate
 pip install -r requirements.txt
-python -m mujoco.viewer --mjcf=model/mk2.xml    # drag the sliders in the Control panel
-python run_sort.py --view                       # watch the full sorting cycle
+python -m mujoco.viewer --mjcf=model/mk2.xml            # drag the sliders in the Control panel
+python run_sort.py --view --foreign 2                   # watch the full sorting cycle
 ```
 
 Full setup with per-step checks and the STL rebuild: [installation.md](assets/docs/installation.md).
