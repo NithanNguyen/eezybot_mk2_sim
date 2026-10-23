@@ -7,7 +7,7 @@ Tu the (diem 'cap' = tam nap khi kep, mm) -> goc servo (do), du tru toi gioi han
   ngan 1 (red): tha      p = [ 280.6 -162.   116. ]  servo = [29.83 48.09 57.39]  du tru = 5.59 do
   vut bo: phia tren      p = [246.8 142.5  99. ]  servo = [149.81  56.17  42.78]  du tru = 13.67 do
   vut bo: tha            p = [246.8 142.5  66. ]  servo = [149.81  44.79  32.59]  du tru = 2.29 do
-Thu tu dat nap (seed 0): red, red, green, white, red, white, white, green, green
+Thu tu dat nap (seed 0): red, red, green, white, red, other, other, white, white, green, green
 Gioi han khop (quy doi tu 150 mm/s, 1500 mm/s^2, 30000 mm/s^3 qua r = 280 mm): 0.536 rad/s, 5.36 rad/s^2, 107.1 rad/s^3
 [t=   3.28 s] CLS,RED,RED,0.001499,0.461412,0.274220,281.000,167.000,161.000,621.000,0
 [t=   3.28 s] # SORT RED (lan 1)  [nap 1: cap_red_1, dong test.csv 31]
@@ -24,32 +24,42 @@ Gioi han khop (quy doi tu 150 mm/s, 1500 mm/s^2, 30000 mm/s^3 qua r = 280 mm): 0
 [t=  37.54 s] CLS,RED,RED,0.001436,0.463621,0.275804,274.000,163.000,154.000,599.000,0
 [t=  37.54 s] # SORT RED (lan 3)  [nap 5: cap_red_0, dong test.csv 39]
            gap: z diem kep (thuc) = 53.5 mm, kep 20.30 do, luc kep 5.38 N, nhac nap 40.3 mm, truot max 0.46 mm; day nap luc tha 99.1 mm; nap nam o: red -> DUNG dich
-[t=  45.76 s] CLS,WHITE,WHITE,0.000451,0.272996,0.378741,793.600,1101.000,1012.400,3028.400,0
-[t=  45.76 s] # SORT WHITE (lan 2)  [nap 6: cap_white_2, dong test.csv 59]
+[t=  45.76 s] CLS,UNKNOWN,WHITE,0.079881,0.193939,0.367677,96.000,182.000,217.000,517.000,0
+[t=  45.76 s] # ERR UNKNOWN_COLOR nearest=WHITE dist=0.0799 dmax=0.0125 sat=0
+[t=  45.76 s] # SORT REJECT (lan 1)  [nap 6: cap_other_0, dong test.csv 88]
+           gap: z diem kep (thuc) = 53.5 mm, kep 20.30 do, luc kep 5.38 N, nhac nap 40.3 mm, truot max 0.47 mm; day nap luc tha 49.7 mm; nap nam o: reject -> DUNG dich
+[t=  54.92 s] CLS,UNKNOWN,WHITE,0.080109,0.193458,0.369765,97.000,185.400,219.000,520.800,0
+[t=  54.92 s] # ERR UNKNOWN_COLOR nearest=WHITE dist=0.0801 dmax=0.0125 sat=0
+[t=  54.92 s] # SORT REJECT (lan 2)  [nap 7: cap_other_1, dong test.csv 97]
+           gap: z diem kep (thuc) = 53.5 mm, kep 20.30 do, luc kep 5.38 N, nhac nap 40.3 mm, truot max 0.47 mm; day nap luc tha 49.7 mm; nap nam o: reject -> DUNG dich
+[t=  64.08 s] CLS,WHITE,WHITE,0.000451,0.272996,0.378741,793.600,1101.000,1012.400,3028.400,0
+[t=  64.08 s] # SORT WHITE (lan 2)  [nap 8: cap_white_2, dong test.csv 59]
            gap: z diem kep (thuc) = 53.5 mm, kep 20.30 do, luc kep 5.38 N, nhac nap 40.3 mm, truot max 0.46 mm; day nap luc tha 99.7 mm; nap nam o: white -> DUNG dich
-[t=  54.26 s] CLS,WHITE,WHITE,0.000253,0.273057,0.378552,782.200,1084.400,998.000,2983.600,0
-[t=  54.26 s] # SORT WHITE (lan 3)  [nap 7: cap_white_1, dong test.csv 53]
+[t=  72.58 s] CLS,WHITE,WHITE,0.000253,0.273057,0.378552,782.200,1084.400,998.000,2983.600,0
+[t=  72.58 s] # SORT WHITE (lan 3)  [nap 9: cap_white_1, dong test.csv 53]
            gap: z diem kep (thuc) = 53.5 mm, kep 20.30 do, luc kep 5.38 N, nhac nap 40.3 mm, truot max 0.46 mm; day nap luc tha 99.7 mm; nap nam o: white -> DUNG dich
-[t=  62.76 s] CLS,GREEN,GREEN,0.001305,0.202614,0.482026,124.000,295.000,193.000,639.000,0
-[t=  62.76 s] # SORT GREEN (lan 2)  [nap 8: cap_green_0, dong test.csv 11]
+[t=  81.08 s] CLS,GREEN,GREEN,0.001305,0.202614,0.482026,124.000,295.000,193.000,639.000,0
+[t=  81.08 s] # SORT GREEN (lan 2)  [nap 10: cap_green_0, dong test.csv 11]
            gap: z diem kep (thuc) = 53.5 mm, kep 20.30 do, luc kep 5.38 N, nhac nap 40.3 mm, truot max 0.46 mm; day nap luc tha 100.2 mm; nap nam o: green -> DUNG dich
-[t=  71.08 s] CLS,GREEN,GREEN,0.001568,0.201626,0.484553,124.000,298.000,193.000,643.000,0
-[t=  71.08 s] # SORT GREEN (lan 3)  [nap 9: cap_green_1, dong test.csv 19]
+[t=  89.40 s] CLS,GREEN,GREEN,0.001568,0.201626,0.484553,124.000,298.000,193.000,643.000,0
+[t=  89.40 s] # SORT GREEN (lan 3)  [nap 11: cap_green_1, dong test.csv 19]
            gap: z diem kep (thuc) = 53.5 mm, kep 20.30 do, luc kep 5.38 N, nhac nap 40.3 mm, truot max 0.46 mm; day nap luc tha 100.2 mm; nap nam o: green -> DUNG dich
-[t=  77.62 s] Tram trong, het nap -> dung.
+[t=  95.94 s] Tram trong, het nap -> dung.
 
 Toc do servo lon nhat = [1.07 0.97 0.86] rad/s (MG996R khong tai 5.51 rad/s @4.8V) -> OK
 Khe ho nho nhat tren quy dao LENH (FK; diem thap nhat = day nap khi mang nap, mep duoi ngon khi kep rong):
   Home -> tren tram (kep rong)           mat ban 91.5 mm, ke + nap 35.5 mm
   tram -> ngan 1 (mang nap)              mat ban 83.0 mm, ke 40.0 mm, hop dich 44.7 mm
-  ve Home (kep rong)                     mat ban 108.5 mm, hop dich 58.5 mm, ke 109.3 mm
+  ve Home (kep rong)                     mat ban 91.5 mm, hop dich 58.5 mm, ke 109.3 mm
   tram -> ngan 2 (mang nap)              mat ban 83.0 mm, ke 40.0 mm, hop dich 44.3 mm
   tram -> ngan 3 (mang nap)              mat ban 83.0 mm, ke 40.0 mm, hop dich 47.7 mm
+  tram -> tren vung vut bo (mang nap)    mat ban 83.0 mm, ke 40.0 mm
 So chu ky lenh co tam kep cham ke/hop/ban: 0
-Thoi gian 1 chu ky (dat nap -> tay ve Home): TB 7.35 s, min 7.22, max 7.50
+Thoi gian 1 chu ky (dat nap -> tay ve Home): TB 7.49 s, min 7.22, max 8.16
 Thoi gian tu luc dat nap toi luc ra quyet dinh: TB 0.78 s
 Ma tran: mau that (hang) x noi nap nam sau chu trinh (cot: ngan 1 do, ngan 2 xanh, ngan 3 trang, vut bo, ngoai)
   green  [0 3 0 0 0]
   red    [3 0 0 0 0]
   white  [0 0 3 0 0]
-Nap toi dung dich da chon (co hoc gap-tha): 9/9; nap toi dung noi theo mau that (toan chu trinh): 9/9
+  other  [0 0 0 2 0]
+Nap toi dung dich da chon (co hoc gap-tha): 11/11; nap toi dung noi theo mau that (toan chu trinh): 11/11
