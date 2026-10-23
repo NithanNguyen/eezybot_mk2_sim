@@ -147,7 +147,7 @@
          kp=tau_stall/5.0 deg, back-EMF dat o damping cua khop -->
     <position name="servo_base" joint="base_yaw" gear="2.0" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-1.5708 1.5708"/>
     <position name="servo_shoulder" joint="shoulder" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-0.994838 0.698132"/>
-    <position name="servo_elbow" joint="elbow_servo" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-1.00007 0.305433"/>
+    <position name="servo_elbow" joint="elbow_servo" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-1.09083 0.305433"/>
     <!-- Servo kep SG90 (truc = banh rang trai, ti so 1): 0 = dong, 1.571 rad = mo het;
          kep but D10: 0.0748 rad (4.29 do) -->
     <position name="servo_gripper" joint="gripper" gear="1" kp="2.02277" forcelimited="true" forcerange="-0.17652 0.17652" ctrllimited="true" ctrlrange="0 1.5708"/>
