@@ -9,7 +9,11 @@ a pen-drawing trajectory benchmark (M0 vs M2) and a full bottle-cap colour-sorti
 ![MuJoCo](https://img.shields.io/badge/MuJoCo-3.2.3-1f6feb)
 ![Ruckig](https://img.shields.io/badge/Ruckig-0.12.2-6e7781)
 
-<img src="assets/images/sort_scene_end.png" width="560" alt="Sorting scene in MuJoCo after a run">
+<p align="center">
+  <a href="https://youtu.be/EzIfi_X_p9Y" target="_blank">
+    <img src="https://img.youtube.com/vi/EzIfi_X_p9Y/maxresdefault.jpg" alt="Video Demo" width="80%" />
+  </a>
+</p>
 
 </div>
 
