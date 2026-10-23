@@ -9,6 +9,8 @@ Ket qua:
     model/meshes/*.stl   (STL nhi phan, da dat vao he toa do cua tung body)
     model/mk2.xml        (MJCF MAC DINH: gripper, KHONG co but — bai gap vat)
     model/mk2_pen.xml    (MJCF cho che do --pen: them but D10 kep giua 2 ngon + to giay A4)
+    model/mk2_sort.xml   (MJCF bai phan loai mau nap chai: mk2.xml + ke/GY-33, hop 3 ngan, vung vut bo,
+                          11 nap chai tu do, tam kep co va cham tren 2 ngon — sort_scene.py)
     model/mass_report.txt
 
 Nguyen tac lap rap (kiem chung bang tools/check_assembly.py):
@@ -272,6 +274,17 @@ def main():
         sys.exit("params.TCP_W/PEN_GRIP_W/PEN_GRIP_DEG khong khop hinh hoc gripper. Sua params.py thanh:\n"
                  f"TCP_W = ({tcp[0]:.2f}, {tcp[1]:.3f}, {tcp[2]:.2f})\n"
                  f"PEN_GRIP_W = ({grip[0]:.2f}, {grip[1]:.3f}, {grip[2]:.2f})\nPEN_GRIP_DEG = {a_pen:.2f}")
+    # bai phan loai: tam nap D30 khi kep va goc servo de 2 ngon vua cham nap
+    cap_w = GR.cap_grip_w(); a_cap = GR.cap_grip_deg()
+    cap_clr = GR.cap_link_clearance(a_cap); worst = min(cap_clr, key=cap_clr.get)
+    print(f"  nap D{P.CAP_DIAMETER:g} (sort): tam nap - W = ({cap_w[0]:.2f}, {cap_w[1]:.3f}, {cap_w[2]:.2f}) mm; "
+          f"goc servo cham nap = {a_cap:.2f} do; khe nho nhat toi chi tiet khong va cham = "
+          f"{cap_clr[worst]:.2f} mm ({worst}); mo {P.GRIP_OPEN_DEG:g} do: ngon cach nap {GR.cap_clearance(P.GRIP_OPEN_DEG):.2f} mm")
+    if np.max(np.abs(cap_w - np.array(P.CAP_GRIP_W))) > 0.02 or abs(a_cap - P.CAP_GRIP_DEG) > 0.01:
+        sys.exit("params.CAP_GRIP_W/CAP_GRIP_DEG khong khop hinh hoc gripper. Sua params.py thanh:\n"
+                 f"CAP_GRIP_W = ({cap_w[0]:.2f}, {cap_w[1]:.3f}, {cap_w[2]:.2f})\nCAP_GRIP_DEG = {a_cap:.2f}")
+    if cap_clr[worst] <= 0:
+        sys.exit(f"Nap cham {worst} (khong co va cham trong mo phong) — doi GRIP_CAP_GY")
     tcp_w = Wp + tcp
     grip_w = Wp + grip
     zc = np.array([0.0, 0.0, 1.0])                                  # truc gripper (nam ngang -> dung)
@@ -568,9 +581,13 @@ def main():
   </sensor>
 </mujoco>
 """
-    # ---------------- ghi 2 mo hinh; mo hinh but co keyframe "pen" (gripper o goc kep but)
+    # ---------------- ghi 3 mo hinh; mo hinh but co keyframe "pen" (gripper o goc kep but)
+    xml_def = make_xml(False)
     with open(os.path.join(OUT, "mk2.xml"), "w") as f:
-        f.write(make_xml(False))
+        f.write(xml_def)
+    sort_path = os.path.join(OUT, "mk2_sort.xml")
+    with open(sort_path, "w") as f:
+        f.write(make_sort_xml(xml_def, lw(Wp + cap_w, "wrist")))
     xml_pen = make_xml(True)
     pen_path = os.path.join(OUT, "mk2_pen.xml")
     with open(pen_path, "w") as f:
@@ -594,7 +611,39 @@ def main():
         f.write("\n".join(report) + "\n")
     print("\n".join(report))
     print(f"\nServo: tau_stall={tau_s:.3f} N m, w0={w0:.2f} rad/s, kp={kp:.3f} N m/rad, b={b_emf:.4f} N m s/rad")
-    print(f"Da ghi {os.path.join(OUT, 'mk2.xml')} (mac dinh, khong but) va {pen_path} (--pen)")
+    print(f"Da ghi {os.path.join(OUT, 'mk2.xml')} (mac dinh, khong but), {pen_path} (--pen) va {sort_path} (bai phan loai)")
+
+
+def make_sort_xml(xml_def, cap_site_pos):
+    """Mo hinh bai phan loai = mo hinh mac dinh + ke/cam bien/hop/vung vut bo/nap (sort_scene.py) + tam kep
+    co va cham tren 2 ngon. Chen bang thay chuoi de mk2.xml va mk2_pen.xml khong doi."""
+    import sort_scene as SS
+
+    def sub(xml, old, new):
+        if xml.count(old) != 1:
+            raise RuntimeError(f"make_sort_xml: khong tim thay dung 1 cho '{old[:60]}'")
+        return xml.replace(old, new)
+    x = xml_def
+    x = sub(x, '<mujoco model="eezybotarm_mk2">', '<mujoco model="eezybotarm_mk2_sort">')
+    x = sub(x, "MAC DINH: gripper, khong but (gap vat)",
+            "BAI PHAN LOAI: ke + GY-33, hop 3 ngan, vung vut bo, nap chai; ngon co va cham (sort_scene.py)")
+    # jacobian="dense": voi 11 nap tu do (nv = 82) che do "auto" chuyen sang Jacobian thua va MuJoCo 3.2.3
+    # dung o mj_makeConstraint ("constraint Jacobian mis-allocation") — da thu: dense chay binh thuong.
+    # multiccd: tru-hop/tru-luoi loi cho nhieu diem tiep xuc (nap nam phang on dinh tren day hop, mica).
+    x = sub(x, 'gravity="0 0 -9.81"/>',
+            'gravity="0 0 -9.81" cone="elliptic" jacobian="dense">\n    <flag multiccd="enable"/>\n  </option>')
+    x = sub(x, "  </asset>", SS.assets_xml() + "\n  </asset>")
+    x = sub(x, '<geom name="table" type="plane" size="0.6 0.6 0.01" material="grid" contype="0" conaffinity="0"/>',
+            SS.table_xml() + "\n    " + SS.world_xml())
+    for side in ("l", "r"):
+        old = f'<geom type="mesh" mesh="GR_finger_{side}"'
+        i = x.index(old); j = x.index("\n", i)
+        if x.count(old) != 1: raise RuntimeError("make_sort_xml: luoi ngon")
+        x = x[:j] + "\n" + SS.pads_xml(side) + x[j:]
+    old = '<site name="tool" '
+    i = x.index(old)
+    x = x[:i] + f'<site name="tool" pos="{cap_site_pos}" size="0.002" rgba="1 0 0 1"/>\n            <site name="tcp" ' + x[i + len(old):]
+    return x
 
 
 def mat2quat(R):

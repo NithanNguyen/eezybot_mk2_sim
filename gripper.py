@@ -118,6 +118,48 @@ def pen_grip_w(phi_deg=None):
     return g2w(*pen_center_G(ph), T / 2)
 
 
+# ------------------------------------------------------------------ nap chai (bai phan loai)
+def cap_center_G():
+    """Tam nap chai (he G) khi kep: tren truc doi xung, cach truc banh rang GRIP_CAP_GY (co dinh voi co tay)."""
+    return np.array([0.0, P.GRIP_CAP_GY])
+
+
+def cap_clearance(phi_deg, diameter=None):
+    """Khe (mm) giua vong tron nap va bien dang tam ngon trai (am = lan vao) o goc servo phi."""
+    d = P.CAP_DIAMETER if diameter is None else diameter
+    c = cap_center_G(); poly = finger_G(phi_deg, -1)
+    dist = _dist_point_poly(c, poly)
+    return (-dist if Path(poly).contains_point(c) else dist) - d / 2
+
+
+def cap_grip_deg():
+    """Goc servo (do) de 2 ngon vua cham nap D = CAP_DIAMETER."""
+    return brentq(cap_clearance, 0.0, 60.0, xtol=1e-7)
+
+
+def cap_grip_w():
+    """Tam nap (giua chieu day ngon) trong he co tay (mm)."""
+    return g2w(*cap_center_G(), T / 2)
+
+
+def cap_link_clearance(phi_deg):
+    """Khe nho nhat (mm, trong mat phang ngang) giua nap va cac chi tiet KHONG co va cham trong mo phong
+    (khau tren, khau duoi + banh rang, de) o goc phi — phai > 0 de nap chi cham mat kep cua ngon."""
+    c = cap_center_G(); out = {}
+    def clr(poly):
+        poly = np.asarray(poly, float)
+        dist = _dist_point_poly(c, poly)
+        return (-dist if Path(poly).contains_point(c) else dist) - P.CAP_DIAMETER / 2
+    for s in (-1, 1):
+        p = pose(phi_deg, s)
+        nm = "trai" if s < 0 else "phai"
+        out[f"khau tren {nm}"] = clr(stadium(p["c"], p["up"], W_LINK))
+        out[f"khau duoi {nm}"] = clr(stadium(p["g"], p["lw"], W_LINK))
+        out[f"banh rang {nm}"] = clr(circle(p["g"], R_GEAR, 96))
+    out["de"] = clr(GS.BASE)
+    return out
+
+
 # ------------------------------------------------------------------ hinh 2D
 def circle(c, r, n=48):
     a = np.linspace(0, 2 * math.pi, n, endpoint=False)

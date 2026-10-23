@@ -1,0 +1,655 @@
+<mujoco model="eezybotarm_mk2_sort">
+  <!-- Sinh tu dong boi build_model.py — KHONG sua tay, sua params.py roi build lai. BAI PHAN LOAI: ke + GY-33, hop 3 ngan, vung vut bo, nap chai; ngon co va cham (sort_scene.py) -->
+  <compiler angle="radian" inertiafromgeom="false" meshdir="meshes"/>
+  <option timestep="0.0005" integrator="implicitfast" gravity="0 0 -9.81" cone="elliptic" jacobian="dense">
+    <flag multiccd="enable"/>
+  </option>
+  <visual><global offwidth="1280" offheight="960"/></visual>
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" rgb1="0.9 0.9 0.9" rgb2="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="grid" texture="grid" texrepeat="10 10"/>
+    <mesh name="EBAmk2_001_base" file="EBAmk2_001_base.stl"/>
+    <mesh name="EBAmk2_011_gearmast" file="EBAmk2_011_gearmast.stl"/>
+    <mesh name="EBAmk2_002_mainarm" file="EBAmk2_002_mainarm.stl"/>
+    <mesh name="EBAmk2_006_horarm__" file="EBAmk2_006_horarm__.stl"/>
+    <mesh name="EBAmk2_003_varm" file="EBAmk2_003_varm.stl"/>
+    <mesh name="EBAmk2_004_link135" file="EBAmk2_004_link135.stl"/>
+    <mesh name="EBAmk2_005_link135angled" file="EBAmk2_005_link135angled.stl"/>
+    <mesh name="EBAmk2_007_trialink" file="EBAmk2_007_trialink.stl"/>
+    <mesh name="EBAmk2_008_link147_new" file="EBAmk2_008_link147_new.stl"/>
+    <mesh name="GR_body" file="GR_body.stl"/>
+    <mesh name="GR_gear_l" file="GR_gear_l.stl"/>
+    <mesh name="GR_gear_r" file="GR_gear_r.stl"/>
+    <mesh name="GR_finger_l" file="GR_finger_l.stl"/>
+    <mesh name="GR_finger_r" file="GR_finger_r.stl"/>
+    <mesh name="GR_uplink_l" file="GR_uplink_l.stl"/>
+    <mesh name="GR_uplink_r" file="GR_uplink_r.stl"/>
+    <mesh name="EBAmk2_012_mainbase" file="EBAmk2_012_mainbase.stl"/>
+    <mesh name="EBAmk2_013_lower_base" file="EBAmk2_013_lower_base.stl"/>
+    <mesh name="EBAmk2_019_drive_cover" file="EBAmk2_019_drive_cover.stl"/>
+    <mesh name="EBAmk2_010_gearservo" file="EBAmk2_010_gearservo.stl"/>
+    <mesh name="shelf_p0" vertex="0.0115 0.00228749 -0.0015 0.03 0.00596737 -0.0015 0.03 0.0200454 -0.0015 0.00974923 0.00651423 -0.0015 0.0115 0.00228749 0.0015 0.03 0.00596737 0.0015 0.03 0.0200454 0.0015 0.00974923 0.00651423 0.0015"/>
+    <mesh name="shelf_p1" vertex="0.00974923 0.00651423 -0.0015 0.03 0.0200454 -0.0015 0.03 0.03 -0.0015 0.0200454 0.03 -0.0015 0.00651423 0.00974923 -0.0015 0.00974923 0.00651423 0.0015 0.03 0.0200454 0.0015 0.03 0.03 0.0015 0.0200454 0.03 0.0015 0.00651423 0.00974923 0.0015"/>
+    <mesh name="shelf_p2" vertex="0.00651423 0.00974923 -0.0015 0.0200454 0.03 -0.0015 0.00596737 0.03 -0.0015 0.00228749 0.0115 -0.0015 0.00651423 0.00974923 0.0015 0.0200454 0.03 0.0015 0.00596737 0.03 0.0015 0.00228749 0.0115 0.0015"/>
+    <mesh name="shelf_p3" vertex="0.00228749 0.0115 -0.0015 0.00596737 0.03 -0.0015 -0.00596737 0.03 -0.0015 -0.00228749 0.0115 -0.0015 0.00228749 0.0115 0.0015 0.00596737 0.03 0.0015 -0.00596737 0.03 0.0015 -0.00228749 0.0115 0.0015"/>
+    <mesh name="shelf_p4" vertex="-0.00228749 0.0115 -0.0015 -0.00596737 0.03 -0.0015 -0.0200454 0.03 -0.0015 -0.00651423 0.00974923 -0.0015 -0.00228749 0.0115 0.0015 -0.00596737 0.03 0.0015 -0.0200454 0.03 0.0015 -0.00651423 0.00974923 0.0015"/>
+    <mesh name="shelf_p5" vertex="-0.00651423 0.00974923 -0.0015 -0.0200454 0.03 -0.0015 -0.03 0.03 -0.0015 -0.03 0.0200454 -0.0015 -0.00974923 0.00651423 -0.0015 -0.00651423 0.00974923 0.0015 -0.0200454 0.03 0.0015 -0.03 0.03 0.0015 -0.03 0.0200454 0.0015 -0.00974923 0.00651423 0.0015"/>
+    <mesh name="shelf_p6" vertex="-0.00974923 0.00651423 -0.0015 -0.03 0.0200454 -0.0015 -0.03 0.00596737 -0.0015 -0.0115 0.00228749 -0.0015 -0.00974923 0.00651423 0.0015 -0.03 0.0200454 0.0015 -0.03 0.00596737 0.0015 -0.0115 0.00228749 0.0015"/>
+    <mesh name="shelf_p7" vertex="-0.0115 0.00228749 -0.0015 -0.03 0.00596737 -0.0015 -0.03 -0.00596737 -0.0015 -0.0115 -0.00228749 -0.0015 -0.0115 0.00228749 0.0015 -0.03 0.00596737 0.0015 -0.03 -0.00596737 0.0015 -0.0115 -0.00228749 0.0015"/>
+    <mesh name="shelf_p8" vertex="-0.0115 -0.00228749 -0.0015 -0.03 -0.00596737 -0.0015 -0.03 -0.0200454 -0.0015 -0.00974923 -0.00651423 -0.0015 -0.0115 -0.00228749 0.0015 -0.03 -0.00596737 0.0015 -0.03 -0.0200454 0.0015 -0.00974923 -0.00651423 0.0015"/>
+    <mesh name="shelf_p9" vertex="-0.00974923 -0.00651423 -0.0015 -0.03 -0.0200454 -0.0015 -0.03 -0.03 -0.0015 -0.0200454 -0.03 -0.0015 -0.00651423 -0.00974923 -0.0015 -0.00974923 -0.00651423 0.0015 -0.03 -0.0200454 0.0015 -0.03 -0.03 0.0015 -0.0200454 -0.03 0.0015 -0.00651423 -0.00974923 0.0015"/>
+    <mesh name="shelf_p10" vertex="-0.00651423 -0.00974923 -0.0015 -0.0200454 -0.03 -0.0015 -0.00596737 -0.03 -0.0015 -0.00228749 -0.0115 -0.0015 -0.00651423 -0.00974923 0.0015 -0.0200454 -0.03 0.0015 -0.00596737 -0.03 0.0015 -0.00228749 -0.0115 0.0015"/>
+    <mesh name="shelf_p11" vertex="-0.00228749 -0.0115 -0.0015 -0.00596737 -0.03 -0.0015 0.00596737 -0.03 -0.0015 0.00228749 -0.0115 -0.0015 -0.00228749 -0.0115 0.0015 -0.00596737 -0.03 0.0015 0.00596737 -0.03 0.0015 0.00228749 -0.0115 0.0015"/>
+    <mesh name="shelf_p12" vertex="0.00228749 -0.0115 -0.0015 0.00596737 -0.03 -0.0015 0.0200454 -0.03 -0.0015 0.00651423 -0.00974923 -0.0015 0.00228749 -0.0115 0.0015 0.00596737 -0.03 0.0015 0.0200454 -0.03 0.0015 0.00651423 -0.00974923 0.0015"/>
+    <mesh name="shelf_p13" vertex="0.00651423 -0.00974923 -0.0015 0.0200454 -0.03 -0.0015 0.03 -0.03 -0.0015 0.03 -0.0200454 -0.0015 0.00974923 -0.00651423 -0.0015 0.00651423 -0.00974923 0.0015 0.0200454 -0.03 0.0015 0.03 -0.03 0.0015 0.03 -0.0200454 0.0015 0.00974923 -0.00651423 0.0015"/>
+    <mesh name="shelf_p14" vertex="0.00974923 -0.00651423 -0.0015 0.03 -0.0200454 -0.0015 0.03 -0.00596737 -0.0015 0.0115 -0.00228749 -0.0015 0.00974923 -0.00651423 0.0015 0.03 -0.0200454 0.0015 0.03 -0.00596737 0.0015 0.0115 -0.00228749 0.0015"/>
+    <mesh name="shelf_p15" vertex="0.0115 -0.00228749 -0.0015 0.03 -0.00596737 -0.0015 0.03 0.00596737 -0.0015 0.0115 0.00228749 -0.0015 0.0115 -0.00228749 0.0015 0.03 -0.00596737 0.0015 0.03 0.00596737 0.0015 0.0115 0.00228749 0.0015"/>
+    <mesh name="shelf_leg" vertex="0.0025 0 -0.02 0.00125 0.00216506 -0.02 -0.00125 0.00216506 -0.02 -0.0025 3.06162e-19 -0.02 -0.00125 -0.00216506 -0.02 0.00125 -0.00216506 -0.02 0.0025 0 0.02 0.00125 0.00216506 0.02 -0.00125 0.00216506 0.02 -0.0025 3.06162e-19 0.02 -0.00125 -0.00216506 0.02 0.00125 -0.00216506 0.02"/>
+  </asset>
+  <worldbody>
+    <light pos="0.3 -0.3 0.8" dir="-0.3 0.3 -0.8"/>
+    <geom name="table" type="plane" size="0.6 0.6 0.01" material="grid" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+    <body name="shelf" pos="0.279 0 0">
+      <geom name="shelf_p0" type="mesh" mesh="shelf_p0" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p1" type="mesh" mesh="shelf_p1" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p2" type="mesh" mesh="shelf_p2" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p3" type="mesh" mesh="shelf_p3" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p4" type="mesh" mesh="shelf_p4" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p5" type="mesh" mesh="shelf_p5" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p6" type="mesh" mesh="shelf_p6" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p7" type="mesh" mesh="shelf_p7" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p8" type="mesh" mesh="shelf_p8" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p9" type="mesh" mesh="shelf_p9" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p10" type="mesh" mesh="shelf_p10" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p11" type="mesh" mesh="shelf_p11" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p12" type="mesh" mesh="shelf_p12" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p13" type="mesh" mesh="shelf_p13" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p14" type="mesh" mesh="shelf_p14" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_p15" type="mesh" mesh="shelf_p15" pos="0 0 0.0415" rgba="0.75 0.88 0.95 0.35" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_leg0" type="mesh" mesh="shelf_leg" pos="0.0275 0.0278349 0.02" rgba="0.8 0.8 0.82 1" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_leg1" type="mesh" mesh="shelf_leg" pos="-0.0275 0.0278349 0.02" rgba="0.8 0.8 0.82 1" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_leg2" type="mesh" mesh="shelf_leg" pos="-0.0275 -0.0278349 0.02" rgba="0.8 0.8 0.82 1" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="shelf_leg3" type="mesh" mesh="shelf_leg" pos="0.0275 -0.0278349 0.02" rgba="0.8 0.8 0.82 1" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="gy33" type="box" pos="0 0 0.034" size="0.0125 0.0125 0.006" rgba="0.12 0.2 0.5 1" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <site name="station" pos="0 0 0.043" size="0.002" rgba="1 1 0 1"/>
+      <site name="sensor" pos="0 0 0.04" size="0.002" rgba="1 1 1 1"/>
+    </body>
+    <body name="bin" pos="0.230363 -0.133 0" quat="0.965925826 0 0 -0.258819045">
+      <geom name="bin_floor" type="box" pos="0 0 0.0015" size="0.0885 0.033 0.0015" rgba="0.98 0.74 0.35 1" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="bin_side_l" type="box" pos="0 0.0315 0.0265" size="0.0885 0.0015 0.0235" rgba="0.98 0.74 0.35 1" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="bin_side_r" type="box" pos="0 -0.0315 0.0265" size="0.0885 0.0015 0.0235" rgba="0.98 0.74 0.35 1" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="bin_end_near" type="box" pos="-0.087 0 0.0265" size="0.0015 0.03 0.0235" rgba="0.98 0.74 0.35 1" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="bin_end_far" type="box" pos="0.087 0 0.0265" size="0.0015 0.03 0.0235" rgba="0.98 0.74 0.35 1" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="bin_divn" type="box" pos="-0.029 0 0.0265" size="0.0015 0.03 0.0235" rgba="0.98 0.74 0.35 1" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="bin_divf" type="box" pos="0.029 0 0.0265" size="0.0015 0.03 0.0235" rgba="0.98 0.74 0.35 1" group="1" contype="8" conaffinity="0" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="bin_mark_white" type="box" pos="-0.058 0 0.0031" size="0.0235 0.026 0.0001" rgba="0.96 0.96 0.96 0.45" contype="0" conaffinity="0" group="1"/>
+      <site name="bin_white" pos="-0.058 0 0.05" size="0.002" rgba="0 0 0 1"/>
+      <geom name="bin_mark_green" type="box" pos="0 0 0.0031" size="0.0235 0.026 0.0001" rgba="0.10 0.62 0.25 0.45" contype="0" conaffinity="0" group="1"/>
+      <site name="bin_green" pos="0 0 0.05" size="0.002" rgba="0 0 0 1"/>
+      <geom name="bin_mark_red" type="box" pos="0.058 0 0.0031" size="0.0235 0.026 0.0001" rgba="0.85 0.10 0.10 0.45" contype="0" conaffinity="0" group="1"/>
+      <site name="bin_red" pos="0.058 0 0.05" size="0.002" rgba="0 0 0 1"/>
+    </body>
+    <body name="reject" pos="0.246817 0.1425 0" quat="0.965925826 0 0 0.258819045">
+      <geom name="reject_fill" type="box" pos="0 0 0.0001" size="0.04 0.04 0.0001" rgba="1 0.3 0.3 0.25" contype="0" conaffinity="0" group="1"/>
+      <geom name="reject_edge0" type="box" pos="0 0.039 0.00025" size="0.04 0.001 0.00025" rgba="0.9 0.1 0.1 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="reject_edge1" type="box" pos="0 -0.039 0.00025" size="0.04 0.001 0.00025" rgba="0.9 0.1 0.1 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="reject_edge2" type="box" pos="0.039 0 0.00025" size="0.001 0.04 0.00025" rgba="0.9 0.1 0.1 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="reject_edge3" type="box" pos="-0.039 0 0.00025" size="0.001 0.04 0.00025" rgba="0.9 0.1 0.1 1" contype="0" conaffinity="0" group="1"/>
+      <site name="reject" pos="0 0 0" size="0.002" rgba="0 0 0 1"/>
+    </body>
+    <body name="cap_green_0" pos="0.42 -0.1125 0.0065">
+      <freejoint/>
+      <inertial pos="0 0 0.00205236" mass="0.0025" diaginertia="2.58514e-07 2.58514e-07 4.30046e-07"/>
+      <geom name="cap_green_0_c0" type="capsule" fromto="0.013 0 -0.0045 0.013 0 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_0_c1" type="capsule" fromto="0.0112583 0.0065 -0.0045 0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_0_c2" type="capsule" fromto="0.0065 0.0112583 -0.0045 0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_0_c3" type="capsule" fromto="7.9602e-19 0.013 -0.0045 7.9602e-19 0.013 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_0_c4" type="capsule" fromto="-0.0065 0.0112583 -0.0045 -0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_0_c5" type="capsule" fromto="-0.0112583 0.0065 -0.0045 -0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_0_c6" type="capsule" fromto="-0.013 1.59204e-18 -0.0045 -0.013 1.59204e-18 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_0_c7" type="capsule" fromto="-0.0112583 -0.0065 -0.0045 -0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_0_c8" type="capsule" fromto="-0.0065 -0.0112583 -0.0045 -0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_0_c9" type="capsule" fromto="-2.38806e-18 -0.013 -0.0045 -2.38806e-18 -0.013 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_0_c10" type="capsule" fromto="0.0065 -0.0112583 -0.0045 0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_0_c11" type="capsule" fromto="0.0112583 -0.0065 -0.0045 0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_0_lid" type="box" pos="0 0 0.006" size="0.00919239 0.00919239 0.0005" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_0_top" type="cylinder" pos="0 0 0.006" size="0.015 0.0005" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w0" type="box" pos="0.0142118 0 -0.0005" quat="1 0 0 0" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w1" type="box" pos="0.01313 0.00543861 -0.0005" quat="0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w2" type="box" pos="0.0100492 0.0100492 -0.0005" quat="0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w3" type="box" pos="0.00543861 0.01313 -0.0005" quat="0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w4" type="box" pos="8.7022e-19 0.0142118 -0.0005" quat="0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w5" type="box" pos="-0.00543861 0.01313 -0.0005" quat="0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w6" type="box" pos="-0.0100492 0.0100492 -0.0005" quat="0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w7" type="box" pos="-0.01313 0.00543861 -0.0005" quat="0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w8" type="box" pos="-0.0142118 1.74044e-18 -0.0005" quat="6.123234e-17 0 0 1" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w9" type="box" pos="-0.01313 -0.00543861 -0.0005" quat="-0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w10" type="box" pos="-0.0100492 -0.0100492 -0.0005" quat="-0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w11" type="box" pos="-0.00543861 -0.01313 -0.0005" quat="-0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w12" type="box" pos="-2.61066e-18 -0.0142118 -0.0005" quat="-0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w13" type="box" pos="0.00543861 -0.01313 -0.0005" quat="-0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w14" type="box" pos="0.0100492 -0.0100492 -0.0005" quat="-0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_0_w15" type="box" pos="0.01313 -0.00543861 -0.0005" quat="-0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+    </body>
+    <body name="cap_green_1" pos="0.42 -0.0675 0.0065">
+      <freejoint/>
+      <inertial pos="0 0 0.00205236" mass="0.0025" diaginertia="2.58514e-07 2.58514e-07 4.30046e-07"/>
+      <geom name="cap_green_1_c0" type="capsule" fromto="0.013 0 -0.0045 0.013 0 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_1_c1" type="capsule" fromto="0.0112583 0.0065 -0.0045 0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_1_c2" type="capsule" fromto="0.0065 0.0112583 -0.0045 0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_1_c3" type="capsule" fromto="7.9602e-19 0.013 -0.0045 7.9602e-19 0.013 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_1_c4" type="capsule" fromto="-0.0065 0.0112583 -0.0045 -0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_1_c5" type="capsule" fromto="-0.0112583 0.0065 -0.0045 -0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_1_c6" type="capsule" fromto="-0.013 1.59204e-18 -0.0045 -0.013 1.59204e-18 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_1_c7" type="capsule" fromto="-0.0112583 -0.0065 -0.0045 -0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_1_c8" type="capsule" fromto="-0.0065 -0.0112583 -0.0045 -0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_1_c9" type="capsule" fromto="-2.38806e-18 -0.013 -0.0045 -2.38806e-18 -0.013 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_1_c10" type="capsule" fromto="0.0065 -0.0112583 -0.0045 0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_1_c11" type="capsule" fromto="0.0112583 -0.0065 -0.0045 0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_1_lid" type="box" pos="0 0 0.006" size="0.00919239 0.00919239 0.0005" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_1_top" type="cylinder" pos="0 0 0.006" size="0.015 0.0005" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w0" type="box" pos="0.0142118 0 -0.0005" quat="1 0 0 0" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w1" type="box" pos="0.01313 0.00543861 -0.0005" quat="0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w2" type="box" pos="0.0100492 0.0100492 -0.0005" quat="0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w3" type="box" pos="0.00543861 0.01313 -0.0005" quat="0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w4" type="box" pos="8.7022e-19 0.0142118 -0.0005" quat="0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w5" type="box" pos="-0.00543861 0.01313 -0.0005" quat="0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w6" type="box" pos="-0.0100492 0.0100492 -0.0005" quat="0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w7" type="box" pos="-0.01313 0.00543861 -0.0005" quat="0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w8" type="box" pos="-0.0142118 1.74044e-18 -0.0005" quat="6.123234e-17 0 0 1" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w9" type="box" pos="-0.01313 -0.00543861 -0.0005" quat="-0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w10" type="box" pos="-0.0100492 -0.0100492 -0.0005" quat="-0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w11" type="box" pos="-0.00543861 -0.01313 -0.0005" quat="-0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w12" type="box" pos="-2.61066e-18 -0.0142118 -0.0005" quat="-0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w13" type="box" pos="0.00543861 -0.01313 -0.0005" quat="-0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w14" type="box" pos="0.0100492 -0.0100492 -0.0005" quat="-0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_1_w15" type="box" pos="0.01313 -0.00543861 -0.0005" quat="-0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+    </body>
+    <body name="cap_green_2" pos="0.42 -0.0225 0.0065">
+      <freejoint/>
+      <inertial pos="0 0 0.00205236" mass="0.0025" diaginertia="2.58514e-07 2.58514e-07 4.30046e-07"/>
+      <geom name="cap_green_2_c0" type="capsule" fromto="0.013 0 -0.0045 0.013 0 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_2_c1" type="capsule" fromto="0.0112583 0.0065 -0.0045 0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_2_c2" type="capsule" fromto="0.0065 0.0112583 -0.0045 0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_2_c3" type="capsule" fromto="7.9602e-19 0.013 -0.0045 7.9602e-19 0.013 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_2_c4" type="capsule" fromto="-0.0065 0.0112583 -0.0045 -0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_2_c5" type="capsule" fromto="-0.0112583 0.0065 -0.0045 -0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_2_c6" type="capsule" fromto="-0.013 1.59204e-18 -0.0045 -0.013 1.59204e-18 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_2_c7" type="capsule" fromto="-0.0112583 -0.0065 -0.0045 -0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_2_c8" type="capsule" fromto="-0.0065 -0.0112583 -0.0045 -0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_2_c9" type="capsule" fromto="-2.38806e-18 -0.013 -0.0045 -2.38806e-18 -0.013 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_2_c10" type="capsule" fromto="0.0065 -0.0112583 -0.0045 0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_2_c11" type="capsule" fromto="0.0112583 -0.0065 -0.0045 0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_2_lid" type="box" pos="0 0 0.006" size="0.00919239 0.00919239 0.0005" group="3" rgba="0.10 0.62 0.25 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_green_2_top" type="cylinder" pos="0 0 0.006" size="0.015 0.0005" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w0" type="box" pos="0.0142118 0 -0.0005" quat="1 0 0 0" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w1" type="box" pos="0.01313 0.00543861 -0.0005" quat="0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w2" type="box" pos="0.0100492 0.0100492 -0.0005" quat="0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w3" type="box" pos="0.00543861 0.01313 -0.0005" quat="0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w4" type="box" pos="8.7022e-19 0.0142118 -0.0005" quat="0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w5" type="box" pos="-0.00543861 0.01313 -0.0005" quat="0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w6" type="box" pos="-0.0100492 0.0100492 -0.0005" quat="0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w7" type="box" pos="-0.01313 0.00543861 -0.0005" quat="0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w8" type="box" pos="-0.0142118 1.74044e-18 -0.0005" quat="6.123234e-17 0 0 1" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w9" type="box" pos="-0.01313 -0.00543861 -0.0005" quat="-0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w10" type="box" pos="-0.0100492 -0.0100492 -0.0005" quat="-0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w11" type="box" pos="-0.00543861 -0.01313 -0.0005" quat="-0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w12" type="box" pos="-2.61066e-18 -0.0142118 -0.0005" quat="-0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w13" type="box" pos="0.00543861 -0.01313 -0.0005" quat="-0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w14" type="box" pos="0.0100492 -0.0100492 -0.0005" quat="-0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_green_2_w15" type="box" pos="0.01313 -0.00543861 -0.0005" quat="-0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.10 0.62 0.25 1" contype="0" conaffinity="0" group="1"/>
+    </body>
+    <body name="cap_red_0" pos="0.42 0.0225 0.0065">
+      <freejoint/>
+      <inertial pos="0 0 0.00205236" mass="0.0025" diaginertia="2.58514e-07 2.58514e-07 4.30046e-07"/>
+      <geom name="cap_red_0_c0" type="capsule" fromto="0.013 0 -0.0045 0.013 0 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_0_c1" type="capsule" fromto="0.0112583 0.0065 -0.0045 0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_0_c2" type="capsule" fromto="0.0065 0.0112583 -0.0045 0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_0_c3" type="capsule" fromto="7.9602e-19 0.013 -0.0045 7.9602e-19 0.013 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_0_c4" type="capsule" fromto="-0.0065 0.0112583 -0.0045 -0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_0_c5" type="capsule" fromto="-0.0112583 0.0065 -0.0045 -0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_0_c6" type="capsule" fromto="-0.013 1.59204e-18 -0.0045 -0.013 1.59204e-18 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_0_c7" type="capsule" fromto="-0.0112583 -0.0065 -0.0045 -0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_0_c8" type="capsule" fromto="-0.0065 -0.0112583 -0.0045 -0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_0_c9" type="capsule" fromto="-2.38806e-18 -0.013 -0.0045 -2.38806e-18 -0.013 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_0_c10" type="capsule" fromto="0.0065 -0.0112583 -0.0045 0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_0_c11" type="capsule" fromto="0.0112583 -0.0065 -0.0045 0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_0_lid" type="box" pos="0 0 0.006" size="0.00919239 0.00919239 0.0005" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_0_top" type="cylinder" pos="0 0 0.006" size="0.015 0.0005" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w0" type="box" pos="0.0142118 0 -0.0005" quat="1 0 0 0" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w1" type="box" pos="0.01313 0.00543861 -0.0005" quat="0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w2" type="box" pos="0.0100492 0.0100492 -0.0005" quat="0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w3" type="box" pos="0.00543861 0.01313 -0.0005" quat="0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w4" type="box" pos="8.7022e-19 0.0142118 -0.0005" quat="0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w5" type="box" pos="-0.00543861 0.01313 -0.0005" quat="0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w6" type="box" pos="-0.0100492 0.0100492 -0.0005" quat="0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w7" type="box" pos="-0.01313 0.00543861 -0.0005" quat="0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w8" type="box" pos="-0.0142118 1.74044e-18 -0.0005" quat="6.123234e-17 0 0 1" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w9" type="box" pos="-0.01313 -0.00543861 -0.0005" quat="-0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w10" type="box" pos="-0.0100492 -0.0100492 -0.0005" quat="-0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w11" type="box" pos="-0.00543861 -0.01313 -0.0005" quat="-0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w12" type="box" pos="-2.61066e-18 -0.0142118 -0.0005" quat="-0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w13" type="box" pos="0.00543861 -0.01313 -0.0005" quat="-0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w14" type="box" pos="0.0100492 -0.0100492 -0.0005" quat="-0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_0_w15" type="box" pos="0.01313 -0.00543861 -0.0005" quat="-0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+    </body>
+    <body name="cap_red_1" pos="0.42 0.0675 0.0065">
+      <freejoint/>
+      <inertial pos="0 0 0.00205236" mass="0.0025" diaginertia="2.58514e-07 2.58514e-07 4.30046e-07"/>
+      <geom name="cap_red_1_c0" type="capsule" fromto="0.013 0 -0.0045 0.013 0 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_1_c1" type="capsule" fromto="0.0112583 0.0065 -0.0045 0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_1_c2" type="capsule" fromto="0.0065 0.0112583 -0.0045 0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_1_c3" type="capsule" fromto="7.9602e-19 0.013 -0.0045 7.9602e-19 0.013 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_1_c4" type="capsule" fromto="-0.0065 0.0112583 -0.0045 -0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_1_c5" type="capsule" fromto="-0.0112583 0.0065 -0.0045 -0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_1_c6" type="capsule" fromto="-0.013 1.59204e-18 -0.0045 -0.013 1.59204e-18 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_1_c7" type="capsule" fromto="-0.0112583 -0.0065 -0.0045 -0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_1_c8" type="capsule" fromto="-0.0065 -0.0112583 -0.0045 -0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_1_c9" type="capsule" fromto="-2.38806e-18 -0.013 -0.0045 -2.38806e-18 -0.013 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_1_c10" type="capsule" fromto="0.0065 -0.0112583 -0.0045 0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_1_c11" type="capsule" fromto="0.0112583 -0.0065 -0.0045 0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_1_lid" type="box" pos="0 0 0.006" size="0.00919239 0.00919239 0.0005" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_1_top" type="cylinder" pos="0 0 0.006" size="0.015 0.0005" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w0" type="box" pos="0.0142118 0 -0.0005" quat="1 0 0 0" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w1" type="box" pos="0.01313 0.00543861 -0.0005" quat="0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w2" type="box" pos="0.0100492 0.0100492 -0.0005" quat="0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w3" type="box" pos="0.00543861 0.01313 -0.0005" quat="0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w4" type="box" pos="8.7022e-19 0.0142118 -0.0005" quat="0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w5" type="box" pos="-0.00543861 0.01313 -0.0005" quat="0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w6" type="box" pos="-0.0100492 0.0100492 -0.0005" quat="0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w7" type="box" pos="-0.01313 0.00543861 -0.0005" quat="0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w8" type="box" pos="-0.0142118 1.74044e-18 -0.0005" quat="6.123234e-17 0 0 1" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w9" type="box" pos="-0.01313 -0.00543861 -0.0005" quat="-0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w10" type="box" pos="-0.0100492 -0.0100492 -0.0005" quat="-0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w11" type="box" pos="-0.00543861 -0.01313 -0.0005" quat="-0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w12" type="box" pos="-2.61066e-18 -0.0142118 -0.0005" quat="-0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w13" type="box" pos="0.00543861 -0.01313 -0.0005" quat="-0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w14" type="box" pos="0.0100492 -0.0100492 -0.0005" quat="-0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_1_w15" type="box" pos="0.01313 -0.00543861 -0.0005" quat="-0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+    </body>
+    <body name="cap_red_2" pos="0.42 0.1125 0.0065">
+      <freejoint/>
+      <inertial pos="0 0 0.00205236" mass="0.0025" diaginertia="2.58514e-07 2.58514e-07 4.30046e-07"/>
+      <geom name="cap_red_2_c0" type="capsule" fromto="0.013 0 -0.0045 0.013 0 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_2_c1" type="capsule" fromto="0.0112583 0.0065 -0.0045 0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_2_c2" type="capsule" fromto="0.0065 0.0112583 -0.0045 0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_2_c3" type="capsule" fromto="7.9602e-19 0.013 -0.0045 7.9602e-19 0.013 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_2_c4" type="capsule" fromto="-0.0065 0.0112583 -0.0045 -0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_2_c5" type="capsule" fromto="-0.0112583 0.0065 -0.0045 -0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_2_c6" type="capsule" fromto="-0.013 1.59204e-18 -0.0045 -0.013 1.59204e-18 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_2_c7" type="capsule" fromto="-0.0112583 -0.0065 -0.0045 -0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_2_c8" type="capsule" fromto="-0.0065 -0.0112583 -0.0045 -0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_2_c9" type="capsule" fromto="-2.38806e-18 -0.013 -0.0045 -2.38806e-18 -0.013 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_2_c10" type="capsule" fromto="0.0065 -0.0112583 -0.0045 0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_2_c11" type="capsule" fromto="0.0112583 -0.0065 -0.0045 0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_2_lid" type="box" pos="0 0 0.006" size="0.00919239 0.00919239 0.0005" group="3" rgba="0.85 0.10 0.10 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_red_2_top" type="cylinder" pos="0 0 0.006" size="0.015 0.0005" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w0" type="box" pos="0.0142118 0 -0.0005" quat="1 0 0 0" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w1" type="box" pos="0.01313 0.00543861 -0.0005" quat="0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w2" type="box" pos="0.0100492 0.0100492 -0.0005" quat="0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w3" type="box" pos="0.00543861 0.01313 -0.0005" quat="0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w4" type="box" pos="8.7022e-19 0.0142118 -0.0005" quat="0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w5" type="box" pos="-0.00543861 0.01313 -0.0005" quat="0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w6" type="box" pos="-0.0100492 0.0100492 -0.0005" quat="0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w7" type="box" pos="-0.01313 0.00543861 -0.0005" quat="0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w8" type="box" pos="-0.0142118 1.74044e-18 -0.0005" quat="6.123234e-17 0 0 1" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w9" type="box" pos="-0.01313 -0.00543861 -0.0005" quat="-0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w10" type="box" pos="-0.0100492 -0.0100492 -0.0005" quat="-0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w11" type="box" pos="-0.00543861 -0.01313 -0.0005" quat="-0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w12" type="box" pos="-2.61066e-18 -0.0142118 -0.0005" quat="-0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w13" type="box" pos="0.00543861 -0.01313 -0.0005" quat="-0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w14" type="box" pos="0.0100492 -0.0100492 -0.0005" quat="-0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_red_2_w15" type="box" pos="0.01313 -0.00543861 -0.0005" quat="-0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.85 0.10 0.10 1" contype="0" conaffinity="0" group="1"/>
+    </body>
+    <body name="cap_white_0" pos="0.465 -0.1125 0.0065">
+      <freejoint/>
+      <inertial pos="0 0 0.00205236" mass="0.0025" diaginertia="2.58514e-07 2.58514e-07 4.30046e-07"/>
+      <geom name="cap_white_0_c0" type="capsule" fromto="0.013 0 -0.0045 0.013 0 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_0_c1" type="capsule" fromto="0.0112583 0.0065 -0.0045 0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_0_c2" type="capsule" fromto="0.0065 0.0112583 -0.0045 0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_0_c3" type="capsule" fromto="7.9602e-19 0.013 -0.0045 7.9602e-19 0.013 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_0_c4" type="capsule" fromto="-0.0065 0.0112583 -0.0045 -0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_0_c5" type="capsule" fromto="-0.0112583 0.0065 -0.0045 -0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_0_c6" type="capsule" fromto="-0.013 1.59204e-18 -0.0045 -0.013 1.59204e-18 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_0_c7" type="capsule" fromto="-0.0112583 -0.0065 -0.0045 -0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_0_c8" type="capsule" fromto="-0.0065 -0.0112583 -0.0045 -0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_0_c9" type="capsule" fromto="-2.38806e-18 -0.013 -0.0045 -2.38806e-18 -0.013 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_0_c10" type="capsule" fromto="0.0065 -0.0112583 -0.0045 0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_0_c11" type="capsule" fromto="0.0112583 -0.0065 -0.0045 0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_0_lid" type="box" pos="0 0 0.006" size="0.00919239 0.00919239 0.0005" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_0_top" type="cylinder" pos="0 0 0.006" size="0.015 0.0005" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w0" type="box" pos="0.0142118 0 -0.0005" quat="1 0 0 0" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w1" type="box" pos="0.01313 0.00543861 -0.0005" quat="0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w2" type="box" pos="0.0100492 0.0100492 -0.0005" quat="0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w3" type="box" pos="0.00543861 0.01313 -0.0005" quat="0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w4" type="box" pos="8.7022e-19 0.0142118 -0.0005" quat="0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w5" type="box" pos="-0.00543861 0.01313 -0.0005" quat="0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w6" type="box" pos="-0.0100492 0.0100492 -0.0005" quat="0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w7" type="box" pos="-0.01313 0.00543861 -0.0005" quat="0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w8" type="box" pos="-0.0142118 1.74044e-18 -0.0005" quat="6.123234e-17 0 0 1" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w9" type="box" pos="-0.01313 -0.00543861 -0.0005" quat="-0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w10" type="box" pos="-0.0100492 -0.0100492 -0.0005" quat="-0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w11" type="box" pos="-0.00543861 -0.01313 -0.0005" quat="-0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w12" type="box" pos="-2.61066e-18 -0.0142118 -0.0005" quat="-0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w13" type="box" pos="0.00543861 -0.01313 -0.0005" quat="-0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w14" type="box" pos="0.0100492 -0.0100492 -0.0005" quat="-0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_0_w15" type="box" pos="0.01313 -0.00543861 -0.0005" quat="-0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+    </body>
+    <body name="cap_white_1" pos="0.465 -0.0675 0.0065">
+      <freejoint/>
+      <inertial pos="0 0 0.00205236" mass="0.0025" diaginertia="2.58514e-07 2.58514e-07 4.30046e-07"/>
+      <geom name="cap_white_1_c0" type="capsule" fromto="0.013 0 -0.0045 0.013 0 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_1_c1" type="capsule" fromto="0.0112583 0.0065 -0.0045 0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_1_c2" type="capsule" fromto="0.0065 0.0112583 -0.0045 0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_1_c3" type="capsule" fromto="7.9602e-19 0.013 -0.0045 7.9602e-19 0.013 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_1_c4" type="capsule" fromto="-0.0065 0.0112583 -0.0045 -0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_1_c5" type="capsule" fromto="-0.0112583 0.0065 -0.0045 -0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_1_c6" type="capsule" fromto="-0.013 1.59204e-18 -0.0045 -0.013 1.59204e-18 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_1_c7" type="capsule" fromto="-0.0112583 -0.0065 -0.0045 -0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_1_c8" type="capsule" fromto="-0.0065 -0.0112583 -0.0045 -0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_1_c9" type="capsule" fromto="-2.38806e-18 -0.013 -0.0045 -2.38806e-18 -0.013 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_1_c10" type="capsule" fromto="0.0065 -0.0112583 -0.0045 0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_1_c11" type="capsule" fromto="0.0112583 -0.0065 -0.0045 0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_1_lid" type="box" pos="0 0 0.006" size="0.00919239 0.00919239 0.0005" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_1_top" type="cylinder" pos="0 0 0.006" size="0.015 0.0005" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w0" type="box" pos="0.0142118 0 -0.0005" quat="1 0 0 0" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w1" type="box" pos="0.01313 0.00543861 -0.0005" quat="0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w2" type="box" pos="0.0100492 0.0100492 -0.0005" quat="0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w3" type="box" pos="0.00543861 0.01313 -0.0005" quat="0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w4" type="box" pos="8.7022e-19 0.0142118 -0.0005" quat="0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w5" type="box" pos="-0.00543861 0.01313 -0.0005" quat="0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w6" type="box" pos="-0.0100492 0.0100492 -0.0005" quat="0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w7" type="box" pos="-0.01313 0.00543861 -0.0005" quat="0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w8" type="box" pos="-0.0142118 1.74044e-18 -0.0005" quat="6.123234e-17 0 0 1" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w9" type="box" pos="-0.01313 -0.00543861 -0.0005" quat="-0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w10" type="box" pos="-0.0100492 -0.0100492 -0.0005" quat="-0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w11" type="box" pos="-0.00543861 -0.01313 -0.0005" quat="-0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w12" type="box" pos="-2.61066e-18 -0.0142118 -0.0005" quat="-0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w13" type="box" pos="0.00543861 -0.01313 -0.0005" quat="-0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w14" type="box" pos="0.0100492 -0.0100492 -0.0005" quat="-0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_1_w15" type="box" pos="0.01313 -0.00543861 -0.0005" quat="-0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+    </body>
+    <body name="cap_white_2" pos="0.465 -0.0225 0.0065">
+      <freejoint/>
+      <inertial pos="0 0 0.00205236" mass="0.0025" diaginertia="2.58514e-07 2.58514e-07 4.30046e-07"/>
+      <geom name="cap_white_2_c0" type="capsule" fromto="0.013 0 -0.0045 0.013 0 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_2_c1" type="capsule" fromto="0.0112583 0.0065 -0.0045 0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_2_c2" type="capsule" fromto="0.0065 0.0112583 -0.0045 0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_2_c3" type="capsule" fromto="7.9602e-19 0.013 -0.0045 7.9602e-19 0.013 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_2_c4" type="capsule" fromto="-0.0065 0.0112583 -0.0045 -0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_2_c5" type="capsule" fromto="-0.0112583 0.0065 -0.0045 -0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_2_c6" type="capsule" fromto="-0.013 1.59204e-18 -0.0045 -0.013 1.59204e-18 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_2_c7" type="capsule" fromto="-0.0112583 -0.0065 -0.0045 -0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_2_c8" type="capsule" fromto="-0.0065 -0.0112583 -0.0045 -0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_2_c9" type="capsule" fromto="-2.38806e-18 -0.013 -0.0045 -2.38806e-18 -0.013 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_2_c10" type="capsule" fromto="0.0065 -0.0112583 -0.0045 0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_2_c11" type="capsule" fromto="0.0112583 -0.0065 -0.0045 0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_2_lid" type="box" pos="0 0 0.006" size="0.00919239 0.00919239 0.0005" group="3" rgba="0.96 0.96 0.96 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_white_2_top" type="cylinder" pos="0 0 0.006" size="0.015 0.0005" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w0" type="box" pos="0.0142118 0 -0.0005" quat="1 0 0 0" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w1" type="box" pos="0.01313 0.00543861 -0.0005" quat="0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w2" type="box" pos="0.0100492 0.0100492 -0.0005" quat="0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w3" type="box" pos="0.00543861 0.01313 -0.0005" quat="0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w4" type="box" pos="8.7022e-19 0.0142118 -0.0005" quat="0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w5" type="box" pos="-0.00543861 0.01313 -0.0005" quat="0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w6" type="box" pos="-0.0100492 0.0100492 -0.0005" quat="0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w7" type="box" pos="-0.01313 0.00543861 -0.0005" quat="0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w8" type="box" pos="-0.0142118 1.74044e-18 -0.0005" quat="6.123234e-17 0 0 1" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w9" type="box" pos="-0.01313 -0.00543861 -0.0005" quat="-0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w10" type="box" pos="-0.0100492 -0.0100492 -0.0005" quat="-0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w11" type="box" pos="-0.00543861 -0.01313 -0.0005" quat="-0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w12" type="box" pos="-2.61066e-18 -0.0142118 -0.0005" quat="-0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w13" type="box" pos="0.00543861 -0.01313 -0.0005" quat="-0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w14" type="box" pos="0.0100492 -0.0100492 -0.0005" quat="-0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_white_2_w15" type="box" pos="0.01313 -0.00543861 -0.0005" quat="-0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.96 0.96 0.96 1" contype="0" conaffinity="0" group="1"/>
+    </body>
+    <body name="cap_other_0" pos="0.465 0.0225 0.0065">
+      <freejoint/>
+      <inertial pos="0 0 0.00205236" mass="0.0025" diaginertia="2.58514e-07 2.58514e-07 4.30046e-07"/>
+      <geom name="cap_other_0_c0" type="capsule" fromto="0.013 0 -0.0045 0.013 0 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_0_c1" type="capsule" fromto="0.0112583 0.0065 -0.0045 0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_0_c2" type="capsule" fromto="0.0065 0.0112583 -0.0045 0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_0_c3" type="capsule" fromto="7.9602e-19 0.013 -0.0045 7.9602e-19 0.013 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_0_c4" type="capsule" fromto="-0.0065 0.0112583 -0.0045 -0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_0_c5" type="capsule" fromto="-0.0112583 0.0065 -0.0045 -0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_0_c6" type="capsule" fromto="-0.013 1.59204e-18 -0.0045 -0.013 1.59204e-18 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_0_c7" type="capsule" fromto="-0.0112583 -0.0065 -0.0045 -0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_0_c8" type="capsule" fromto="-0.0065 -0.0112583 -0.0045 -0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_0_c9" type="capsule" fromto="-2.38806e-18 -0.013 -0.0045 -2.38806e-18 -0.013 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_0_c10" type="capsule" fromto="0.0065 -0.0112583 -0.0045 0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_0_c11" type="capsule" fromto="0.0112583 -0.0065 -0.0045 0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_0_lid" type="box" pos="0 0 0.006" size="0.00919239 0.00919239 0.0005" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_0_top" type="cylinder" pos="0 0 0.006" size="0.015 0.0005" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w0" type="box" pos="0.0142118 0 -0.0005" quat="1 0 0 0" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w1" type="box" pos="0.01313 0.00543861 -0.0005" quat="0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w2" type="box" pos="0.0100492 0.0100492 -0.0005" quat="0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w3" type="box" pos="0.00543861 0.01313 -0.0005" quat="0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w4" type="box" pos="8.7022e-19 0.0142118 -0.0005" quat="0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w5" type="box" pos="-0.00543861 0.01313 -0.0005" quat="0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w6" type="box" pos="-0.0100492 0.0100492 -0.0005" quat="0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w7" type="box" pos="-0.01313 0.00543861 -0.0005" quat="0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w8" type="box" pos="-0.0142118 1.74044e-18 -0.0005" quat="6.123234e-17 0 0 1" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w9" type="box" pos="-0.01313 -0.00543861 -0.0005" quat="-0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w10" type="box" pos="-0.0100492 -0.0100492 -0.0005" quat="-0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w11" type="box" pos="-0.00543861 -0.01313 -0.0005" quat="-0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w12" type="box" pos="-2.61066e-18 -0.0142118 -0.0005" quat="-0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w13" type="box" pos="0.00543861 -0.01313 -0.0005" quat="-0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w14" type="box" pos="0.0100492 -0.0100492 -0.0005" quat="-0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_0_w15" type="box" pos="0.01313 -0.00543861 -0.0005" quat="-0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+    </body>
+    <body name="cap_other_1" pos="0.465 0.0675 0.0065">
+      <freejoint/>
+      <inertial pos="0 0 0.00205236" mass="0.0025" diaginertia="2.58514e-07 2.58514e-07 4.30046e-07"/>
+      <geom name="cap_other_1_c0" type="capsule" fromto="0.013 0 -0.0045 0.013 0 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_1_c1" type="capsule" fromto="0.0112583 0.0065 -0.0045 0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_1_c2" type="capsule" fromto="0.0065 0.0112583 -0.0045 0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_1_c3" type="capsule" fromto="7.9602e-19 0.013 -0.0045 7.9602e-19 0.013 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_1_c4" type="capsule" fromto="-0.0065 0.0112583 -0.0045 -0.0065 0.0112583 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_1_c5" type="capsule" fromto="-0.0112583 0.0065 -0.0045 -0.0112583 0.0065 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_1_c6" type="capsule" fromto="-0.013 1.59204e-18 -0.0045 -0.013 1.59204e-18 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_1_c7" type="capsule" fromto="-0.0112583 -0.0065 -0.0045 -0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_1_c8" type="capsule" fromto="-0.0065 -0.0112583 -0.0045 -0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_1_c9" type="capsule" fromto="-2.38806e-18 -0.013 -0.0045 -2.38806e-18 -0.013 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_1_c10" type="capsule" fromto="0.0065 -0.0112583 -0.0045 0.0065 -0.0112583 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_1_c11" type="capsule" fromto="0.0112583 -0.0065 -0.0045 0.0112583 -0.0065 0.0045" size="0.002" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_1_lid" type="box" pos="0 0 0.006" size="0.00919239 0.00919239 0.0005" group="3" rgba="0.15 0.30 0.85 0.3" contype="4" conaffinity="28" condim="4" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+      <geom name="cap_other_1_top" type="cylinder" pos="0 0 0.006" size="0.015 0.0005" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w0" type="box" pos="0.0142118 0 -0.0005" quat="1 0 0 0" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w1" type="box" pos="0.01313 0.00543861 -0.0005" quat="0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w2" type="box" pos="0.0100492 0.0100492 -0.0005" quat="0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w3" type="box" pos="0.00543861 0.01313 -0.0005" quat="0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w4" type="box" pos="8.7022e-19 0.0142118 -0.0005" quat="0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w5" type="box" pos="-0.00543861 0.01313 -0.0005" quat="0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w6" type="box" pos="-0.0100492 0.0100492 -0.0005" quat="0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w7" type="box" pos="-0.01313 0.00543861 -0.0005" quat="0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w8" type="box" pos="-0.0142118 1.74044e-18 -0.0005" quat="6.123234e-17 0 0 1" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w9" type="box" pos="-0.01313 -0.00543861 -0.0005" quat="-0.195090322 0 0 0.98078528" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w10" type="box" pos="-0.0100492 -0.0100492 -0.0005" quat="-0.382683432 0 0 0.923879533" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w11" type="box" pos="-0.00543861 -0.01313 -0.0005" quat="-0.555570233 0 0 0.831469612" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w12" type="box" pos="-2.61066e-18 -0.0142118 -0.0005" quat="-0.707106781 0 0 0.707106781" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w13" type="box" pos="0.00543861 -0.01313 -0.0005" quat="-0.831469612 0 0 0.555570233" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w14" type="box" pos="0.0100492 -0.0100492 -0.0005" quat="-0.923879533 0 0 0.382683432" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="cap_other_1_w15" type="box" pos="0.01313 -0.00543861 -0.0005" quat="-0.98078528 0 0 0.195090322" size="0.0005 0.00292635 0.006" rgba="0.15 0.30 0.85 1" contype="0" conaffinity="0" group="1"/>
+    </body>
+    
+    <geom type="mesh" mesh="EBAmk2_012_mainbase" rgba="0.6 0.6 0.6 1" contype="0" conaffinity="0" group="1"/>
+    <geom type="mesh" mesh="EBAmk2_013_lower_base" rgba="0.5 0.5 0.5 1" contype="0" conaffinity="0" group="1"/>
+    <geom type="mesh" mesh="EBAmk2_019_drive_cover" rgba="0.95 0.45 0.1 1" contype="0" conaffinity="0" group="1"/>
+    <geom name="mg996r_base" type="box" pos="-0.066 0 0.0238" size="0.02035 0.00985 0.02145" rgba="0.12 0.12 0.12 1" contype="0" conaffinity="0" group="1"/>
+    <body name="gearservo" pos="-0.05625 0 0">
+      <inertial pos="-8.7805e-07 2.34676e-06 0.0475788" mass="0.00566278" fullinertia="5.82105e-07 5.82105e-07 1.14117e-06 -7.65455e-15 -2.11369e-16 3.82301e-16"/>
+      <joint name="gearservo" type="hinge" axis="0 0 1" armature="1e-06"/>
+      <geom type="mesh" mesh="EBAmk2_010_gearservo" rgba="0.3 0.3 0.3 1" contype="0" conaffinity="0" group="1"/>
+    </body>
+    <body name="turret" pos="0 0 0">
+      <inertial pos="-0.000300579 -0.000617576 0.073251" mass="0.326504" fullinertia="0.000384604 0.000193279 0.000361709 -3.5564e-06 7.23647e-06 5.39541e-06"/>
+      <joint name="base_yaw" type="hinge" axis="0 0 1" damping="0.669011" armature="0" frictionloss="0"/>
+      <geom type="mesh" mesh="EBAmk2_001_base" rgba="0.95 0.45 0.1 1" contype="0" conaffinity="0" group="1"/>
+      <geom type="mesh" mesh="EBAmk2_011_gearmast" rgba="0.3 0.3 0.3 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="mg996r_elbow" type="box" pos="0 0.0395 0.0845" size="0.00985 0.02145 0.02035" rgba="0.12 0.12 0.12 1" contype="0" conaffinity="0" group="1"/>
+      <geom name="mg996r_shoulder" type="box" pos="0 -0.0394 0.0845" size="0.00985 0.02145 0.02035" rgba="0.12 0.12 0.12 1" contype="0" conaffinity="0" group="1"/>
+      <body name="mainarm" pos="0 0 0.09425">
+        <inertial pos="0.00470724 -0.00264703 0.0590433" mass="0.0830792" fullinertia="0.000184127 0.000181815 1.46534e-05 -3.97752e-07 -1.55376e-06 -8.495e-07"/>
+        <joint name="shoulder" type="hinge" axis="0 -1 0" damping="0.167253" armature="0" frictionloss="0"/>
+        <geom type="mesh" mesh="EBAmk2_002_mainarm" rgba="0.95 0.45 0.1 1" contype="0" conaffinity="0" group="1"/>
+        <site name="E_main" pos="8.26637e-18 0 0.135" size="0.003"/>
+        <body name="horarm" pos="8.26637e-18 0 0.135">
+          <inertial pos="0.0367294 0.00545907 0.0124691" mass="0.0485629" fullinertia="6.90345e-06 0.000173534 0.000173167 5.45019e-06 9.72735e-07 5.84072e-07"/>
+          <joint name="elbow_rel" type="hinge" axis="0 -1 0" damping="0" armature="0" frictionloss="0"/>
+          <geom type="mesh" mesh="EBAmk2_006_horarm__" rgba="0.95 0.45 0.1 1" contype="0" conaffinity="0" group="1"/>
+          <site name="T_hor" pos="-0.057 0 0" size="0.003"/>
+          <body name="wrist" pos="0.147 0 0">
+            <inertial pos="0.0360928 0.00410385 0.00936203" mass="0.0353461" fullinertia="7.97812e-06 1.63165e-05 1.32925e-05 -2.0088e-07 -2.04301e-08 -8.14379e-07"/>
+            <joint name="wrist_rel" type="hinge" axis="0 -1 0" damping="0" armature="0" frictionloss="0"/>
+            <geom type="mesh" mesh="GR_body" rgba="0.32 0.33 0.36 1" contype="0" conaffinity="0" group="1"/>
+            <geom name="sg90" type="box" pos="0.045 0.01197 0.019" size="0.0059 0.0111 0.0155" rgba="0.1 0.3 0.8 1" contype="0" conaffinity="0" group="1"/>
+            <site name="Q_wrist" pos="0.0326024 0 0.0280372" size="0.003"/>
+            <site name="tool" pos="0.11 0.00048 0.0005" size="0.002" rgba="1 0 0 1"/>
+            <site name="tcp" pos="0.13269 0.00048 0.0005" size="0.002" rgba="1 0 0 1"/>
+            <body name="gear_l" pos="0.045 0.01398 -0.007">
+              <inertial pos="0.00508528 1.40339e-07 0.007" mass="0.00622139" fullinertia="2.56e-07 9.54147e-07 1.1594e-06 -5.33049e-24 -2.57714e-25 1.17018e-27"/>
+              <joint name="gripper" type="hinge" axis="0 0 1" armature="1e-06" damping="0.0168564" limited="true" range="0 1.5708"/>
+              <geom type="mesh" mesh="GR_gear_l" rgba="0.16 0.62 0.56 1" contype="0" conaffinity="0" group="1"/>
+              <body name="finger_l" pos="0.035 0 0">
+                <inertial pos="0.0292127 -0.00543003 0.0077221" mass="0.00860483" fullinertia="3.40266e-07 2.27121e-06 2.18415e-06 2.66977e-07 1.9496e-08 -2.79546e-09"/>
+                <joint name="finger_l" type="hinge" axis="0 0 1" armature="1e-06"/>
+                <geom type="mesh" mesh="GR_finger_l" rgba="0.85 0.85 0.9 1" contype="0" conaffinity="0" group="1"/>
+                <geom name="pad_l0" type="box" pos="0.0115027 -0.00848827 0.00165" quat="0.9064911 0 0 -0.422224924" size="0.00460694 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l1" type="box" pos="0.0148406 -0.0117109 0.00165" quat="0.9995685 0 0 0.0293736857" size="0.000951469 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l2" type="box" pos="0.0187495 -0.0121414 0.00165" quat="0.996815809 0 0 -0.0797385926" size="0.003088 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l3" type="box" pos="0.0249631 -0.0116777 0.00165" quat="0.991111371 0 0 0.133034774" size="0.00370252 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l4" type="box" pos="0.0295706 -0.0106606 0.00165" quat="0.999703044 0 0 0.0243685132" size="0.00112622 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l5" type="box" pos="0.0320872 -0.0106603 0.00165" quat="0.999851489 0 0 -0.0172336973" size="0.00155086 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l6" type="box" pos="0.0387644 -0.0114398 0.00165" quat="0.997579221 0 0 -0.0695391832" size="0.00532554 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l7" type="box" pos="0.0502274 -0.0119353 0.00165" quat="0.999844424 0 0 0.017638822" size="0.00647897 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l8" type="box" pos="0.0563079 -0.0117422 0.00165" quat="0.86187091 0 0 0.50712773" size="0.000357391 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l9" type="box" pos="0.0570933 -0.0111312 0.00165" quat="0.981757203 0 0 0.190138882" size="0.000541956 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l10" type="box" pos="0.0248911 -0.0101671 0.007" quat="0.990811299 0 0 0.135251508" size="0.00341617 0.0005 0.0037" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l11" type="box" pos="0.0293888 -0.00918597 0.007" quat="0.999513026 0 0 0.0312043388" size="0.00130234 0.0005 0.0037" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l12" type="box" pos="0.0320872 -0.0091603 0.007" quat="0.999851489 0 0 -0.0172336973" size="0.00155086 0.0005 0.0037" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l13" type="box" pos="0.0387644 -0.00993984 0.007" quat="0.997579221 0 0 -0.0695391832" size="0.00532554 0.0005 0.0037" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l14" type="box" pos="0.0496778 -0.0104603 0.007" quat="0.99985276 0 0 0.0171597984" size="0.00592843 0.0005 0.0037" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l15" type="box" pos="0.0556242 -0.0101643 0.007" quat="0.977591581 0 0 0.21051057" size="0.000440147 0.0005 0.0037" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l16" type="box" pos="0.0115027 -0.00848827 0.01285" quat="0.9064911 0 0 -0.422224924" size="0.00460694 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l17" type="box" pos="0.0148406 -0.0117109 0.01285" quat="0.9995685 0 0 0.0293736857" size="0.000951469 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l18" type="box" pos="0.0187495 -0.0121414 0.01285" quat="0.996815809 0 0 -0.0797385926" size="0.003088 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l19" type="box" pos="0.0249631 -0.0116777 0.01285" quat="0.991111371 0 0 0.133034774" size="0.00370252 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l20" type="box" pos="0.0295706 -0.0106606 0.01285" quat="0.999703044 0 0 0.0243685132" size="0.00112622 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l21" type="box" pos="0.0320872 -0.0106603 0.01285" quat="0.999851489 0 0 -0.0172336973" size="0.00155086 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l22" type="box" pos="0.0387644 -0.0114398 0.01285" quat="0.997579221 0 0 -0.0695391832" size="0.00532554 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l23" type="box" pos="0.0502274 -0.0119353 0.01285" quat="0.999844424 0 0 0.017638822" size="0.00647897 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l24" type="box" pos="0.0563079 -0.0117422 0.01285" quat="0.86187091 0 0 0.50712773" size="0.000357391 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_l25" type="box" pos="0.0570933 -0.0111312 0.01285" quat="0.981757203 0 0 0.190138882" size="0.000541956 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+              </body>
+            </body>
+            <body name="uplink_l" pos="0.0633303 0.00598 -0.007">
+              <inertial pos="0.017507 0 0.007" mass="0.00206584" fullinertia="1.44251e-08 2.80231e-07 2.77807e-07 -8.63452e-25 3.74456e-26 0"/>
+              <joint name="uplink_l" type="hinge" axis="0 0 1" armature="1e-06"/>
+              <geom type="mesh" mesh="GR_uplink_l" rgba="0.23 0.53 1 1" contype="0" conaffinity="0" group="1"/>
+            </body>
+            <body name="gear_r" pos="0.045 -0.01302 -0.007">
+              <inertial pos="0.00508528 1.40339e-07 0.007" mass="0.00622139" fullinertia="2.56e-07 9.54147e-07 1.1594e-06 -5.33049e-24 -2.57714e-25 1.17018e-27"/>
+              <joint name="gear_r" type="hinge" axis="0 0 -1" armature="1e-06" limited="true" range="0 1.5708"/>
+              <geom type="mesh" mesh="GR_gear_r" rgba="0.16 0.62 0.56 1" contype="0" conaffinity="0" group="1"/>
+              <body name="finger_r" pos="0.035 0 0">
+                <inertial pos="0.029212 0.00542925 0.00772214" mass="0.00860599" fullinertia="3.40345e-07 2.27129e-06 2.18422e-06 -2.67012e-07 1.94975e-08 2.79734e-09"/>
+                <joint name="finger_r" type="hinge" axis="0 0 -1" armature="1e-06"/>
+                <geom type="mesh" mesh="GR_finger_r" rgba="0.85 0.85 0.9 1" contype="0" conaffinity="0" group="1"/>
+                <geom name="pad_r0" type="box" pos="0.0115027 0.00848827 0.00165" quat="0.9064911 0 0 0.422224924" size="0.00460694 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r1" type="box" pos="0.0148406 0.0117109 0.00165" quat="0.9995685 0 0 -0.0293736857" size="0.000951469 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r2" type="box" pos="0.0187495 0.0121414 0.00165" quat="0.996815809 0 0 0.0797385926" size="0.003088 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r3" type="box" pos="0.0249631 0.0116777 0.00165" quat="0.991111371 0 0 -0.133034774" size="0.00370252 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r4" type="box" pos="0.0295706 0.0106606 0.00165" quat="0.999703044 0 0 -0.0243685132" size="0.00112622 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r5" type="box" pos="0.0320872 0.0106603 0.00165" quat="0.999851489 0 0 0.0172336973" size="0.00155086 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r6" type="box" pos="0.0387644 0.0114398 0.00165" quat="0.997579221 0 0 0.0695391832" size="0.00532554 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r7" type="box" pos="0.0502274 0.0119353 0.00165" quat="0.999844424 0 0 -0.017638822" size="0.00647897 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r8" type="box" pos="0.0563079 0.0117422 0.00165" quat="0.86187091 0 0 -0.50712773" size="0.000357391 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r9" type="box" pos="0.0570933 0.0111312 0.00165" quat="0.981757203 0 0 -0.190138882" size="0.000541956 0.0005 0.00165" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r10" type="box" pos="0.0248911 0.0101671 0.007" quat="0.990811299 0 0 -0.135251508" size="0.00341617 0.0005 0.0037" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r11" type="box" pos="0.0293888 0.00918597 0.007" quat="0.999513026 0 0 -0.0312043388" size="0.00130234 0.0005 0.0037" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r12" type="box" pos="0.0320872 0.0091603 0.007" quat="0.999851489 0 0 0.0172336973" size="0.00155086 0.0005 0.0037" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r13" type="box" pos="0.0387644 0.00993984 0.007" quat="0.997579221 0 0 0.0695391832" size="0.00532554 0.0005 0.0037" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r14" type="box" pos="0.0496778 0.0104603 0.007" quat="0.99985276 0 0 -0.0171597984" size="0.00592843 0.0005 0.0037" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r15" type="box" pos="0.0556242 0.0101643 0.007" quat="0.977591581 0 0 -0.21051057" size="0.000440147 0.0005 0.0037" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r16" type="box" pos="0.0115027 0.00848827 0.01285" quat="0.9064911 0 0 0.422224924" size="0.00460694 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r17" type="box" pos="0.0148406 0.0117109 0.01285" quat="0.9995685 0 0 -0.0293736857" size="0.000951469 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r18" type="box" pos="0.0187495 0.0121414 0.01285" quat="0.996815809 0 0 0.0797385926" size="0.003088 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r19" type="box" pos="0.0249631 0.0116777 0.01285" quat="0.991111371 0 0 -0.133034774" size="0.00370252 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r20" type="box" pos="0.0295706 0.0106606 0.01285" quat="0.999703044 0 0 -0.0243685132" size="0.00112622 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r21" type="box" pos="0.0320872 0.0106603 0.01285" quat="0.999851489 0 0 0.0172336973" size="0.00155086 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r22" type="box" pos="0.0387644 0.0114398 0.01285" quat="0.997579221 0 0 0.0695391832" size="0.00532554 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r23" type="box" pos="0.0502274 0.0119353 0.01285" quat="0.999844424 0 0 -0.017638822" size="0.00647897 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r24" type="box" pos="0.0563079 0.0117422 0.01285" quat="0.86187091 0 0 -0.50712773" size="0.000357391 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+                <geom name="pad_r25" type="box" pos="0.0570933 0.0111312 0.01285" quat="0.981757203 0 0 -0.190138882" size="0.000541956 0.0005 0.00215" rgba="0.9 0.5 0.1 0.6" group="3" contype="16" conaffinity="8" condim="3" friction="0.4 0.005 0.0001" solref="0.002 1.0" solimp="0.95 0.99 0.0005"/>
+              </body>
+            </body>
+            <body name="uplink_r" pos="0.0633303 -0.00502 -0.007">
+              <inertial pos="0.017507 0 0.007" mass="0.00206584" fullinertia="1.44251e-08 2.80231e-07 2.77807e-07 -8.63452e-25 3.74456e-26 0"/>
+              <joint name="uplink_r" type="hinge" axis="0 0 -1" armature="1e-06"/>
+              <geom type="mesh" mesh="GR_uplink_r" rgba="0.23 0.53 1 1" contype="0" conaffinity="0" group="1"/>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="varm" pos="0 0 0.09425">
+        <inertial pos="-0.0203304 0.0169755 0.000568095" mass="0.0150344" fullinertia="7.85024e-07 6.84699e-06 6.5352e-06 4.20299e-07 1.28454e-07 -8.41439e-09"/>
+        <joint name="elbow_servo" type="hinge" axis="0 -1 0" damping="0.167253" armature="0" frictionloss="0"/>
+        <geom type="mesh" mesh="EBAmk2_003_varm" rgba="0.2 0.4 0.85 1" contype="0" conaffinity="0" group="1"/>
+        <body name="link004" pos="-0.057 0 0">
+          <inertial pos="4.57987e-07 0.0198289 0.0734379" mass="0.00732513" fullinertia="1.65303e-05 1.65488e-05 8.34606e-08 -1.63591e-11 -1.23271e-09 -2.13042e-07"/>
+          <joint name="l004" type="hinge" axis="0 -1 0" damping="0" armature="0" frictionloss="0"/>
+          <geom type="mesh" mesh="EBAmk2_004_link135" rgba="0.2 0.4 0.85 1" contype="0" conaffinity="0" group="1"/>
+          <site name="T_l004" pos="7.10543e-18 0 0.135" size="0.003"/>
+        </body>
+      </body>
+      <body name="link005" pos="-0.03797 0 0.11444">
+        <inertial pos="-0.00937315 -0.0151939 0.0675052" mass="0.0081693" fullinertia="1.82316e-05 1.86257e-05 4.29545e-07 1.54809e-08 -4.774e-10 -7.61011e-13"/>
+        <joint name="l005" type="hinge" axis="0 -1 0" damping="0" armature="0" frictionloss="0"/>
+        <geom type="mesh" mesh="EBAmk2_005_link135angled" rgba="0.15 0.6 0.3 1" contype="0" conaffinity="0" group="1"/>
+        <body name="trialink" pos="3.66504e-06 0 0.134998">
+          <inertial pos="0.0356784 -0.0209389 -0.00553182" mass="0.0230965" fullinertia="2.40987e-06 9.14099e-06 7.94166e-06 -6.98248e-08 -4.70102e-07 2.85865e-07"/>
+          <joint name="tri" type="hinge" axis="0 -1 0" damping="0" armature="0" frictionloss="0"/>
+          <geom type="mesh" mesh="EBAmk2_007_trialink" rgba="0.15 0.6 0.3 1" contype="0" conaffinity="0" group="1"/>
+          <site name="E_tri" pos="0.0379663 0 -0.0201881" size="0.003"/>
+          <body name="link008" pos="0.0705687 0 0.00784916">
+            <inertial pos="0.079606 -0.0155891 4.11825e-07" mass="0.00781487" fullinertia="8.72626e-08 2.05164e-05 2.04965e-05 2.35633e-07 -1.39562e-09 1.59973e-11"/>
+            <joint name="l008" type="hinge" axis="0 -1 0" damping="0" armature="0" frictionloss="0"/>
+            <geom type="mesh" mesh="EBAmk2_008_link147_new" rgba="0.15 0.6 0.3 1" contype="0" conaffinity="0" group="1"/>
+            <site name="Q_l008" pos="0.147 0 0" size="0.003"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <!-- 3 vong hinh binh hanh canh tay -->
+    <connect name="loop_elbow_drive" site1="T_hor" site2="T_l004" solref="0.002 1"/>
+    <connect name="loop_triangle" site1="E_main" site2="E_tri" solref="0.002 1"/>
+    <connect name="loop_wrist" site1="Q_wrist" site2="Q_l008" solref="0.002 1"/>
+    <!-- gripper: 2 banh rang an khop 1:1 (chieu duong cua ca 2 khop = mo); 2 hinh binh hanh:
+         khau tren quay cung goc khau duoi, ngon quay nguoc lai -> ngon tinh tien -->
+    <joint name="gripper_gears" joint1="gear_r" joint2="gripper" polycoef="0 1 0 0 0" solref="0.002 1"/>
+    <joint name="finger_l_par" joint1="finger_l" joint2="gripper" polycoef="0 -1 0 0 0" solref="0.002 1"/>
+    <joint name="finger_r_par" joint1="finger_r" joint2="gear_r" polycoef="0 -1 0 0 0" solref="0.002 1"/>
+    <joint name="uplink_l_par" joint1="uplink_l" joint2="gripper" polycoef="0 1 0 0 0" solref="0.002 1"/>
+    <joint name="uplink_r_par" joint1="uplink_r" joint2="gear_r" polycoef="0 1 0 0 0" solref="0.002 1"/>
+    <!-- banh rang de: 010 - 011 -->
+    <joint name="base_gear" joint1="gearservo" joint2="base_yaw" polycoef="0 -2 0 0 0"/>
+  </equality>
+  <actuator>
+    <!-- Servo MG996R (4.8V): tau_stall=0.922 Nm, w0=5.51 rad/s,
+         kp=tau_stall/5.0 deg, back-EMF dat o damping cua khop -->
+    <position name="servo_base" joint="base_yaw" gear="2.0" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-1.5708 1.5708"/>
+    <position name="servo_shoulder" joint="shoulder" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-0.994838 0.698132"/>
+    <position name="servo_elbow" joint="elbow_servo" kp="10.5633" forcelimited="true" forcerange="-0.921825 0.921825" ctrllimited="true" ctrlrange="-1.09083 0.305433"/>
+    <!-- Servo kep SG90 (truc = banh rang trai, ti so 1): 0 = dong, 1.571 rad = mo het;
+         kep but D10: 0.0748 rad (4.29 do) -->
+    <position name="servo_gripper" joint="gripper" gear="1" kp="2.02277" forcelimited="true" forcerange="-0.17652 0.17652" ctrllimited="true" ctrlrange="0 1.5708"/>
+  </actuator>
+  <sensor>
+    <framepos name="tool_pos" objtype="site" objname="tool"/>
+    <actuatorfrc name="frc_base" actuator="servo_base"/>
+    <actuatorfrc name="frc_shoulder" actuator="servo_shoulder"/>
+    <actuatorfrc name="frc_elbow" actuator="servo_elbow"/>
+  </sensor>
+</mujoco>

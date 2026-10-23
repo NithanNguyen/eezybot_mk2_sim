@@ -13,13 +13,14 @@ import mk2_kinematics as K
 HERE = os.path.dirname(os.path.abspath(__file__))
 MODEL = os.path.join(HERE, "model", "mk2.xml")
 MODEL_PEN = os.path.join(HERE, "model", "mk2_pen.xml")
+MODEL_SORT = os.path.join(HERE, "model", "mk2_sort.xml")
 INK_RGBA = {"M0": (0.85, 0.1, 0.1, 1.0), "M2": (0.05, 0.2, 0.85, 1.0)}
 
 
-def load_model(gravity=True, contact=True, pen=False):
-    """Nap mo hinh mac dinh (gripper) hoac mo hinh co but (pen=True). Mo hinh but bat dau o
-    keyframe "pen": gripper dang kep but."""
-    path = MODEL_PEN if pen else MODEL
+def load_model(gravity=True, contact=True, pen=False, sort=False):
+    """Nap mo hinh mac dinh (gripper), mo hinh co but (pen=True) hoac mo hinh bai phan loai (sort=True).
+    Mo hinh but bat dau o keyframe "pen": gripper dang kep but."""
+    path = MODEL_SORT if sort else (MODEL_PEN if pen else MODEL)
     if not os.path.exists(path):
         raise SystemExit(f"Chua co {os.path.relpath(path, HERE)} — chay: python build_model.py --stl-dir <thu muc STL>")
     m = mujoco.MjModel.from_xml_path(path)

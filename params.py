@@ -88,12 +88,19 @@ PEN_TIP_FRICTION = 0.2          # he so ma sat ngoi-giay                       [
 TCP_W = (132.69, 0.480, 0.50)   # TCP gap vat (khong but), gripper dong
 PEN_GRIP_W = (110.59, 0.480, 0.50)  # diem kep but (tam but, giua chieu day ngon)
 PEN_GRIP_DEG = 4.29             # goc servo kep de 2 mat kep vua cham but D10 (tu luc dong)
+# Bai phan loai: nap chai D30 nam giua 2 ngon, tam nap cach duong truc 2 banh rang GRIP_CAP_GY mm theo
+# huong mui ngon. 65 mm: nap nam trong hoc giua 2 go cua ngon (bien dang gripper_shape.FINGER), cach khau
+# tren 5 mm, mut ngon vuot qua mep truoc nap ~5 mm khi kep (tinh bang gripper.py, xem build_model.py).
+GRIP_CAP_GY = 65.0                                                            # [TINH]
+CAP_GRIP_W = (110.00, 0.480, 0.50)   # tam nap (giua chieu day ngon) so voi W; build_model.py kiem tra
+CAP_GRIP_DEG = 21.27            # goc servo kep de 2 ngon vua cham nap D30 (tu luc dong); build_model kiem tra
 
 # Dau cong tac so voi W (mat phang canh tay: dx, dz) va do lech ngang dy (mm) — dung cho FK/IK.
 # Mac dinh "gripper"; "pen" chi dung khi chay voi --pen (mk2_kinematics.set_tool).
 TOOL_OFFSETS = {
     "gripper": (TCP_W[0], TCP_W[2]),
     "pen": (PEN_GRIP_W[0], PEN_GRIP_W[2] - PEN_GRIP_TO_TIP),
+    "cap": (CAP_GRIP_W[0], CAP_GRIP_W[2]),     # tam nap chai khi kep (bai phan loai, run_sort.py)
 }
 TOOL_OFFSET_Y = TCP_W[1]
 
@@ -102,7 +109,7 @@ TOOL_OFFSET_Y = TCP_W[1]
 # ---------------------------------------------------------------------------
 PAPER_SIZE = (210.0, 297.0)     # (theo x, theo y) mm                          [ISO 216]
 PAPER_THICKNESS = 1.0           # mm, mat tren giay o z = 1 mm                 [YEU-CAU]
-PAPER_CENTER = (290.0, 0.0)     # (x, y) tam to giay = tam hinh ve mac dinh; R_max = 22.9 mm tai day (check_kinematics.py --pen [4])
+PAPER_CENTER = (290.0, 0.0)     # (x, y) tam to giay = tam hinh ve mac dinh; R = 20 mm o day van kha thi (R_max 34.1 mm tai x = 275: check_kinematics.py --pen [4])
 INK_WIDTH = 1.0                 # be rong net but (mm)                         [YEU-CAU]
 # Ngoi coi la "cham giay" (ra muc) khi khe ngoi-giay <= INK_GAP. Tiep xuc cung trong MuJoCo
 # rung vi mo +-0.015 mm; nguong nay chi anh huong viec ghi muc, khong anh huong luc tiep xuc.
@@ -134,7 +141,11 @@ SERVO_RANGE = (0.0, 180.0)
 
 CTRL_BASE_DEG     = (-90.0, 90.0)
 CTRL_SHOULDER_DEG = (-57.0, 40.0) 
-CTRL_ELBOW_DEG    = (-62.5, 17.5)  # gioi han tren cua phi = 20 do, de tranh cham 003 quay vao 001 base
+# Khuyu: gioi han tren 17.5 de 003 khong quay cham 001 base (phi <= 20 do).
+# Gioi han duoi: -57.3 -> -62.5 (nguoi dung chot 2026-10-23, phuong an (a) cua bai phan loai): voi ke
+# cao 43 mm, -57.3 chi cho ngon chong len nap ~1.2 mm; -62.5 van cach bien va cham STL PHI_LIM = -65 do
+# 2.5 do. PHAI kiem tra tren tay that: tay ngang chuc xuong ~62.5 do khong ket/va cham.
+CTRL_ELBOW_DEG    = (-62.5, 17.5)
 
 # ---------------------------------------------------------------------------
 # 5. Servo MG996R — TowerPro (https://towerpro.com.tw/product/mg996r/)
@@ -175,3 +186,70 @@ MEASURED_MASS_G = {
 # ---------------------------------------------------------------------------
 TIMESTEP = 0.0005               # s
 CMD_PERIOD = 0.020              # s, chu ky xung servo / cap nhat lenh (de cuong)
+
+# ---------------------------------------------------------------------------
+# 8. Bai phan loai mau nap chai (model/mk2_sort.xml, run_sort.py)
+#    He the gioi: goc tai truc quay de tren mat ban, x ra truoc, y sang trai, z len (mm).
+#    [YEU-CAU]: nguoi dung cho (2026-10-23)   [TINH]: tinh tu dong hoc/hinh hoc (tools/check_sort_layout.py)
+#    [CHON]: lua chon thiet ke, co the doi      [GIA-DINH]: chua do, phai do lai
+# ---------------------------------------------------------------------------
+# Nap chai nhua: tru rong, dat UP (mieng xuong), 3 mau x 3 nap
+CAP_DIAMETER = 30.0             # duong kinh ngoai                              [YEU-CAU]
+CAP_HEIGHT = 13.0                                                             # [YEU-CAU]
+CAP_WALL = 1.0                  # be day thanh (mat tren dung cung be day nay [GIA-DINH]) [YEU-CAU]
+CAP_MASS_G = 2.5                                                              # [YEU-CAU]
+CAP_COLORS = ("green", "red", "white")
+CAP_PER_COLOR = 3                                                             # [YEU-CAU]
+CAP_WALL_SEGMENTS = 16          # thanh nap = 16 tam phang (sai so ban kinh 0.29 mm) [CHON]
+
+# Ke tram cam bien: mat mica trong 60 x 60 x 3, lo tron D23 o giua, 4 chan luc giac deu
+SHELF_SIZE = 60.0                                                             # [YEU-CAU]
+SHELF_THICKNESS = 3.0                                                         # [YEU-CAU]
+SHELF_LEG_HEIGHT = 40.0                                                       # [YEU-CAU]
+SHELF_HEIGHT = SHELF_LEG_HEIGHT + SHELF_THICKNESS   # = 43 mm, mat tren mica   [YEU-CAU]
+SHELF_LEG_ACROSS = 5.0          # luc giac: dinh -> dinh doi dien                [YEU-CAU]
+SHELF_HOLE_D = 23.0                                                           # [YEU-CAU]
+SHELF_CENTER = (279.0, 0.0)     # doi dien tay may; giua dai gap duoc 274.5..283.5 mm [TINH]
+# Module GY-33: sat mat duoi mica, tam ngay duoi lo, mat cam bien huong len; khong mo hinh gia do
+SENSOR_SIZE = (25.0, 25.0, 12.0)                                              # [YEU-CAU]
+
+# Hop dich 1 khoi 3 ngan, truc dai huong xuyen tam (de chi quay 1 goc). Ngan 1 (do) xa robot nhat.
+BIN_WALL = 3.0                  # thanh va day                                  [YEU-CAU]
+BIN_INNER = (55.0, 60.0)        # long moi ngan: (xuyen tam, tiep tuyen)        [CHON]
+BIN_HEIGHT = 50.0               # cao ngoai (mat tren thanh)                     [CHON]
+BIN_ANGLE_DEG = -30.0           # ben phai robot                                 [TINH]
+BIN_CENTER_R = 266.0            # tam hop; dai tha duoc o z = 116 mm: 193.5..338 mm [TINH]
+BIN_ORDER = ("white", "green", "red")   # tu gan robot ra xa = ngan 3, 2, 1      [YEU-CAU]
+BIN_NUMBER = {"red": 1, "green": 2, "white": 3}
+# Vung vut bo: vung phang ve tren ban, ben trai
+REJECT_SIZE = 80.0                                                            # [CHON]
+REJECT_ANGLE_DEG = 30.0                                                       # [TINH]
+REJECT_R = 285.0                # dai tha duoc o z = 66 mm: 265..295 mm           [TINH]
+DROP_ABOVE = 50.0               # day nap cach mat tren hop / mat ban khi tha     [YEU-CAU]
+
+# Gap / tha
+CAP_GRASP_Z = 59.0              # z diem "cap" khi kep: tam duoi ngon 51.5..54.8 mm trong nap 43..56 [TINH]
+PRE_GRASP_LIFT = 40.0           # diem "phia tren diem gap" cao hon diem kep 40 mm  [CHON]
+GRIP_OPEN_DEG = 40.0            # mo khi ha xuong: ngon cach nap 8.9 mm moi ben    [TINH]
+GRIP_HOLD_DEG = 15.0            # lenh kep: thap hon goc cham nap 21.27 do > SERVO_ERR_SAT_DEG -> SG90 bao hoa mo-men [CHON]
+GRIP_MOVE_S = 0.5               # thoi gian cho sau moi lenh dong/mo kep           [CHON]
+DROP_WAIT_S = 0.6               # cho nap roi sau khi mo kep                       [CHON]
+
+# Gioi han quy dao. Duong thang (ha/nhac): theo eezybot_mk2_robot/include/arm_config.h.
+TRAJ_V, TRAJ_A, TRAJ_J = 150.0, 1500.0, 30000.0       # mm/s, mm/s^2, mm/s^3
+# Khong gian khop (th1, th2, phi): quy doi tu gioi han tren qua ban kinh lam viec dac trung 280 mm
+# (1 khop quay rieng le thi diem cong tac chay khoang <= 150 mm/s)                [CHON]
+TRAJ_R_REF = 280.0
+
+# Tiep xuc trong mo hinh sort. Chua do he so ma sat nhua-nhua tren vat that.
+CONTACT_FRICTION = 0.4                                                        # [GIA-DINH]
+CONTACT_SOLREF = (0.002, 1.0)   # cung, giong tiep xuc ngoi-giay va gioi han khop trong mo hinh
+CONTACT_SOLIMP = (0.95, 0.99, 0.0005)
+
+# Cam bien + chu trinh (eezybot_mk2_robot): POLL_MS (src/robot/sorter.h), READ_INTERVAL_MS
+# (lib/ColorClassifier/ColorClassifier.h). settle_ms, navg lay tu data/color/model.json.
+POLL_MS = 500
+READ_INTERVAL_MS = 120
+CAP_PLACE_DELAY_S = 1.0         # nguoi dat nap tiep theo sau khi tay ve Home     [CHON]
+STATION_TOL = 5.0               # nap "o tram" neu tam lech <= 5 mm va nam tren mat mica [CHON]
+CAP_QUEUE_X = 420.0             # nap cho xep hang ngoai tam voi (r > 370 mm)       [CHON]

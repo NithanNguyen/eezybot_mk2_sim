@@ -7,6 +7,10 @@ cd ~/eezybot_mk2_sim
 
 python -m mujoco.viewer --mjcf=model/mk2.xml       # tay máy + gripper thật (KHÔNG bút); kéo servo_gripper để đóng/mở
 python -m mujoco.viewer --mjcf=model/mk2_pen.xml   # có bút + giấy (panel Simulation -> Load key để 2 ngón kẹp bút)
+python -m mujoco.viewer --mjcf=model/mk2_sort.xml  # cảnh phân loại: kệ + GY-33, hộp 3 ngăn, vùng vứt bỏ, nắp chai
+python run_sort.py --view        # xem chu trình phân loại 9 nắp (mục 9b)
+python run_sort.py               # chạy không cửa sổ, ghi kết quả vào results/sort/ (khoảng 2 phút)
+python run_sort.py --foreign 2   # thêm 2 vật lạ để thử nhánh "vứt bỏ"
 python run_sim.py --pen --view   # xem tay máy cầm bút vẽ, vệt mực hiện dần trên giấy
 python run_sim.py --pen          # chạy không cửa sổ, ghi kết quả vào results/
 python check_kinematics.py       # kiểm chứng động học cho TCP gripper (khoảng 6 giây)
@@ -25,6 +29,9 @@ Bộ mã mô phỏng cho đồ án CE212 "Tay máy robot 3-DOF phân loại sả
 - Mô hình servo MG996R (đế, vai, khuỷu) và SG90 (gripper). Hộp servo vẽ theo kích thước datasheet.
 - Thư viện FK/IK giải tích kèm lớp ánh xạ góc servo. Đầu công tác chọn được: TCP gripper (mặc định) hoặc ngòi bút.
 - Thí nghiệm M0/M2 vẽ ngôi sao + đường tròn, đúng như mô tả trong đề cương; chỉ số đo trên vết mực.
+- **Chu trình phân loại màu nắp chai** (mục 9b): kệ trạm cảm biến có lỗ Ø23, module GY-33, hộp đích 3 ngăn, vùng vứt bỏ, 9 nắp chai Ø30 × 13 mm.
+  - Gripper kẹp nắp bằng **tiếp xúc và ma sát thật**.
+  - Màu được phân loại bằng **đúng thuật toán và kết quả hiệu chuẩn của firmware**: `data/color/model.json`, chép từ repo `eezybot_mk2_robot`.
 
 > **Trạng thái kiểm chứng (2026-10-16, bản gripper thật + cờ `--pen`).** Toàn bộ quy trình bước 5 → 9 đã được chạy lại từ đầu
 > trong venv **Python 3.8.20** với đúng các phiên bản ghim trong `requirements.txt`, bộ STL `EBAmk2_*.STL` (xem bước 4).
@@ -35,6 +42,13 @@ Bộ mã mô phỏng cho đồ án CE212 "Tay máy robot 3-DOF phân loại sả
 > Lần chạy này **không** làm trên Ubuntu 20.04 thật mà trên Linux x86_64 khác. Khả năng tương thích với Ubuntu 20.04 được suy ra
 > từ thẻ wheel (mọi gói là `cp38 manylinux` cần glibc ≤ 2.28, Ubuntu 20.04 có glibc 2.31). Bước 2 giúp bạn tự xác nhận điều này trên máy mình.
 > Ảnh OpenGL được dựng trên màn hình ảo (Xvfb); cửa sổ viewer chưa được thử với driver NVIDIA thật.
+>
+> **Bổ sung 2026-10-23 (bài phân loại; `CTRL_ELBOW_DEG` đổi thành −62,5°).** Các bước 5, 7, 8, 9 (2 lệnh đầu) và 9b được chạy lại
+> trong cùng môi trường (Python 3.8.20, đúng các phiên bản ghim, bộ STL `EBAmk2_*.STL`). Các số "Kết quả mong đợi" đã cập nhật theo lần chạy này.
+> - `mk2.xml` và `mk2_pen.xml` chỉ khác bản trước ở `ctrlrange` của `servo_elbow`.
+> - `run_sim.py --pen` vẫn cho 2 đồ thị trùng **từng byte** với ảnh mẫu.
+> - Chỉ bảng R_max của `check_kinematics.py --pen` (bước 7) thay đổi.
+> - Viewer `--view` của `run_sort.py` mới được thử trên màn hình ảo (Xvfb).
 
 ---
 
@@ -74,19 +88,24 @@ eezybot_mk2_sim/
 ├── mk2_kinematics.py    # FK, IK, giới hạn khớp + tầm lệnh servo, ánh xạ góc <-> servo; set_tool("gripper"/"pen")
 ├── gripper.py           # gripper thật: hình học, động học ngón, lưới lăng trụ, khối lượng
 ├── gripper_shape.py     # biên dạng ngón/đế/khối chốt trích từ ảnh (sinh bởi tools/gripper_from_photos.py)
-├── build_model.py       # STL gốc + gripper.py -> model/mk2.xml (không bút), model/mk2_pen.xml (bút + giấy)
-├── sim_common.py        # nạp mô hình (pen=False/True), giữ lệnh 20 ms, đọc góc thực
+├── build_model.py       # STL gốc + gripper.py -> model/mk2.xml (không bút), mk2_pen.xml (bút + giấy), mk2_sort.xml
+├── sort_scene.py        # đồ vật bài phân loại (kệ, GY-33, hộp 3 ngăn, vùng vứt bỏ, nắp) + tấm kẹp có va chạm của ngón
+├── color_sim.py         # bộ phân loại màu (bản sao ColorMath.h của firmware) + cảm biến mô phỏng (phát lại test.csv)
+├── sim_common.py        # nạp mô hình (pen / sort), giữ lệnh 20 ms, đọc góc thực
 ├── trajectories.py      # hình sao + tròn, M0 (tuyến tính), M2 (double-S/Ruckig)
 ├── check_kinematics.py  # kiểm chứng FK/IK, so MuJoCo vs giải tích, vùng làm việc  [--pen]
 ├── run_sim.py           # thí nghiệm vẽ M0 vs M2, đồ thị + CSV + chỉ số  (bắt buộc --pen)
+├── run_sort.py          # chu trình phân loại màu nắp chai, CSV + ma trận + đồ thị  [--view] [--foreign N] [--seed]
 ├── snapshot.py          # chụp ảnh tư thế cho báo cáo  [--pen] [--grip]
+├── data/color/          # model.json (kết quả hiệu chuẩn) + test.csv (tập kiểm tra) — chép từ repo eezybot_mk2_robot
 ├── tools/holes.py       # đo tâm lỗ trục trên STL (nguồn số liệu hình học)
 ├── tools/check_assembly.py      # kiểm chứng lắp ráp + gripper tự va chạm; suy ra giới hạn khớp
+├── tools/check_sort_layout.py   # tính lại các số [TINH] của bài phân loại (tầm với, vị trí nắp trong gripper)
 ├── tools/gripper_from_photos.py # ảnh chụp gripper -> gripper_shape.py (ảnh KHÔNG có trong repo)
 ├── assets/simulation_results/   # ảnh kết quả mẫu để đối chiếu
 ├── requirements.txt
-├── model/               # mk2.xml, mk2_pen.xml, meshes/ — repo có kèm bản đã dựng, bước 5 ghi đè
-└── results/             # kết quả bước 7–9 — repo có kèm bản mẫu, các bước đó ghi đè
+├── model/               # mk2.xml, mk2_pen.xml, mk2_sort.xml, meshes/ — repo có kèm bản đã dựng, bước 5 ghi đè
+└── results/             # kết quả bước 7–9b — repo có kèm bản mẫu, các bước đó ghi đè (bài phân loại: results/sort/)
 ```
 
 ## 2. Kiểm tra máy trước khi cài
@@ -294,6 +313,7 @@ Kết quả mong đợi (tham số mặc định trong `params.py`):
   gripper: Q - W = (32.60, 28.04) mm (|Q-W| = 43.00); khe 2 mui ngon: dong 0.78 mm, mo het 70.8 mm
   but D10 lui 27 mm tu mut ngon: goc servo kep = 4.29 do; khe 2 mui ngon khi kep but = 6.01 mm
   TCP - W = (132.69, 0.480, 0.50) mm; diem kep but - W = (110.59, 0.480, 0.50) mm
+  nap D30 (sort): tam nap - W = (110.00, 0.480, 0.50) mm; goc servo cham nap = 21.27 do; khe nho nhat toi chi tiet khong va cham = 4.99 mm (khau tren trai); mo 40 do: ngon cach nap 8.90 mm
   TCP o home: hinh hoc [279.69   0.48 229.75]  FK [279.69   0.48 229.75]  lech 0.000 mm
   ngoi but o home (--pen): hinh hoc [257.59   0.48 139.75]  FK [257.59   0.48 139.75]  lech 0.002 mm
 chi tiet | khoi luong (g) | the tich (cm3) | ghi chu
@@ -310,7 +330,7 @@ TONG khoi luong chuyen dong: 588.7 g  (FILL_FACTOR=1.0)
   + but (chi --pen): 15.0 g [GIA-DINH]
 
 Servo: tau_stall=0.922 N m, w0=5.51 rad/s, kp=10.563 N m/rad, b=0.1673 N m s/rad
-Da ghi .../eezybot_mk2_sim/model/mk2.xml (mac dinh, khong but) va .../eezybot_mk2_sim/model/mk2_pen.xml (--pen)
+Da ghi .../eezybot_mk2_sim/model/mk2.xml (mac dinh, khong but), .../eezybot_mk2_sim/model/mk2_pen.xml (--pen) va .../eezybot_mk2_sim/model/mk2_sort.xml (bai phan loai)
 ```
 
 Ý nghĩa các dòng kiểm tra:
@@ -321,6 +341,10 @@ Da ghi .../eezybot_mk2_sim/model/mk2.xml (mac dinh, khong but) va .../eezybot_mk
   - Khe 2 mũi ngón: 0,78 mm khi đóng và 70,8 mm khi mở hết (= 0,78 + 2 × 35 mm chiều dài khâu).
 - **Dòng `but D10`:** góc servo kẹp để mặt trong 2 ngón vừa chạm thân bút Ø10. Góc này tính từ biên dạng ngón và vị trí bút (lùi 27 mm so với mút ngón).
 - **Dòng `TCP - W` / `diem kep but - W`** được so với `params.TCP_W`, `PEN_GRIP_W`, `PEN_GRIP_DEG`. Nếu lệch quá 0,02 mm hoặc 0,01°, script dừng và in giá trị đúng để chép vào `params.py`.
+- **Dòng `nap D30 (sort)`** (bài phân loại, mục 9b), so với `params.CAP_GRIP_W` và `CAP_GRIP_DEG` theo cùng cách:
+  - Tâm nắp Ø30 khi kẹp nằm cách trục 2 bánh răng `GRIP_CAP_GY` = 65 mm, tức 110 mm trước W.
+  - Góc servo để 2 ngón vừa chạm nắp là 21,27°.
+  - Khe tới các chi tiết **không** có va chạm trong mô phỏng (khâu trên, khâu dưới, bánh răng, đế) phải > 0. Nếu không, script dừng.
 - **Dòng `TCP o home` và `ngoi but o home`:** vị trí tính từ hình học phải trùng FK giải tích của `mk2_kinematics.py`, sai lệch < 0,05 mm.
 - **Khối lượng `GR_*`** tính trên khối lăng trụ của gripper (lưới điểm 0,25 mm, PLA 1,24 g/cm³, đặc 100%). Khối lượng bút chỉ cộng vào mô hình `--pen`.
 
@@ -335,16 +359,17 @@ Kết quả mong đợi:
 ```
 servo_base      [-1.5708  1.5708] rad = [-90.  90.] deg
 servo_shoulder  [-0.9948  0.6981] rad = [-57.  40.] deg
-servo_elbow     [-1.0001  0.3054] rad = [-57.3  17.5] deg
+servo_elbow     [-1.0908  0.3054] rad = [-62.5  17.5] deg
 servo_gripper   [0.     1.5708] rad = [ 0. 90.] deg
 ```
 
 3 dòng đầu lấy từ `CTRL_BASE_DEG`, `CTRL_SHOULDER_DEG`, `CTRL_ELBOW_DEG` trong `params.py`. Dòng cuối lấy từ `GRIP_TRAVEL_DEG`: 0 là đóng, 90° là mở hết.
+Cận dưới của khuỷu là −62,5°, thay cho −57,3° trước ngày 2026-10-23. Lý do và việc cần kiểm tra trên tay thật: mục 9b.
 
-✅ **Kiểm tra — MuJoCo nạp được cả 2 mô hình:**
+✅ **Kiểm tra — MuJoCo nạp được cả 3 mô hình:**
 
 ```bash
-for f in model/mk2.xml model/mk2_pen.xml; do python -c "import mujoco,sys; m=mujoco.MjModel.from_xml_path(sys.argv[1]); print(sys.argv[1], 'nbody',m.nbody,'njnt',m.njnt,'neq',m.neq,'nu',m.nu,'nmesh',m.nmesh,'nkey',m.nkey)" $f; done
+for f in model/mk2.xml model/mk2_pen.xml model/mk2_sort.xml; do python -c "import mujoco,sys; m=mujoco.MjModel.from_xml_path(sys.argv[1]); print(sys.argv[1], 'nbody',m.nbody,'njnt',m.njnt,'neq',m.neq,'nu',m.nu,'nmesh',m.nmesh,'nkey',m.nkey)" $f; done
 ls model/meshes | wc -l
 ```
 
@@ -353,6 +378,7 @@ Kết quả mong đợi:
 ```
 model/mk2.xml nbody 17 njnt 16 neq 9 nu 4 nmesh 20 nkey 0
 model/mk2_pen.xml nbody 17 njnt 16 neq 9 nu 4 nmesh 20 nkey 1
+model/mk2_sort.xml nbody 31 njnt 27 neq 9 nu 4 nmesh 37 nkey 0
 20
 ```
 
@@ -360,7 +386,7 @@ PASS khi tất cả các điều sau đúng:
 - Mọi dòng `lech` ≤ 0,05 mm.
 - 2 dòng `o home` lệch < 0,05 mm.
 - Tổng khối lượng là `588.7 g` (nếu chưa sửa `params.py`).
-- 2 dòng nạp mô hình in đúng như trên.
+- 3 dòng nạp mô hình in đúng như trên.
 
 Ý nghĩa các con số:
 - **17 body:** world, 9 khâu tay (khâu `wrist` mang thân gripper), 6 chi tiết gripper, gearservo 010.
@@ -369,6 +395,10 @@ PASS khi tất cả các điều sau đúng:
   - Khớp `gripper` là trục SG90, các khớp còn lại của gripper bị ràng buộc theo nó.
 - **9 ràng buộc:** 3 vòng hình bình hành của tay, cặp bánh răng gripper, 4 ràng buộc hình bình hành gripper (2 ngón, 2 khâu trên), cặp bánh răng đế 010–011.
 - **4 servo:** đế, vai, khuỷu, gripper.
+- `mk2_sort.xml` có thêm:
+  - 14 body: kệ, hộp, vùng vứt bỏ, 9 nắp và 2 vật lạ.
+  - 11 khớp tự do (`freejoint`), mỗi khớp cho 1 nắp.
+  - 17 lưới lồi khai báo thẳng trong XML (16 mảnh mica, 1 chân lục giác), không ghi file vào `meshes/`.
 - **20 lưới:** 13 STL gốc và 7 lưới gripper `GR_*`.
 - **`nkey 1`:** `mk2_pen.xml` có tư thế mẫu (keyframe) `pen`, trong đó gripper mở 4,29° vừa kẹp bút. Các script tự nạp tư thế này.
 
@@ -497,9 +527,9 @@ Dau cong tac: pen (110.59, 0.48, -89.5) mm so voi W. CANH BAO: ...
     q=(0, 45, -55): lech goc (deg) = [ 0.   -1.09 -0.46], lech ngoi but = 2.71 mm, ...
     q=(0, 110, 0): lech goc (deg) = [ 0.    0.51 -0.76], lech ngoi but = 2.95 mm, ...
 [4] Hinh ve lon nhat (sao + tron ban kinh R) theo do cao mat giay z (mm), cach gioi han >= 3 deg:
-    z_giay =   1.0 mm: tam x = 290 mm, R_max =  22.9 mm   <- mat giay (params.PAPER_THICKNESS)
-    z_giay =  10.0 mm: tam x = 285 mm, R_max =  35.6 mm
-    z_giay =  20.0 mm: tam x = 265 mm, R_max =  58.8 mm
+    z_giay =   1.0 mm: tam x = 275 mm, R_max =  34.1 mm   <- mat giay (params.PAPER_THICKNESS)
+    z_giay =  10.0 mm: tam x = 265 mm, R_max =  51.3 mm
+    z_giay =  20.0 mm: tam x = 265 mm, R_max =  62.9 mm
     ...
     z_giay =  70.0 mm: tam x = 260 mm, R_max =  82.1 mm
     ...
@@ -522,24 +552,25 @@ Dòng `CANH BAO` là nhắc nhở bình thường, không phải lỗi. Phần [
 1. Công thức IK là nghịch đảo đúng của FK. FK/IK đã tính cả độ lệch ngang 0,48 mm của đầu công tác so với mặt phẳng cánh tay (`GRIP_CENTER_Y`, mục 10).
 2. Mô hình vật lý có vòng kín cho cùng vị trí đầu công tác với công thức giải tích. Điều này chứng minh **lớp ánh xạ hình bình hành** là đúng.
 3. Servo là bộ điều khiển P hữu hạn, nên dưới trọng lực đầu công tác võng xuống vài mm. Đây là hiệu ứng thật mà mô hình động học thuần không thấy được.
-   - Tư thế thử thứ 3 là (0, 45, −55) chứ không phải −60. Lý do: φ = −60° nằm ngoài tầm lệnh `CTRL_ELBOW_DEG` (−57,3°), lệnh sẽ bị cắt.
+   - Tư thế thử thứ 3 là (0, 45, −55) chứ không phải −60. Lý do: khi viết bước này, φ = −60° nằm ngoài tầm lệnh `CTRL_ELBOW_DEG` cũ (−57,3°). Tư thế được giữ nguyên để số liệu so sánh được.
 4. Bảng để **chọn R và tâm hình vẽ**. Dòng đánh dấu là mặt tờ giấy thật (dày 1 mm, nằm trên bàn). Chọn R nhỏ hơn hẳn R_max để còn khoảng dự phòng.
 
-**Vì sao R_max trên mặt giấy chỉ còn 22,9 mm (bản kẹp cũ: 56,4 mm).** Có 2 nguyên nhân. Lần kiểm chứng này đã chạy lại bảng [4] khi thay từng yếu tố:
+**Vì sao R_max trên mặt giấy là 34,1 mm (bản kẹp cũ: 56,4 mm).** Có 2 nguyên nhân. Bảng [4] đã được chạy lại khi thay từng yếu tố:
 
 | Trường hợp | R_max tại z = 1 mm |
 |---|---|
 | Kẹp cũ, chưa có tầm lệnh servo (README cũ) | 56,4 mm |
 | Kẹp cũ + `CTRL_ELBOW_DEG` | 34,9 mm |
 | Gripper thật, chỉ dùng `PHI_LIM` | 42,2 mm |
-| Gripper thật + `CTRL_ELBOW_DEG` (hiện tại) | **22,9 mm** |
+| Gripper thật + `CTRL_ELBOW_DEG` cận dưới −57,3° (2026-10-16) | 22,9 mm |
+| Gripper thật + `CTRL_ELBOW_DEG` cận dưới −62,5° (hiện tại, từ 2026-10-23, mục 9b) | **34,1 mm** (tâm x = 275 mm) |
 
 - **Gripper thật kẹp bút cao hơn.** Điểm kẹp bút nằm cao hơn tâm W 0,5 mm; kẹp cũ thấp hơn W 8 mm. Ngòi vì vậy cao hơn 8,5 mm so với cổ tay, nên muốn chạm giấy thì tay ngang phải chúc xuống sâu hơn.
-- **Tầm lệnh servo khuỷu chặn ở φ ≥ −57,3°** (`CTRL_ELBOW_DEG`, commit "update - Operating Angle"). Giới hạn này chặt hơn giới hạn va chạm `PHI_LIM` = −65°. IK hiện kiểm tra cả tầm lệnh này, nên điểm vượt tầm bị báo `IKError` thay vì bị cắt lệnh âm thầm.
+- **Tầm lệnh servo khuỷu chặn ở φ ≥ −62,5°** (`CTRL_ELBOW_DEG`; trước 2026-10-23 là −57,3°, commit "update - Operating Angle"). Giới hạn này vẫn chặt hơn giới hạn va chạm `PHI_LIM` = −65°. IK kiểm tra cả tầm lệnh này, nên điểm vượt tầm bị báo `IKError` thay vì bị cắt lệnh âm thầm.
 - Nếu cần hình to hơn:
-  - Kê giấy cao hơn: z = 10 mm cho R_max 35,6 mm; z = 20 mm cho 58,8 mm.
+  - Kê giấy cao hơn: z = 10 mm cho R_max 51,3 mm; z = 20 mm cho 62,9 mm.
   - Hoặc cho bút thò dài hơn: thò thêm k mm tương đương kê giấy cao thêm k mm.
-  - Hoặc nới `CTRL_ELBOW_DEG` nếu servo thật quay được tới đó.
+  - Hoặc nới thêm `CTRL_ELBOW_DEG` nếu servo thật quay được tới đó (không vượt `PHI_LIM` = −65°).
 
 ## 8. Chạy thí nghiệm M0 vs M2
 
@@ -670,6 +701,165 @@ Da luu results/home.png
 - Góc servo đế là 89,8° chứ không phải 90° vì IK bù độ lệch ngang 0,48 mm của đầu công tác.
 - `--grip` là góc servo kẹp (độ). Không có `--grip`: gripper đóng, hoặc kẹp bút 4,29° nếu có `--pen`.
 
+## 9b. Chu trình phân loại màu nắp chai (`run_sort.py`)
+
+Bài gắp–thả của đề tài chạy trên mô hình `model/mk2_sort.xml`. Mô hình này được dựng ở bước 5 cùng 2 mô hình kia, bằng `build_model.py` + `sort_scene.py`.
+
+### 9b.1 Đồ vật (nguồn kích thước: yêu cầu của chủ dự án, 2026-10-23, trừ dòng ghi khác)
+
+| Đồ vật | Mô hình trong MuJoCo |
+|---|---|
+| Kệ trạm cảm biến | Mặt mica trong suốt 60 × 60 × 3 mm, lỗ tròn Ø23 ở giữa, mặt trên ở z = 43 mm. 4 chân lục giác đều (đỉnh–đỉnh 5 mm) cao 40 mm, đặt sát 4 góc, không lòi ra ngoài mặt kệ. Mặt mica ghép từ 16 mảnh lồi quanh lỗ |
+| Module GY-33 | Hộp 25 × 25 × 12 mm, tâm ngay dưới lỗ, mặt trên chạm mặt dưới mica (z = 40 mm). Không mô hình giá đỡ |
+| Nắp chai | 3 xanh lá + 3 đỏ + 3 trắng. Trụ rỗng Ø30 × 13 mm, thành 1 mm, 2,5 g, đặt **úp**. Thêm 2 "vật lạ" màu xanh dương, chỉ dùng khi chạy `--foreign` |
+| Hộp đích | 1 khối 3 ngăn liền, thành và đáy 3 mm. Ngoài 177 × 66 × 50 mm, lòng mỗi ngăn 55 × 60 mm. Kích thước do mô phỏng chọn `[CHON]` |
+| Vùng vứt bỏ | Vùng phẳng 80 × 80 mm vẽ trên mặt bàn `[CHON]` |
+| Gripper | Thêm **tấm kẹp có va chạm** dọc mặt kẹp của 2 ngón, theo 3 lớp chiều dày của ngón (`sort_scene.finger_pads`). Các chi tiết khác của tay và gripper vẫn không có va chạm |
+
+### 9b.2 Bố trí
+
+Hệ tọa độ: gốc ở trục quay đế trên mặt bàn, x hướng ra trước, y sang trái, z lên. Kệ đặt đối diện tay máy, vùng vứt bỏ bên trái, hộp bên phải.
+Các số `[TINH]` được tính lại bằng `python tools/check_sort_layout.py`.
+
+| Đồ vật | Vị trí | Vì sao |
+|---|---|---|
+| Kệ | Tâm (279; 0) | Kẹp nắp cần điểm "cap" (tâm nắp) ở z = 59 mm. Ở độ cao này tay chỉ với tới bán kính 274,5…283,5 mm; 279 nằm giữa dải |
+| Hộp 3 ngăn | Trục dài hướng xuyên tâm, góc −30°, tâm r = 266 mm. Ngăn 3 (trắng) r = 208, ngăn 2 (xanh lá) r = 266, ngăn 1 (đỏ, xa robot nhất) r = 324 | Thả ở z = 116 mm; dải với tới ở độ cao này là 193…338,5 mm, nên mỗi đầu còn dư khoảng 14 mm. Đặt xuyên tâm thì đế chỉ cần quay đúng 1 góc (giới hạn ±45°) |
+| Vùng vứt bỏ | Tâm r = 285 mm, góc +30° | Thả ở z = 66 mm; dải với tới 267…294,5 mm |
+
+**Vì sao điểm kẹp ở z = 59 mm và `CTRL_ELBOW_DEG` = −62,5°.**
+- Nắp úp trên kệ chiếm z = 43…56 mm. Ngón dày 15 mm, điểm "cap" ở giữa chiều dày.
+- Ở z = 59 mm, tấm dưới của ngón (dày 3,3 mm) nằm ở z = 51,5…54,8 mm, ôm trọn trên thân nắp; tấm trên nằm cao hơn nắp.
+- Với cận cũ −57,3°, điểm "cap" thấp nhất chỉ là 62,3 mm. Khi đó tấm dưới chỉ chồng lên nắp khoảng 1,2 mm.
+- Chủ dự án chọn nới cận này thành −62,5°, vẫn cách biên va chạm STL (`PHI_LIM` = −65°) 2,5°.
+- **Phải kiểm tra trên tay thật:** cho tay ngang chúc xuống khoảng 62,5° so với phương ngang (tay chính nghiêng khoảng 43,5°) và xác nhận không kẹt, không va chạm.
+
+### 9b.3 Chu trình (mỗi nắp)
+
+1. Tay ở Home (servo 90/90/90), gripper mở 40°. Sau `CAP_PLACE_DELAY_S` = 1 s, "người" đặt 1 nắp lên trạm. Thứ tự nắp ngẫu nhiên theo `--seed`.
+2. ESP32 đọc kênh C mỗi `POLL_MS` = 500 ms (`src/robot/sorter.h` của firmware).
+   - Khi |C − C_empty| ≥ C_margin (có nắp), chờ `settle_ms` = 300 ms (≥ 200 ms theo yêu cầu).
+   - Sau đó lấy trung bình 5 lần đọc RGBC, mỗi lần cách nhau 120 ms. Tổng thời gian đo khoảng 0,78 s.
+3. Phân loại bằng `color_sim.classify()`, bản sao `colormath::classify()` (`lib/ColorClassifier/ColorMath.h`), tính bằng float32 giống ESP32.
+   - Lớp được chọn theo tâm lớp gần nhất trong mặt phẳng (r, g).
+   - d > d_max → vứt bỏ, in `# ERR UNKNOWN_COLOR ...` như firmware.
+   - |C − C_empty| < C_margin → không có nắp, tiếp tục chờ.
+4. Tới điểm cao hơn điểm kẹp 40 mm, hạ thẳng xuống, kẹp, nhấc thẳng lên.
+   - Lệnh kẹp là 15°, thấp hơn góc chạm nắp 21,27° hơn `SERVO_ERR_SAT_DEG`, nên SG90 kẹp bằng mô-men bão hòa.
+5. Tới điểm mà **đáy nắp cách mặt trên hộp 50 mm** (z điểm "cap" = 50 + 50 + 16 = 116 mm) rồi mở kẹp.
+   - Với vùng vứt bỏ, đáy nắp cách mặt bàn 50 mm (z = 66 mm). Tay tới phía trên vùng ở z = 99 mm rồi mới hạ thẳng xuống.
+6. Về Home, chờ nắp tiếp theo.
+
+Quỹ đạo, lệnh mỗi 20 ms → IK → servo:
+- **Giữa các trạm:** double-S đồng bộ 3 khớp (Ruckig, cả 3 khớp xong cùng lúc). Giới hạn 0,536 rad/s, 5,36 rad/s², 107 rad/s³, quy đổi từ 150 mm/s, 1500 mm/s², 30000 mm/s³ (`include/arm_config.h` của firmware) qua bán kính 280 mm.
+- **Hạ và nhấc:** đường thẳng đứng, double-S theo độ dài cung với 150 / 1500 / 30000.
+
+**Cảm biến trong mô phỏng.** MuJoCo không mô phỏng quang học của TCS34725, nên mỗi phép đo **phát lại 1 dòng đo thật** của `data/color/test.csv`, đúng nhãn của vật đang nằm trên trạm.
+- Nắp và vật lạ: rút không hoàn lại.
+- Trạm trống: rút có hoàn lại.
+- `data/color/model.json` và `test.csv` được chép nguyên từ repo `eezybot_mk2_robot` (commit `a172b69`, hiệu chuẩn 2026-10-23).
+
+✅ **Kiểm tra 1 — bộ phân loại khớp firmware:**
+
+```bash
+python color_sim.py
+```
+
+Kết quả mong đợi: ma trận trùng `reports/color/eval_test.json` của repo firmware (99/100, 1 mẫu đỏ ở dòng 24 bị "không xác định").
+
+```
+  green  [20  0  0  0  0]
+  red    [ 0 19  0  1  0]
+  white  [ 0  0 20  0  0]
+  empty  [ 0  0  0  0 20]
+  other  [ 0  0  0 20  0]
+Dung 99/100 = 99.0%
+```
+
+✅ **Kiểm tra 2 — chạy chu trình:**
+
+```bash
+python run_sort.py            # 9 nắp, seed 0; khoảng 1 phút 45 giây trên máy thử 2 nhân (thời gian mô phỏng 78 s)
+python run_sort.py --view     # xem trực tiếp; tối đa bằng thời gian thực (máy chậm sẽ chạy chậm hơn)
+python run_sort.py --foreign 2  # thêm 2 vật lạ -> phải vào vùng vứt bỏ kèm "# ERR UNKNOWN_COLOR"
+```
+
+Kết quả mong đợi (`python run_sort.py`, rút gọn):
+
+```
+Tu the (diem 'cap' = tam nap khi kep, mm) -> goc servo (do), du tru toi gioi han gan nhat:
+  tram: diem kep         p = [279.   0.  59.]  servo = [89.8  43.5  28.91]  du tru = 1.00 do
+  tram: phia tren        p = [279.   0.  99.]  servo = [89.8  57.94 41.46]  du tru = 13.96 do
+  ngan 3 (white): tha    p = [ 180.1 -104.   116. ]  servo = [29.74 87.97 39.35]  du tru = 6.39 do
+  ngan 2 (green): tha    p = [ 230.4 -133.   116. ]  servo = [29.79 67.52 45.25]  du tru = 14.90 do
+  ngan 1 (red): tha      p = [ 280.6 -162.   116. ]  servo = [29.83 48.09 57.39]  du tru = 5.59 do
+  vut bo: phia tren      p = [246.8 142.5  99. ]  servo = [149.81  56.17  42.78]  du tru = 13.67 do
+  vut bo: tha            p = [246.8 142.5  66. ]  servo = [149.81  44.79  32.59]  du tru = 2.29 do
+Thu tu dat nap (seed 0): red, red, green, white, red, white, white, green, green
+[t=   3.28 s] CLS,RED,RED,0.001499,0.461412,0.274220,281.000,167.000,161.000,621.000,0
+[t=   3.28 s] # SORT RED (lan 1)  [nap 1: cap_red_1, dong test.csv 31]
+           gap: z diem kep (thuc) = 53.5 mm, kep 20.30 do, luc kep 5.38 N, nhac nap 40.3 mm, truot max 0.46 mm; day nap luc tha 99.1 mm; nap nam o: red -> DUNG dich
+...
+[t=  77.62 s] Tram trong, het nap -> dung.
+
+Toc do servo lon nhat = [1.07 0.97 0.86] rad/s (MG996R khong tai 5.51 rad/s @4.8V) -> OK
+Khe ho nho nhat tren quy dao LENH (FK; diem thap nhat = day nap khi mang nap, mep duoi ngon khi kep rong):
+  Home -> tren tram (kep rong)           mat ban 91.5 mm, ke + nap 35.5 mm
+  tram -> ngan 1 (mang nap)              mat ban 83.0 mm, ke 40.0 mm, hop dich 44.7 mm
+  ve Home (kep rong)                     mat ban 108.5 mm, hop dich 58.5 mm, ke 109.3 mm
+  tram -> ngan 2 (mang nap)              mat ban 83.0 mm, ke 40.0 mm, hop dich 44.3 mm
+  tram -> ngan 3 (mang nap)              mat ban 83.0 mm, ke 40.0 mm, hop dich 47.7 mm
+So chu ky lenh co tam kep cham ke/hop/ban: 0
+Thoi gian 1 chu ky (dat nap -> tay ve Home): TB 7.35 s, min 7.22, max 7.50
+Thoi gian tu luc dat nap toi luc ra quyet dinh: TB 0.78 s
+Ma tran: mau that (hang) x noi nap nam sau chu trinh (cot: ngan 1 do, ngan 2 xanh, ngan 3 trang, vut bo, ngoai)
+  green  [0 3 0 0 0]
+  red    [3 0 0 0 0]
+  white  [0 0 3 0 0]
+Nap toi dung dich da chon (co hoc gap-tha): 9/9; nap toi dung noi theo mau that (toan chu trinh): 9/9
+```
+
+Đã thử thêm `--seed 1`, `--seed 2`, `--seed 3`: đều cho 9/9. `--foreign 2` cho 11/11: 2 vật lạ có 2 dòng `# ERR UNKNOWN_COLOR nearest=WHITE dist=0.08..` và nằm trong vùng vứt bỏ.
+
+PASS khi:
+- Dòng cuối ghi `9/9` ở cả 2 vế.
+- `So chu ky lenh co tam kep cham ke/hop/ban: 0`: ngón không chạm kệ, hộp hay bàn.
+- Mọi dòng `truot max` < 1 mm: nắp không trượt trong kẹp.
+- Tốc độ servo `-> OK`.
+
+Các file trong `results/sort/`:
+
+| File | Nội dung |
+|---|---|
+| `summary.txt` | Toàn bộ output trên, gồm các dòng `CLS,...`/`# SORT ...`/`# ERR ...` giống Serial của firmware |
+| `caps.csv` | Mỗi nắp: màu thật, dòng `test.csv` đã dùng, R/G/B/C, r/g, d, nhãn, đích, nơi nắp nằm cuối cùng, z điểm kẹp thực, góc và lực kẹp, độ trượt, các mốc thời gian |
+| `log.csv` | Lệnh 20 ms: pha, lệnh 3 servo, góc thực, lệnh và góc kẹp, vị trí điểm "cap" và vị trí nắp, cờ ngón chạm môi trường |
+| `sort_matrix.png` | Ma trận màu thật × nơi nắp nằm sau chu trình |
+| `sort_timeline.png` | Lệnh 3 servo và servo kẹp theo thời gian |
+| `scene_end_top.png`, `scene_end_persp.png` | Ảnh cảnh cuối (cần OpenGL) |
+
+**Kiểm tra bố trí** (không cần MuJoCo): `python tools/check_sort_layout.py` in lại mọi số `[TINH]`:
+- góc chạm nắp, khe khi mở;
+- lớp ngón nào ôm thân nắp;
+- dải với tới theo độ cao, với cận khuỷu cũ và mới;
+- góc servo và dư trữ tới giới hạn ở từng tư thế.
+
+**Giới hạn riêng của bài phân loại** (ghi rõ trong báo cáo):
+- **Độ võng khi kẹp.** Điểm kẹp lệnh ở z = 59 mm, nhưng MuJoCo cho z thực khoảng 53,5 mm (võng khoảng 5,5 mm).
+  - Nguyên nhân: tư thế duỗi xa, servo P hữu hạn với `SERVO_ERR_SAT_DEG` = 5° `[GIA-DINH]`.
+  - Khi đó mép dưới ngón chỉ còn cách mica khoảng 3 mm.
+  - Trên tay thật hãy đo z thực ở tư thế này. Nếu ngón chạm mica, tăng `CAP_GRASP_Z` (tối đa khoảng 60 mm để tấm dưới vẫn ôm nắp).
+- **Hệ số ma sát** `CONTACT_FRICTION` = 0,4 là giả định, chưa đo. Lực kẹp mô phỏng khoảng 5,4 N (tổng 2 ngón), trong khi trọng lượng nắp chỉ 0,025 N, nên kết quả gắp không nhạy với giá trị này.
+- **Hình va chạm của nắp** là 12 viên nang R2 quanh chu vi + 1 tấm hộp ở mặt trên (hình vẽ vẫn là nắp rỗng).
+  - Bản thử đầu dùng 1 hình trụ. Khi 3 nắp rơi chồng vào cùng 1 ngăn, va chạm trụ–trụ làm nắp nảy văng ra ngoài: 45/54 lần thả nằm đúng ngăn, có lúc mô phỏng mất ổn định.
+  - Với viên nang, cùng phép thử cho 54/54.
+  - Nắp vẫn được giữ đúng khối lượng và quán tính của trụ rỗng.
+- Mô hình đặt `jacobian="dense"`: với 11 nắp tự do (nv = 82), chế độ `auto` của MuJoCo 3.2.3 chuyển sang Jacobian thưa và dừng với lỗi `mj_makeConstraint: constraint Jacobian mis-allocation`.
+- **Người đặt nắp** được mô phỏng bằng cách đặt tức thời nắp đứng yên, đúng tâm lỗ. Mỗi dòng `test.csv` đã là trung bình 5 lần đọc, nên lần đọc kênh C để phát hiện nắp ít nhiễu hơn 1 lần đọc thật.
+- **Kiểm tra va chạm của tay.** Chỉ ngón có va chạm.
+  - Khe giữa nắp và khâu, bánh răng, đế của gripper được kiểm tra hình học (≥ 5 mm, dòng `nap D30` ở bước 5).
+  - Khe giữa điểm thấp nhất (đáy nắp khi mang, mép dưới ngón khi kẹp rỗng) và kệ, hộp được tính trên quỹ đạo lệnh. Thân tay và servo không được kiểm tra với đồ vật.
+
 ## 10. Hiệu chỉnh cho giống thực tế (quan trọng nhất)
 
 Ý nghĩa các nhãn trong `params.py`:
@@ -688,7 +878,8 @@ Hãy đo theo thứ tự sau, sửa `params.py`, rồi chạy lại `build_model
 | 4 | `H_SHOULDER` (qua `LOWER_BASE_Z`) | Thước kẹp: từ mặt bàn tới tâm trục vai. Giá trị 94,25 mm suy từ STL, với giả định gearmast tì lên mặt tâm của 013 (bi Ø6 còn khe ~0,6 mm) |
 | 5 | `SERVO_OFFSET`, `SERVO_SIGN` | Ra lệnh 90/90/90, kiểm tra tay chính thẳng đứng, tay ngang nằm ngang, khớp đế nhìn thẳng; ghi độ lệch và chiều quay |
 | 6 | `THETA2_LIM`, `PHI_LIM`, `REL_LIM`, `THETA1_LIM` | Đang lấy từ kiểm tra va chạm (`tools/check_assembly.py --limits`), cách biên va chạm ≥ 2,5°. Trên tay thật: quay từ từ từng servo tới khi chạm cơ khí, lùi lại 3–5° |
-| 7 | `CTRL_BASE_DEG`, `CTRL_SHOULDER_DEG`, `CTRL_ELBOW_DEG` | Tầm lệnh servo thật. IK từ chối mọi điểm cần lệnh ngoài tầm này. `CTRL_ELBOW_DEG` hiện quyết định R_max trên giấy (bước 7) |
+| 7 | `CTRL_BASE_DEG`, `CTRL_SHOULDER_DEG`, `CTRL_ELBOW_DEG` | Tầm lệnh servo thật. IK từ chối mọi điểm cần lệnh ngoài tầm này. Cận dưới `CTRL_ELBOW_DEG` (−62,5°) quyết định điểm kẹp nắp thấp nhất (mục 9b) và R_max trên giấy (bước 7). **Kiểm tra trên tay thật trước tiên** |
+| 7b | `CAP_GRASP_Z`, `CONTACT_FRICTION` | Bài phân loại (mục 9b): đo z thực của tâm ngón ở tư thế kẹp nắp; hệ số ma sát nắp–ngón chưa đo |
 | 8 | `MEASURED_MASS_G` | Cân từng chi tiết sau khi in, điền vào dict. Mặc định đang giả định in đặc 100% (cận trên) |
 | 9 | `SERVO_ERR_SAT_DEG` | Ra lệnh bước 30° và quay video 240 fps (hoặc đọc chiết áp bên trong servo, theo tài liệu Adafruit [12] trong đề cương); chỉnh tham số tới khi đáp ứng mô phỏng khớp với đo |
 | 10 | `BACKLASH_DEG` | Giữ cố định servo, lắc nhẹ đầu tay và đo độ dơ ở đầu công tác; chia cho cánh tay đòn để ra độ dơ góc |
@@ -726,7 +917,10 @@ Chung:
 - Servo được mô hình là bộ P bão hòa mô-men cộng đường đặc tính mô-men–tốc độ của động cơ DC (đặt bằng `damping`).
   - Bộ điều khiển thật bên trong MG996R/SG90 không được công bố.
   - Không mô hình vùng chết và độ phân giải xung.
-- **Va chạm**: trong lúc mô phỏng chỉ có va chạm ngòi–giấy. Va chạm giữa các khâu được kiểm tra ngoài (bằng `tools/check_assembly.py`) và được loại trừ bằng giới hạn khớp.
+- **Va chạm**:
+  - Mô hình bút chỉ có va chạm ngòi–giấy.
+  - Mô hình phân loại (mục 9b) có va chạm giữa tấm kẹp của ngón, nắp và đồ vật.
+  - Va chạm giữa các khâu được kiểm tra ngoài (bằng `tools/check_assembly.py`) và được loại trừ bằng giới hạn khớp.
 - Servo (MG996R ×3, SG90) không có trong STL. Chúng được vẽ bằng hộp kích thước datasheet, đặt đúng trục quay; vị trí dọc trục chỉ gần đúng.
 - Khối lượng ốc vít, thanh ren, bi và bạc đạn 606zz không được tính.
 
@@ -735,7 +929,9 @@ Riêng gripper:
   - Biên dạng lấy từ ảnh. Khớp đồng dạng giữa vị trí ốc trong mô hình và tâm ốc trên 3 ảnh có sai số RMS 1,16 / 1,50 / 0,52 mm.
   - Kích thước cơ cấu (khoảng cách trục, khâu, W–Q...) lấy từ số đo thước kẹp, không lấy từ ảnh.
 - `GRIP_CENTER_Y` = 0,48 mm là **giả định** (mục 10).
-- **Chưa mô phỏng gắp vật.** Các chi tiết gripper không có va chạm (`contype = 0`), nên ngón chưa thể kẹp một vật trong MuJoCo. Bài gắp–thả cần thêm va chạm và ma sát ở mặt ngón cùng vật cần gắp; việc này nằm ngoài phạm vi bản này.
+- **Gắp vật chỉ có trong mô hình phân loại** (`mk2_sort.xml`, mục 9b).
+  - Ở đó mặt kẹp của 2 ngón có các tấm hộp mỏng có va chạm, đặt theo biên dạng ảnh.
+  - Trong `mk2.xml` và `mk2_pen.xml`, các chi tiết gripper vẫn không có va chạm (`contype = 0`).
 - **TCP gripper cố định** tại điểm kẹp khi đóng. Khi mở, ngón chuyển động theo cung tròn bán kính 35 mm, nên mũi ngón lùi về phía cổ tay (tới 35 mm khi mở 90°). TCP không đi theo mũi ngón.
 - **Bút gắn cứng vào cổ tay** (mô hình `--pen`). Ngón được đặt đúng góc kẹp 4,29° nhưng không mô phỏng lực kẹp, ma sát hay trượt bút trong kẹp. Không có lò xo ở bút. Tờ giấy là vật rắn, không mô phỏng độ lún của giấy.
 
@@ -747,6 +943,7 @@ Riêng gripper:
 - Hằng số đầu công tác `DX`, `DZ` (mm, so với tâm cổ tay W) phụ thuộc dụng cụ, tương ứng `set_tool()`:
   - Gripper: (132,69; 0,50).
   - Ngòi bút: (110,59; −89,50).
+  - Tâm nắp chai khi kẹp (bài phân loại, `set_tool("cap")`): (110,00; 0,50).
 - `to_servo()`: lớp ánh xạ với offset, chiều quay và hộp số 2:1.
 - `within_limits()`: kiểm tra giới hạn θ1, θ2, φ, φ − θ2, tầm lệnh `CTRL_*_DEG` và tầm servo trước khi gửi lệnh.
 
@@ -772,6 +969,10 @@ Riêng gripper:
 | 2 ngón xuyên qua thân bút trong viewer `mk2_pen.xml` | Viewer khởi động với `servo_gripper` = 0 (đóng) | Panel Simulation → **Load key** (bước 6.2) |
 | Viewer không mở / lỗi GLFW / rất chậm | Driver đồ họa đang dùng `llvmpipe` hoặc không hoạt động | Làm lại bước 2.2. Không cần cài `libglfw3` qua apt vì gói `glfw` của pip đã kèm sẵn thư viện |
 | `khong chup duoc anh ink_M0.png`, lỗi `EGL`/`OSMesa`/`GLFWError`, hoặc `Exception ignored in: <function Renderer.__del__ ...>` | Không có OpenGL (ví dụ chạy qua SSH không có màn hình), hoặc biến `MUJOCO_GL` đang được đặt | `unset MUJOCO_GL` rồi thử lại. Script chỉ thử dựng ảnh một lần rồi bỏ qua; các file khác vẫn được ghi bình thường |
+| `Khong voi toi '...'` khi chạy `run_sort.py` | Bố trí trong `params.py` mục 8 (vị trí kệ, hộp, vùng vứt bỏ, `CAP_GRASP_Z`) nằm ngoài vùng làm việc, hoặc `CTRL_ELBOW_DEG` bị đổi về −57,3° | Chạy `python tools/check_sort_layout.py`, chọn vị trí trong dải bán kính in ở mục [3] |
+| `params.CAP_GRIP_W/CAP_GRIP_DEG khong khop hinh hoc gripper` | Đã sửa `GRIP_CAP_GY`, `CAP_DIAMETER`, `GRIP_*` hoặc biên dạng ngón | Chép 2 dòng script in ra vào `params.py`, chạy lại bước 5 |
+| `mj_makeConstraint: constraint Jacobian mis-allocation` | Mô hình có nhiều bậc tự do bị nạp ở chế độ Jacobian thưa (MuJoCo 3.2.3) | `mk2_sort.xml` đã đặt `jacobian="dense"`; nếu tự thêm nắp/vật, giữ thuộc tính này |
+| `run_sort.py` báo nắp nằm ở `ngoai` | Nắp nảy khỏi ngăn hoặc tuột khỏi kẹp | Xem cột `slip_max_mm`, `final_pos` trong `results/sort/caps.csv`; xem lại bằng `--view` |
 | Viewer chạy giật | Lưới STL đầy đủ khá nặng | Tắt hiển thị bóng trong panel Rendering, hoặc thử chạy trên NVIDIA (bước 2.2, tùy chọn) |
 
 ## 14. Nguồn
@@ -789,6 +990,12 @@ Riêng gripper:
 - Khổ giấy A4 210 × 297 mm: ISO 216.
 - Mật độ PLA 1,24 g/cm³: NatureWorks, *Ingeo 4043D Technical Data Sheet* (ASTM D792).
 - MuJoCo: XML Reference (`equality/connect`, `equality/joint`, `actuator/position`, `keyframe`, `armature`, `margin`/`gap` của geom, `contype`/`conaffinity`) và mục Backlash trong Modeling, https://mujoco.readthedocs.io
+  - Bài phân loại dùng thêm: `freejoint`, `option/cone`, `option/jacobian`, `option/flag/multiccd`, `solref`/`solimp` của geom, `mesh/vertex` (lưới lồi khai báo trong XML).
+- Bài phân loại màu (mục 9b), repo firmware https://github.com/NithanNguyen/eezybot_mk2_robot (commit `a172b69`):
+  - `data/color/model.json`, `data/color/test.csv`, `reports/color/eval_test.json`;
+  - `lib/ColorClassifier/ColorMath.h` (thuật toán), `lib/ColorClassifier/ColorClassifier.h` (`READ_INTERVAL_MS`), `src/robot/sorter.h` (`POLL_MS`);
+  - `src/robot/color_console.cpp` (định dạng dòng `CLS`/`ERR`), `include/arm_config.h` (giới hạn quỹ đạo, `DROP_HEIGHT_ABOVE_BIN`).
+- Kích thước kệ, module GY-33, nắp chai, độ dày thành hộp, quy tắc thả 50 mm và chu trình: yêu cầu của chủ dự án (2026-10-23).
 - MuJoCo Python bindings (lệnh `python -m mujoco.viewer --mjcf=...`, `launch_passive`, `user_scn`): https://mujoco.readthedocs.io/en/stable/python.html
 - Phím tắt viewer: MuJoCo "Code samples → simulate", https://mujoco.readthedocs.io/en/stable/programming/samples.html
 - contourpy (dò đường biên trên ảnh raster): https://contourpy.readthedocs.io
