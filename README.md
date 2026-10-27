@@ -84,6 +84,7 @@ git clone https://github.com/NithanNguyen/eezybot_mk2_sim.git && cd eezybot_mk2_
 python3 -m venv ~/venvs/mk2 && source ~/venvs/mk2/bin/activate
 pip install -r requirements.txt
 python -m mujoco.viewer --mjcf=model/mk2.xml            # drag the sliders in the Control panel
+python run_sim.py --pen --view       # watch the robot draw, ink appears progressively (needs a working viewer)
 python run_sort.py --view --foreign 2                   # watch the full sorting cycle
 ```
 
