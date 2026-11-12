@@ -87,7 +87,13 @@ python -m mujoco.viewer --mjcf=model/mk2.xml            # drag the sliders in th
 python run_sim.py --pen --view       # watch the robot draw, ink appears progressively (needs a working viewer)
 python run_sort.py --view --foreign 2                   # watch the full sorting cycle
 ```
+## Quick run
 
+```bash
+cd eezybot_mk2_sim && source ~/venvs/mk2/bin/activate
+python run_sim.py --pen --view       # watch the robot draw, ink appears progressively (needs a working viewer)
+python run_sort.py --view --foreign 2                   # watch the full sorting cycle
+```
 Full setup with per-step checks and the STL rebuild: [installation.md](assets/docs/installation.md).
 
 ## Usage
