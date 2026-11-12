@@ -77,6 +77,26 @@ def station():
     return np.array([P.SHELF_CENTER[0], P.SHELF_CENTER[1], P.SHELF_HEIGHT])
 
 
+def task_points():
+    """Cac diem "cap" (tam nap khi kep, mm, he the gioi) cua chu trinh phan loai — nguon duy nhat cho
+    run_sort.py va tools/export_arm_config.py (firmware). Tra ve dict:
+      grasp, pre          : diem kep tai tram va diem cao hon PRE_GRASP_LIFT
+      drop[mau|"reject"]  : diem tha (day nap cach mat tren hop / mat ban DROP_ABOVE)
+      reject_pre          : phia tren vung vut bo o do cao an toan (roi ha thang xuong drop["reject"])
+      cap_below_tool      : day nap thap hon diem "cap" khi kep (mm)"""
+    below = P.CAP_GRASP_Z - P.SHELF_HEIGHT
+    st = station()
+    grasp = np.array([st[0], st[1], P.CAP_GRASP_Z])
+    pre = grasp + [0, 0, P.PRE_GRASP_LIFT]
+    z_bin = P.BIN_HEIGHT + P.DROP_ABOVE + below
+    z_rej = 0.0 + P.DROP_ABOVE + below
+    drop = {c: np.array([*xy, z_bin]) for c, xy in bin_targets().items()}
+    rj = reject_target()
+    drop["reject"] = np.array([rj[0], rj[1], z_rej])
+    reject_pre = np.array([rj[0], rj[1], max(z_rej, pre[2])])
+    return dict(grasp=grasp, pre=pre, drop=drop, reject_pre=reject_pre, cap_below_tool=below)
+
+
 def queue_positions(n):
     """Cho nap cho: 2 hang ngoai tam voi (x = CAP_QUEUE_X), tam nap (mm)."""
     out = []

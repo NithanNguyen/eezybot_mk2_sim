@@ -20,7 +20,7 @@
 - Firmware repository https://github.com/NithanNguyen/eezybot_mk2_robot (commit `a172b69`):
   - `data/color/model.json`, `data/color/test.csv`, `reports/color/eval_test.json`;
   - `lib/ColorClassifier/ColorMath.h` (algorithm), `lib/ColorClassifier/ColorClassifier.h` (`READ_INTERVAL_MS`), `src/robot/sorter.h` (`POLL_MS`);
-  - `src/robot/color_console.cpp` (`CLS` / `ERR` line format), `include/arm_config.h` (trajectory limits, `DROP_HEIGHT_ABOVE_BIN`).
+  - `src/robot/color_console.cpp` (`CLS` / `ERR` line format), `include/arm_config.h` (now generated from `params.py` by `tools/export_arm_config.py`; the trajectory limits 150 / 1500 / 30000 come from the project proposal).
 - Rack, GY-33 module, bottle-cap dimensions, bin wall thickness, the 50 mm release rule and the cycle: project owner's requirements (2026-10-23).
 
 ## Software

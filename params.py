@@ -164,6 +164,8 @@ MG996R_SHAFT_OFFSET = 9.75
 # Servo kep SG90 — TowerPro SG90 datasheet: 1.8 kgf.cm, 0.1 s/60 do (4.8 V), 9 g,
 # kich thuoc ~22.2 x 11.8 x 31 mm                                             [DATASHEET]
 SG90 = {"stall_kgfcm": 1.8, "s_per_60deg": 0.10, "mass_g": 9.0, "size": (22.2, 11.8, 31.0)}
+# Do rong xung SG90 (us), theo datasheet — chuyen tu eezybot_mk2_robot/include/arm_config.h (truoc 2026-11-12)
+SG90_PULSE_US = (500, 2400)                                                   # [DATASHEET]
 # Sai so goc tai do mo-men bat dau bao hoa (do cung cua vong P ben trong servo).
 # Nha san xuat KHONG cong bo -> hieu chinh bang dap ung buoc do tren servo that.
 SERVO_ERR_SAT_DEG = 5.0                                                       # [GIA-DINH]
@@ -235,7 +237,9 @@ GRIP_HOLD_DEG = 15.0            # lenh kep: thap hon goc cham nap 21.27 do > SER
 GRIP_MOVE_S = 0.5               # thoi gian cho sau moi lenh dong/mo kep           [CHON]
 DROP_WAIT_S = 0.6               # cho nap roi sau khi mo kep                       [CHON]
 
-# Gioi han quy dao. Duong thang (ha/nhac): theo eezybot_mk2_robot/include/arm_config.h.
+# Gioi han quy dao cua dau cong tac (theo de cuong CE212). params.py la NGUON: firmware nhan cac gia tri nay qua
+# tools/export_arm_config.py -> eezybot_mk2_robot/include/arm_config.h. Ap dung cho ca duong thang (ha/nhac)
+# lan chuyen dong khop (run_sort.joint_move gian thoi gian de dau cong tac khong vuot).
 TRAJ_V, TRAJ_A, TRAJ_J = 150.0, 1500.0, 30000.0       # mm/s, mm/s^2, mm/s^3
 # Khong gian khop (th1, th2, phi): quy doi tu gioi han tren qua ban kinh lam viec dac trung 280 mm
 # (1 khop quay rieng le thi diem cong tac chay khoang <= 150 mm/s)                [CHON]

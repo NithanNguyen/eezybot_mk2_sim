@@ -62,8 +62,9 @@ Values tagged `[TINH]` are recomputed by `python tools/check_sort_layout.py`.
 6. Return Home and wait for the next cap.
 
 Trajectories (command every 20 ms → IK → servos):
-- **Between stations:** joint-synchronised double-S (Ruckig, all three joints finish together). Limits 0.536 rad/s, 5.36 rad/s², 107 rad/s³, converted from 150 mm/s, 1500 mm/s², 30000 mm/s³ (firmware `include/arm_config.h`) at a 280 mm radius.
+- **Between stations:** phase-synchronised double-S in joint space (Ruckig `Synchronization.Phase`): q(t) = q₀ + σ(t)·(q₁ − q₀), so the joints follow a straight line in joint space and share one profile σ(t), starting and stopping together. Joint limits 0.536 rad/s, 5.36 rad/s², 107 rad/s³ are converted from 150 mm/s, 1500 mm/s², 30000 mm/s³ at a 280 mm radius. That conversion is exact only for one joint turning alone, so `joint_move()` then measures the tool's peak v, a, j along the joint trajectory and stretches time uniformly by k = max(1, v/150, √(a/1500), ∛(j/30000)). The tool never exceeds 150 mm/s (before this change: up to 178 mm/s).
 - **Descend and lift:** vertical straight line, double-S along arc length with 150 / 1500 / 30000.
+- Both kinds are one 1-D double-S profile σ(t) plus a mapping (joint: q₀ + σ·Δq; line: IK(p₀ + σ·Δp)), which is how the firmware is meant to implement them. The limits 150 / 1500 / 30000 come from `params.py` (`TRAJ_V`, `TRAJ_A`, `TRAJ_J`) and are exported to the firmware by `tools/export_arm_config.py`.
 
 **Sensor in simulation.** MuJoCo does not simulate the TCS34725 optics, so each measurement **replays one real reading** from `data/color/test.csv` with the label of the object currently on the station.
 - Caps and foreign objects: sampled without replacement.
@@ -92,7 +93,7 @@ Dung 99/100 = 99.0%
 **Check 2 — run the cycle:**
 
 ```bash
-python run_sort.py              # 9 caps, seed 0; ~1 min 45 s on a 2-core test machine (78 s simulated time)
+python run_sort.py              # 9 caps, seed 0; 79 s simulated time (wall time depends on the machine)
 python run_sort.py --view       # live view; at most real time (slower machines run slower)
 python run_sort.py --foreign 2  # add 2 foreign objects -> must go to the reject area with "# ERR UNKNOWN_COLOR"
 ```
@@ -113,17 +114,18 @@ Thu tu dat nap (seed 0): red, red, green, white, red, white, white, green, green
 [t=   3.28 s] # SORT RED (lan 1)  [nap 1: cap_red_1, dong test.csv 31]
            gap: z diem kep (thuc) = 53.5 mm, kep 20.30 do, luc kep 5.38 N, nhac nap 40.3 mm, truot max 0.46 mm; day nap luc tha 99.1 mm; nap nam o: red -> DUNG dich
 ...
-[t=  77.62 s] Tram trong, het nap -> dung.
+[t=  78.82 s] Tram trong, het nap -> dung.
 
 Toc do servo lon nhat = [1.07 0.97 0.86] rad/s (MG996R khong tai 5.51 rad/s @4.8V) -> OK
+Van toc dau cong tac lon nhat (lenh, sai phan 20 ms) = 150.0 mm/s (gioi han 150 mm/s) -> OK
 Khe ho nho nhat tren quy dao LENH (FK; diem thap nhat = day nap khi mang nap, mep duoi ngon khi kep rong):
   Home -> tren tram (kep rong)           mat ban 91.5 mm, ke + nap 35.5 mm
-  tram -> ngan 1 (mang nap)              mat ban 83.0 mm, ke 40.0 mm, hop dich 44.7 mm
+  tram -> ngan 1 (mang nap)              mat ban 83.0 mm, ke 40.0 mm, hop dich 44.8 mm
   ve Home (kep rong)                     mat ban 108.5 mm, hop dich 58.5 mm, ke 109.3 mm
-  tram -> ngan 2 (mang nap)              mat ban 83.0 mm, ke 40.0 mm, hop dich 44.3 mm
-  tram -> ngan 3 (mang nap)              mat ban 83.0 mm, ke 40.0 mm, hop dich 47.7 mm
+  tram -> ngan 2 (mang nap)              mat ban 83.0 mm, ke 40.0 mm, hop dich 44.8 mm
+  tram -> ngan 3 (mang nap)              mat ban 83.0 mm, ke 40.0 mm, hop dich 47.6 mm
 So chu ky lenh co tam kep cham ke/hop/ban: 0
-Thoi gian 1 chu ky (dat nap -> tay ve Home): TB 7.35 s, min 7.22, max 7.50
+Thoi gian 1 chu ky (dat nap -> tay ve Home): TB 7.48 s, min 7.32, max 7.60
 Thoi gian tu luc dat nap toi luc ra quyet dinh: TB 0.78 s
 Ma tran: mau that (hang) x noi nap nam sau chu trinh (cot: ngan 1 do, ngan 2 xanh, ngan 3 trang, vut bo, ngoai)
   green  [0 3 0 0 0]

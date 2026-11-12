@@ -9,8 +9,11 @@ Chu trinh (de bai, 2026-10-23), lap lai cho tung nap:
   4. Den diem phia tren diem gap (cao hon PRE_GRASP_LIFT), ha thang xuong, dong kep, nhac len.
   5. Den diem ma day nap cach mat tren hop dich (hoac mat ban o vung vut bo) DROP_ABOVE = 50 mm, mo kep.
   6. Ve Home, cho nap tiep theo.
-Quy dao: giua cac tram = double-S dong bo 3 khop (Ruckig, khong gian khop, cac khop xong cung luc);
-ha/nhac = duong thang dung, double-S theo do dai cung (Ruckig). Lenh moi 20 ms -> IK -> servo (giu 20 ms).
+Quy dao: giua cac tram = double-S dong bo PHA 3 khop (Ruckig Synchronization.Phase: duong thang trong khong
+gian khop, 3 khop chung 1 bien dang sigma(t), xuat phat va dung cung luc), gian thoi gian de dau cong tac
+khong vuot TRAJ_V/TRAJ_A/TRAJ_J; ha/nhac = duong thang dung, double-S theo do dai cung (Ruckig).
+Ca hai = 1 bo double-S 1 chieu sigma(t) + anh xa (khop: q0 + sigma dq; thang: IK(p0 + sigma dp)), nhu firmware.
+Lenh moi 20 ms -> IK -> servo (giu 20 ms).
 Kep nap bang tiep xuc + ma sat that giua tam kep cua 2 ngon va nap (sort_scene.py).
 
 Vi du:
@@ -53,16 +56,12 @@ def say(s):
 
 
 # ======================================================================= diem va tu the
-CAP_BELOW_TOOL = P.CAP_GRASP_Z - P.SHELF_HEIGHT            # day nap thap hon diem "cap" khi kep (16 mm)
+TP = SS.task_points()                                       # cung nguon voi firmware (tools/export_arm_config.py)
+CAP_BELOW_TOOL = TP["cap_below_tool"]                       # day nap thap hon diem "cap" khi kep (16 mm)
 st = SS.station()
-P_GRASP = np.array([st[0], st[1], P.CAP_GRASP_Z])
-P_PRE = P_GRASP + [0, 0, P.PRE_GRASP_LIFT]
-Z_DROP_BIN = P.BIN_HEIGHT + P.DROP_ABOVE + CAP_BELOW_TOOL
-Z_DROP_REJ = 0.0 + P.DROP_ABOVE + CAP_BELOW_TOOL
-DROPS = {c: np.array([*xy, Z_DROP_BIN]) for c, xy in SS.bin_targets().items()}
-rj = SS.reject_target()
-DROPS["reject"] = np.array([rj[0], rj[1], Z_DROP_REJ])
-P_REJ_PRE = np.array([rj[0], rj[1], max(Z_DROP_REJ, P_PRE[2])])  # toi vung vut bo o do cao an toan roi ha
+P_GRASP, P_PRE = TP["grasp"], TP["pre"]
+DROPS = TP["drop"]
+P_REJ_PRE = TP["reject_pre"]                                # toi vung vut bo o do cao an toan roi ha
 Q_HOME = (0.0, math.pi / 2, 0.0)
 
 
@@ -98,13 +97,48 @@ for nm, p in POSES.items():
 JV, JA, JJ = (v / P.TRAJ_R_REF for v in (P.TRAJ_V, P.TRAJ_A, P.TRAJ_J))   # rad/s, rad/s^2, rad/s^3
 
 
-def joint_move(q0, q1):
-    """Double-S dong bo 3 khop (Ruckig, dong bo thoi gian): nghi -> nghi, lay mau DT."""
-    from ruckig import InputParameter, OutputParameter, Result, Ruckig
-    otg = Ruckig(3, DT); inp, out = InputParameter(3), OutputParameter(3)
+TOOL_PEAK_DT = 0.0005   # s, buoc lay mau khi do v, a, j dau cong tac tren quy dao khop (khong phai chu ky lenh)
+
+
+def _joint_input(q0, q1, k):
+    """Bai toan Ruckig nghi -> nghi, dong bo PHA: q(t) = q0 + sigma(t) (q1 - q0), tuc duong thang trong khong
+    gian khop va 3 khop dung chung 1 bien dang sigma(t) — dung cau truc 1 bo double-S 1 chieu cua firmware.
+    k >= 1 gian thoi gian deu: gioi han (JV/k, JA/k^2, JJ/k^3) cho dung quy dao goc chay cham k lan."""
+    from ruckig import InputParameter, Synchronization
+    inp = InputParameter(3)
     inp.current_position = list(q0); inp.current_velocity = [0.0] * 3; inp.current_acceleration = [0.0] * 3
     inp.target_position = list(q1); inp.target_velocity = [0.0] * 3; inp.target_acceleration = [0.0] * 3
-    inp.max_velocity = [JV] * 3; inp.max_acceleration = [JA] * 3; inp.max_jerk = [JJ] * 3
+    inp.max_velocity = [JV / k] * 3; inp.max_acceleration = [JA / k ** 2] * 3; inp.max_jerk = [JJ / k ** 3] * 3
+    inp.synchronization = Synchronization.Phase
+    return inp
+
+
+def tool_peaks(inp):
+    """(v, a, j) lon nhat cua dau cong tac (mm/s, mm/s^2, mm/s^3) tren quy dao khop Ruckig: v = J(q) q' tinh
+    dung, a va j = dao ham so cua v voi buoc TOOL_PEAK_DT."""
+    from ruckig import Result, Ruckig, Trajectory
+    traj = Trajectory(3)
+    res = Ruckig(3).calculate(inp, traj)
+    if res not in (Result.Working, Result.Finished):
+        raise RuntimeError(f"Ruckig loi: {res}")
+    ts = np.append(np.arange(0.0, traj.duration, TOOL_PEAK_DT), traj.duration)
+    v = []
+    for t in ts:
+        q, qd, _ = traj.at_time(t)
+        v.append(K.jacobian(*q) @ np.asarray(qd))
+    v = np.array(v); a = np.gradient(v, ts, axis=0); j = np.gradient(a, ts, axis=0)
+    return tuple(float(np.linalg.norm(x, axis=1).max()) for x in (v, a, j))
+
+
+def joint_move(q0, q1):
+    """Double-S dong bo pha 3 khop (Ruckig Synchronization.Phase), nghi -> nghi, lay mau DT.
+    Gioi han: khop <= (JV, JA, JJ) VA dau cong tac <= (TRAJ_V, TRAJ_A, TRAJ_J). Quy doi qua TRAJ_R_REF chi dung
+    cho 1 khop quay rieng le, nen sau khi giai voi gioi han khop ta do (v, a, j) cua dau cong tac roi gian
+    thoi gian deu he so k = max(1, v/V, sqrt(a/A), cbrt(j/J)): v giam k lan, a k^2 lan, j k^3 lan."""
+    from ruckig import OutputParameter, Result, Ruckig
+    v, a, j = tool_peaks(_joint_input(q0, q1, 1.0))
+    k = max(1.0, v / P.TRAJ_V, math.sqrt(a / P.TRAJ_A), (j / P.TRAJ_J) ** (1.0 / 3.0))
+    otg = Ruckig(3, DT); inp, out = _joint_input(q0, q1, k), OutputParameter(3)
     qs = []; res = Result.Working
     while res == Result.Working:
         res = otg.update(inp, out); qs.append(list(out.new_position)); out.pass_to_input(inp)
@@ -288,7 +322,8 @@ for k in range(args.foreign):
 sensor = CS.SensorSim(seed=args.seed)
 say(f"Thu tu dat nap (seed {args.seed}): " + ", ".join(CAP_COLOR[n] for n in queue))
 say(f"Gioi han khop (quy doi tu {P.TRAJ_V:g} mm/s, {P.TRAJ_A:g} mm/s^2, {P.TRAJ_J:g} mm/s^3 qua r = {P.TRAJ_R_REF:g} mm): "
-    f"{JV:.3f} rad/s, {JA:.2f} rad/s^2, {JJ:.1f} rad/s^3")
+    f"{JV:.3f} rad/s, {JA:.2f} rad/s^2, {JJ:.1f} rad/s^3; dau cong tac <= {P.TRAJ_V:g} mm/s, {P.TRAJ_A:g} mm/s^2, "
+    f"{P.TRAJ_J:g} mm/s^3 (gian thoi gian)")
 meas_s = (MODEL["settle_ms"] + (MODEL["navg"] - 1) * P.READ_INTERVAL_MS) / 1000.0
 
 # ----------------------------------------------------------------------- khoi dong: Home, mo kep
@@ -301,10 +336,15 @@ sv = P.MG996R[P.SUPPLY]; w_servo = math.radians(60) / sv["s_per_60deg"]
 servo_w_max = np.zeros(3)
 
 
+tool_v_max = 0.0
+
+
 def track(qs):
-    global servo_w_max
+    global servo_w_max, tool_v_max
     w = np.abs(TR.derivs(np.vstack([state["q"], qs]))[0][1:]) * np.array([P.BASE_GEAR_RATIO, 1, 1])
     servo_w_max = np.maximum(servo_w_max, w.max(0))
+    ps = np.array([K.fk(*q) for q in np.vstack([state["q"], qs])])
+    tool_v_max = max(tool_v_max, float(np.linalg.norm(np.diff(ps, axis=0), axis=1).max()) / DT)
 
 
 def wait_for_cap(next_cap):
@@ -411,6 +451,8 @@ if viewer is not None:
 say("")
 say(f"Toc do servo lon nhat = {servo_w_max.round(2)} rad/s (MG996R khong tai {w_servo:.2f} rad/s @{P.SUPPLY}) -> "
     f"{'OK' if servo_w_max.max() < w_servo else 'VUOT'}")
+say(f"Van toc dau cong tac lon nhat (lenh, sai phan 20 ms) = {tool_v_max:.1f} mm/s (gioi han {P.TRAJ_V:g} mm/s) -> "
+    f"{'OK' if tool_v_max <= P.TRAJ_V + 0.5 else 'VUOT'}")
 cl = {}
 for nm, dd in plan_clear:
     for ob, z in dd.items():

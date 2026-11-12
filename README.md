@@ -58,7 +58,7 @@ All three are prebuilt in `model/`. Rebuilding from STL is only required after e
 |---|---|
 | Caps delivered to the correct compartment | 9 / 9 (also 9 / 9 for seeds 1–3; 11 / 11 with 2 foreign objects) |
 | Classifier on the firmware test set (`color_sim.py`) | 99 / 100 |
-| Cycle time (cap placed → arm back home) | mean 7.35 s (min 7.22, max 7.50) |
+| Cycle time (cap placed → arm back home) | mean 7.48 s (min 7.32, max 7.60) |
 | Finger contact with rack / bin / table | 0 command cycles |
 
 > The simulated sensor replays real readings from `data/color/test.csv`; TCS34725 optics are not simulated.
@@ -101,6 +101,7 @@ Full setup with per-step checks and the STL rebuild: [installation.md](assets/do
 | `python snapshot.py --xyz X Y Z [--pen] [--grip DEG]` | Pose render via IK for reports | `results/*.png` |
 | `python build_model.py --stl-dir <STL_DIR>` | Rebuild the three models from the original STL | `model/` |
 | `python tools/check_assembly.py --stl-dir <STL_DIR>` | Interpenetration and gripper self-collision check | console |
+| `python tools/export_arm_config.py [--check]` | Export geometry, joint limits, servo map, trajectory limits and sorting points from `params.py` to the firmware | `../eezybot_mk2_robot/include/arm_config.h` |
 
 Expected outputs and pass criteria for each command: [simulation-guide.md](assets/docs/simulation-guide.md) and
 [sorting-task.md](assets/docs/sorting-task.md).
@@ -122,7 +123,8 @@ eezybot_mk2_sim/
 ├── run_sim.py             # M0 vs M2 drawing experiment
 ├── run_sort.py            # colour-sorting cycle
 ├── snapshot.py            # pose renders
-├── tools/                 # STL hole measurement, assembly check, sorting-layout check, photo -> profile
+├── tools/                 # STL hole measurement, assembly check, sorting-layout check, photo -> profile,
+│                          # firmware arm_config.h export
 ├── data/color/            # model.json (calibration) + test.csv, copied from eezybot_mk2_robot
 ├── model/                 # prebuilt MJCF models and meshes
 ├── results/               # sample outputs (overwritten by the scripts)
